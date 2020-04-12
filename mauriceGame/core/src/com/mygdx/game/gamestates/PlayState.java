@@ -24,7 +24,7 @@ import com.mygdx.game.systems.PlayerControlSystem;
 
 public class PlayState extends GameState {
 
-    public static final String FIRST_LEVEL_NAME = "levelFiles/level1";
+    public static final String FIRST_LEVEL_NAME = "levelFiles/level2";
     private String levelName;
 
     private InputMultiplexer inputMultiplexer;
@@ -76,9 +76,9 @@ public class PlayState extends GameState {
         CreateEngine();
         CreatePlayer();
         AddMapToEngine();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
 
-            CreateEntity(i,i);
+            CreateEntity(3,3);
         }
 
     }
@@ -209,7 +209,7 @@ public class PlayState extends GameState {
         }
     }
     public void CreateEntity(int posx , int posy){
-        Entity entity = engine.createEntity();
+        Entity mosquito = engine.createEntity();
         BodyComponent entityBody = engine.createComponent(BodyComponent.class);
         PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
         TextureComponent entityTexture = engine.createComponent(TextureComponent.class);
@@ -223,19 +223,19 @@ public class PlayState extends GameState {
         entityPosition.position.set(posx,posy,0);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 0.5f, BodyMaterial.BOUNCY,
                 BodyDef.BodyType.DynamicBody,false);
-        entityBody.body.setUserData(entity);
+        entityBody.body.setUserData(mosquito);
 
         entityTexture.region = new TextureRegion(entityTexture1,0,0,32,32);
         type.type = TypeComponent.ENEMY;
 
-        entity.add(type);
-        entity.add(entityVelocity);
-        entity.add(entityPosition);
-        entity.add(entityTexture);
-        entity.add(entityBody);
-        entity.add(engine.createComponent(StateComponent.class));
-        entity.add(engine.createComponent(CollisionComponent.class));
-        engine.addEntity(entity);
+        mosquito.add(type);
+        mosquito.add(entityVelocity);
+        mosquito.add(entityPosition);
+        mosquito.add(entityTexture);
+        mosquito.add(entityBody);
+        mosquito.add(engine.createComponent(StateComponent.class));
+        mosquito.add(engine.createComponent(CollisionComponent.class));
+        engine.addEntity(mosquito);
     }
 
 
