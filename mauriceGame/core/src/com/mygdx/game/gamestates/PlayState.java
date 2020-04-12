@@ -24,7 +24,7 @@ import com.mygdx.game.systems.PlayerControlSystem;
 
 public class PlayState extends GameState {
 
-    public static final String FIRST_LEVEL_NAME = "levelFiles/level3";
+    public static final String FIRST_LEVEL_NAME = "levelFiles/level1";
     private String levelName;
 
     private InputMultiplexer inputMultiplexer;
@@ -76,9 +76,9 @@ public class PlayState extends GameState {
         CreateEngine();
         CreatePlayer();
         AddMapToEngine();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 10; i++) {
 
-            CreateEntity();
+            CreateEntity(i,i);
         }
 
     }
@@ -208,7 +208,7 @@ public class PlayState extends GameState {
             }
         }
     }
-    public void CreateEntity(){
+    public void CreateEntity(int posx , int posy){
         Entity entity = engine.createEntity();
         BodyComponent entityBody = engine.createComponent(BodyComponent.class);
         PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
@@ -220,7 +220,7 @@ public class PlayState extends GameState {
         entityVelocity.jumpForce = 9;
         Texture entityTexture1 = new Texture(Gdx.files.internal("charLeft.png"));
         BodyCreator entityBodyCreator = new BodyCreator(world);
-        entityPosition.position.set(3,3,0);
+        entityPosition.position.set(posx,posy,0);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 0.5f, BodyMaterial.BOUNCY,
                 BodyDef.BodyType.DynamicBody,false);
         entityBody.body.setUserData(entity);

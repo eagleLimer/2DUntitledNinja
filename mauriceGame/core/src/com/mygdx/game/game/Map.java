@@ -73,7 +73,7 @@ public class Map extends TiledMap {
     }
 
     public void saveToFile(String fileName) {
-        FileHandle fileHandle = Gdx.files.external(fileName);
+        FileHandle fileHandle = Gdx.files.local(fileName);
 
         MapData mapData = new MapData();
         int[] tileIdList = new int[mapWidth * mapHeight];
@@ -97,7 +97,7 @@ public class Map extends TiledMap {
     }
 
     public void loadMap(String fileName) {
-        FileHandle fileHandle = Gdx.files.external(fileName);
+        FileHandle fileHandle = Gdx.files.local(fileName);
 
         MapData mapData = json.fromJson(MapData.class, Base64Coder.decodeString(fileHandle.readString()));
         this.mapWidth = mapData.getWidth();
