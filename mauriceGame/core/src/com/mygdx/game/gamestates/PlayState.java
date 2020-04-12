@@ -136,6 +136,11 @@ public class PlayState extends GameState {
         stage.dispose();
     }
 
+    @Override
+    public void resize(int width, int height) {
+        //todo: handle background zoom.
+    }
+
     private void CreateEngine() {
         CollisionSystem collisionSystem = new CollisionSystem(level.map);
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
