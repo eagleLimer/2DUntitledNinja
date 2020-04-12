@@ -76,7 +76,7 @@ public class PlayState extends GameState {
         CreateEngine();
         CreatePlayer();
         AddMapToEngine();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
 
             CreateEntity();
         }
@@ -154,12 +154,12 @@ public class PlayState extends GameState {
         VelocityComponent velocity = engine.createComponent(VelocityComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
 
-        velocity.sprintSpeed = 20;
+        velocity.sprintSpeed = 6;
         velocity.jumpForce = 9;
         Texture texture1 = new Texture(Gdx.files.internal("charRight.png"));
         BodyCreator bodyCreator = new BodyCreator(world);
-        position.position.set(100,100,0);
-        bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 32,  32, BodyMaterial.GLASS,
+        position.position.set(3,3,0);
+        bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 1,  1, BodyMaterial.GLASS,
                 BodyDef.BodyType.DynamicBody,false);
         texture.region = new TextureRegion(texture1,0,0,32,32);
         type.type = TypeComponent.PLAYER;
@@ -193,8 +193,8 @@ public class PlayState extends GameState {
 
                     Entity mapTile = engine.createEntity();
 
-                    position.position.set(row * Tile.tileSize, col * Tile.tileSize, 0);
-                    bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 32, 32, BodyMaterial.METAL,
+                    position.position.set(row , col, 0);
+                    bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 1, 1, BodyMaterial.METAL,
                             BodyDef.BodyType.StaticBody, true);
 
                     mapTile.add(position);
@@ -216,9 +216,9 @@ public class PlayState extends GameState {
         entityVelocity.jumpForce = 9;
         Texture entityTexture1 = new Texture(Gdx.files.internal("charLeft.png"));
         BodyCreator entityBodyCreator = new BodyCreator(world);
-        entityPosition.position.set(100,100,0);
-        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 16, BodyMaterial.BOUNCY,
-                BodyDef.BodyType.DynamicBody,false);
+        entityPosition.position.set(3,3,0);
+        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 0.5f, BodyMaterial.BOUNCY,
+                BodyDef.BodyType.KinematicBody,false);
         entityTexture.region = new TextureRegion(entityTexture1,0,0,32,32);
         type.type = TypeComponent.ENEMY;
 
