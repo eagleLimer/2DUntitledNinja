@@ -11,16 +11,13 @@ public class BodyCreator {
     }
 
     public Body makeRectBody(float posx, float posy, float width,float height, BodyMaterial material, BodyDef.BodyType bodyType, boolean fixedRotation){
-        // create a definition
         float tilesToMeters= (float)1/Tile.tileSize;
-        System.out.println(tilesToMeters);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = bodyType;
         boxBodyDef.position.x = posx*tilesToMeters;
         boxBodyDef.position.y = posy*tilesToMeters;
         boxBodyDef.fixedRotation = fixedRotation;
 
-        //create the body to attach said definition
         Body boxBody = world.createBody(boxBodyDef);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox((width/2)*tilesToMeters,(height/2)*tilesToMeters);
@@ -36,7 +33,7 @@ public class BodyCreator {
         bodyDef.position.y = posy*tilesToMetres;
         bodyDef.fixedRotation = fixedRotation;
 
-        //create the body to attach said definition
+        //create the body to attach bodyDef
         Body circleBody = world.createBody(bodyDef);
         CircleShape circleShape = new CircleShape();
         circleShape.setRadius((radius /2)*tilesToMetres);

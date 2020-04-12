@@ -21,6 +21,7 @@ import com.mygdx.game.systems.Engine;
 import com.mygdx.game.systems.PhysicsSystem;
 import com.mygdx.game.systems.PlayerControlSystem;
 
+
 public class PlayState extends GameState {
 
     public static final String FIRST_LEVEL_NAME = "levelFiles/level3";
@@ -75,7 +76,10 @@ public class PlayState extends GameState {
         CreateEngine();
         CreatePlayer();
         AddMapToEngine();
-        CreateEntity();
+        for (int i = 0; i < 100; i++) {
+
+            CreateEntity();
+        }
 
     }
 
@@ -103,6 +107,9 @@ public class PlayState extends GameState {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
+        batch.begin();
+        batch.draw(backGroundImage,0,0);
+        batch.end();
         renderer.setView(camera);
         renderer.render();
         engine.render();
@@ -145,8 +152,9 @@ public class PlayState extends GameState {
         PositionComponent position = engine.createComponent(PositionComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         VelocityComponent velocity = engine.createComponent(VelocityComponent.class);
+        TypeComponent type = engine.createComponent(TypeComponent.class);
 
-        velocity.sprintSpeed = 7;
+        velocity.sprintSpeed = 20;
         velocity.jumpForce = 9;
         Texture texture1 = new Texture(Gdx.files.internal("charRight.png"));
         BodyCreator bodyCreator = new BodyCreator(world);
@@ -154,6 +162,9 @@ public class PlayState extends GameState {
         bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 32,  32, BodyMaterial.GLASS,
                 BodyDef.BodyType.DynamicBody,false);
         texture.region = new TextureRegion(texture1,0,0,32,32);
+        type.type = TypeComponent.PLAYER;
+
+        player.add(type);
         player.add(velocity);
         player.add(position);
         player.add(texture);
@@ -199,16 +210,20 @@ public class PlayState extends GameState {
         PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
         TextureComponent entityTexture = engine.createComponent(TextureComponent.class);
         VelocityComponent entityVelocity = engine.createComponent(VelocityComponent.class);
+        TypeComponent type = engine.createComponent(TypeComponent.class);
 
         entityVelocity.sprintSpeed = 7;
         entityVelocity.jumpForce = 9;
         Texture entityTexture1 = new Texture(Gdx.files.internal("charLeft.png"));
         BodyCreator entityBodyCreator = new BodyCreator(world);
         entityPosition.position.set(100,100,0);
-        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 16, BodyMaterial.METAL,
-                BodyDef.BodyType.KinematicBody,false);
+        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 16, BodyMaterial.BOUNCY,
+                BodyDef.BodyType.DynamicBody,false);
         entityTexture.region = new TextureRegion(entityTexture1,0,0,32,32);
-        //entity.add(entityVelocity);
+        type.type = TypeComponent.ENEMY;
+
+        entity.add(type);
+        entity.add(entityVelocity);
         entity.add(entityPosition);
         entity.add(entityTexture);
         entity.add(entityBody);

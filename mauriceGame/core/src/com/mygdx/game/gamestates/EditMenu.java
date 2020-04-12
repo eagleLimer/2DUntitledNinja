@@ -107,13 +107,13 @@ public class EditMenu extends GameState {
         rightTable.add();
         rightTable.add(backButton);
 
+        leftTable.padTop(100);
         leftTable.add(fileLocLabel2).width(100);
         leftTable.add(enterFileName);
         leftTable.row();
         leftTable.add();
         leftTable.add(loadLevelButton);
-
-
+        
         stage.addActor(rightTable);
         stage.addActor(leftTable);
     }

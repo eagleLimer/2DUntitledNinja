@@ -8,6 +8,7 @@ public class KeyboardController implements InputProcessor {
     public boolean left,right,up,down,esc;
     public boolean leftButton;
     public boolean zoomIn, zoomOut;
+    public boolean jump;
 
     @Override
     public boolean keyDown(int keycode) {
@@ -22,7 +23,7 @@ public class KeyboardController implements InputProcessor {
                 right = true;   // do this
                 keyProcessed = true;    // we have reacted to a keypress
                 break;
-            case Keys.SPACE:       // if keycode is the same as Keys.LEFT a.k.a 19
+            case Keys.W:       // if keycode is the same as Keys.LEFT a.k.a 19
                 up = true;      // do this
                 keyProcessed = true;    // we have reacted to a keypress
                 break;
@@ -42,6 +43,9 @@ public class KeyboardController implements InputProcessor {
                 zoomOut = true;    // do this
                 keyProcessed = true;    // we have reacted to a keypress
                 break;
+            case Keys.SPACE:
+                jump = true;
+                keyProcessed = true;
         }
         return keyProcessed;    //  return our peyProcessed flag
     }
@@ -51,36 +55,39 @@ public class KeyboardController implements InputProcessor {
         boolean keyProcessed = false;
         switch (keycode) // switch code base on the variable keycode
         {
-            case Keys.A:     // if keycode is the same as Keys.LEFT a.k.a 21
-                left = false;   // do this
-                keyProcessed = true;    // we have reacted to a keypress
+            case Keys.A:
+                left = false;
+                keyProcessed = true;
                 break;
-            case Keys.D:    // if keycode is the same as Keys.LEFT a.k.a 22
-                right = false;  // do this
-                keyProcessed = true;    // we have reacted to a keypress
+            case Keys.D:
+                right = false;
+                keyProcessed = true;
                 break;
-            case Keys.SPACE:       // if keycode is the same as Keys.LEFT a.k.a 19
-                up = false;     // do this
-                keyProcessed = true;    // we have reacted to a keypress
+            case Keys.W:
+                up = false;
+                keyProcessed = true;
                 break;
-            case Keys.S:     // if keycode is the same as Keys.LEFT a.k.a 20
-                down = false;   // do this
-                keyProcessed = true;    // we have reacted to a keypress
+            case Keys.S:
+                down = false;
+                keyProcessed = true;
                 break;
-            case Keys.ESCAPE:     // if keycode is the same as Keys.LEFT a.k.a 20
-                esc = false;   // do this
-                keyProcessed = true;    // we have reacted to a keypress
+            case Keys.ESCAPE:
+                esc = false;
+                keyProcessed = true;
                 break;
-            case Keys.O:     // if keycode is the same as Keys.LEFT a.k.a 20
-                zoomIn = false;    // do this
-                keyProcessed = true;    // we have reacted to a keypress
+            case Keys.O:
+                zoomIn = false;
+                keyProcessed = true;
                 break;
-            case Keys.P:     // if keycode is the same as Keys.LEFT a.k.a 20
-                zoomOut = false;    // do this
-                keyProcessed = true;    // we have reacted to a keypress
+            case Keys.P:
+                zoomOut = false;
+                keyProcessed = true;
                 break;
+            case Keys.SPACE:
+                jump = false;
+                keyProcessed = true;
         }
-        return keyProcessed;    //  return our peyProcessed flag
+        return keyProcessed;
     }
 
     @Override

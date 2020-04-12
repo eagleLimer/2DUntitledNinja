@@ -36,6 +36,11 @@ public class PlayerControlSystem extends IteratingSystem {
         StateComponent state = sm.get(entity);
         VelocityComponent velocity = vm.get(entity);
 
+        //just for fun...
+        /*if(controller.down){
+            b2body.body.applyLinearImpulse(0, -velocity.jumpForce*10, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
+        }*/
+
         if(b2body.body.getLinearVelocity().y < -0.1){
             state.set(StateComponent.STATE_FALLING);
         }
@@ -59,7 +64,7 @@ public class PlayerControlSystem extends IteratingSystem {
         if(!controller.left && ! controller.right){
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, 0.1f),b2body.body.getLinearVelocity().y);
         }
-        if(controller.up &&
+        if(controller.jump &&
                 (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)){
             b2body.body.applyForceToCenter(0, 40,true);
             b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);

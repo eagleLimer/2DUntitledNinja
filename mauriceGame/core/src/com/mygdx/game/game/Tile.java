@@ -10,6 +10,7 @@ public class Tile implements TiledMapTile {
     private int id = 0;
     private TextureRegion textureRegion = new TextureRegion();
     private BlendMode blendMode = BlendMode.ALPHA;
+    //todo: ta bort collideable i guesss, collisionlayer blir simplare
     private boolean collideable = false;
     @Override
     public int getId() {
