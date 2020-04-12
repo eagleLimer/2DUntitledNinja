@@ -37,6 +37,8 @@ public class PlayState extends GameState {
     private Entity player;
     private World world;
 
+    private static final float GRAVITY = -9.8f*1.8f;
+
     TextureRegion backGroundImage;
 
 
@@ -62,10 +64,11 @@ public class PlayState extends GameState {
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
         inputMultiplexer.addProcessor(controller);
+
         Texture texture = new Texture(Gdx.files.internal("meerkat.jpg"));
         backGroundImage = new TextureRegion(texture,0,0,1920,1080);
 
-        world = new World(new Vector2(0, -9.8f*1.8f),true);
+        world = new World(new Vector2(0, GRAVITY),true);
         world.setContactListener(new MyContactListener());
 
         CreateEngine();
@@ -86,7 +89,7 @@ public class PlayState extends GameState {
         camera.position.set(player.getComponent(PositionComponent.class).position.x*Tile.tileSize, player.getComponent(PositionComponent.class).position.y*Tile.tileSize, 0);
         camera.update();
         batch.begin();
-        //batch.draw(backGroundImage,0,0);
+        batch.draw(backGroundImage,0,0);
         batch.end();
 
         renderer.setView(camera);
@@ -139,12 +142,17 @@ public class PlayState extends GameState {
         BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
         PositionComponent position = engine.createComponent(PositionComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
+        VelocityComponent velocity = engine.createComponent(VelocityComponent.class);
+
+        velocity.sprintSpeed = 4;
+        velocity.jumpForce = 8;
         Texture texture1 = new Texture(Gdx.files.internal("charRight.png"));
         BodyCreator bodyCreator = new BodyCreator(world);
         position.position.set(100,100,0);
         bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 32,  32, BodyMaterial.WOOD,
                 BodyDef.BodyType.DynamicBody,false);
         texture.region = new TextureRegion(texture1,0,0,32,32);
+        player.add(velocity);
         player.add(position);
         player.add(texture);
         player.add(bodyComponent);

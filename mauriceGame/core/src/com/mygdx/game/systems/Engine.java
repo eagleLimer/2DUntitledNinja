@@ -18,6 +18,9 @@ import com.mygdx.game.game.Tile;
 
 import java.util.Comparator;
 
+import static com.mygdx.game.game.MyGdxGame.worldHeight;
+import static com.mygdx.game.game.MyGdxGame.worldWidth;
+
 public class Engine extends PooledEngine {
     private Array<Entity> renderQueue;
     private ImmutableArray<Entity> entityArray;
@@ -51,8 +54,25 @@ public class Engine extends PooledEngine {
         for (Entity entity : renderQueue){
             TextureRegion region = textureM.get(entity).region;
             Vector3 position = positionM.get(entity).position;
-            Vector2 vector2 = viewport.project(new Vector2(position.x* Tile.tileSize, position.y*Tile.tileSize));
-            batch.draw(region, vector2.x ,vector2.y);
+
+            //there must be a better way....
+
+            Vector2 newCoords = viewport.project(new Vector2(position.x* Tile.tileSize, position.y*Tile.tileSize));
+            Vector2 basicCoords = viewport.project(new Vector2(1,1));
+
+            float width = region.getRegionWidth();
+            float height = region.getRegionHeight();
+
+            float ogWidth = position.x*Tile.tileSize - 1;
+            float newWidth = newCoords.x - basicCoords.x;
+
+            float ogHeight = position.y*Tile.tileSize - 1;
+            float newHeight = newCoords.y - basicCoords.y;
+
+            float scaleX = Math.abs(newWidth)/Math.abs(ogWidth);
+            float scaleY = Math.abs(newHeight)/Math.abs(ogHeight);
+
+            batch.draw(region, newCoords.x ,newCoords.y, scaleX*width, scaleY*height);
         }
         batch.end();
         renderQueue.clear();
