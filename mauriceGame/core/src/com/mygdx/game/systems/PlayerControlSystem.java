@@ -31,6 +31,7 @@ public class PlayerControlSystem extends IteratingSystem {
     }
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
+
         BodyComponent b2body = bodm.get(entity);
         StateComponent state = sm.get(entity);
         VelocityComponent velocity = vm.get(entity);

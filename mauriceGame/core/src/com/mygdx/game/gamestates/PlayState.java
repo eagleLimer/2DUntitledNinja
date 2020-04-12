@@ -36,6 +36,7 @@ public class PlayState extends GameState {
     private Engine engine;
     private Entity player;
     private World world;
+    private Texture backgroundTexture;
 
     private static final float GRAVITY = -9.8f*1.8f;
 
@@ -65,8 +66,8 @@ public class PlayState extends GameState {
         inputMultiplexer.addProcessor(stage);
         inputMultiplexer.addProcessor(controller);
 
-        Texture texture = new Texture(Gdx.files.internal("meerkat.jpg"));
-        backGroundImage = new TextureRegion(texture,0,0,1920,1080);
+        backgroundTexture = new Texture(Gdx.files.internal("meerkat.jpg"));
+        backGroundImage = new TextureRegion(backgroundTexture,0,0,1920,1080);
 
         world = new World(new Vector2(0, GRAVITY),true);
         world.setContactListener(new MyContactListener());
@@ -74,6 +75,7 @@ public class PlayState extends GameState {
         CreateEngine();
         CreatePlayer();
         AddMapToEngine();
+        CreateEntity();
 
     }
 
@@ -144,12 +146,12 @@ public class PlayState extends GameState {
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         VelocityComponent velocity = engine.createComponent(VelocityComponent.class);
 
-        velocity.sprintSpeed = 4;
-        velocity.jumpForce = 8;
+        velocity.sprintSpeed = 7;
+        velocity.jumpForce = 9;
         Texture texture1 = new Texture(Gdx.files.internal("charRight.png"));
         BodyCreator bodyCreator = new BodyCreator(world);
         position.position.set(100,100,0);
-        bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 32,  32, BodyMaterial.WOOD,
+        bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 32,  32, BodyMaterial.GLASS,
                 BodyDef.BodyType.DynamicBody,false);
         texture.region = new TextureRegion(texture1,0,0,32,32);
         player.add(velocity);
@@ -190,6 +192,28 @@ public class PlayState extends GameState {
                 }
             }
         }
+    }
+    public void CreateEntity(){
+        Entity entity = engine.createEntity();
+        BodyComponent entityBody = engine.createComponent(BodyComponent.class);
+        PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
+        TextureComponent entityTexture = engine.createComponent(TextureComponent.class);
+        VelocityComponent entityVelocity = engine.createComponent(VelocityComponent.class);
+
+        entityVelocity.sprintSpeed = 7;
+        entityVelocity.jumpForce = 9;
+        Texture entityTexture1 = new Texture(Gdx.files.internal("charLeft.png"));
+        BodyCreator entityBodyCreator = new BodyCreator(world);
+        entityPosition.position.set(100,100,0);
+        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 16, BodyMaterial.METAL,
+                BodyDef.BodyType.KinematicBody,false);
+        entityTexture.region = new TextureRegion(entityTexture1,0,0,32,32);
+        //entity.add(entityVelocity);
+        entity.add(entityPosition);
+        entity.add(entityTexture);
+        entity.add(entityBody);
+        entity.add(engine.createComponent(StateComponent.class));
+        engine.addEntity(entity);
     }
 
 

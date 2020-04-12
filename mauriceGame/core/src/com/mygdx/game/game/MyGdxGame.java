@@ -11,9 +11,9 @@ import com.mygdx.game.preferences.Preffies;
 
 public class MyGdxGame extends ApplicationAdapter {
 	public static final float STEP = 1/60f;
-	public static final int worldWidth = 1600;
+	public static final int worldWidth = 1000;
+	public static final int worldHeight = 600;
 	//1600 , 900
-	public static final int worldHeight = 900;
 	public static Skin uiSkin;
 
 	private float accum;

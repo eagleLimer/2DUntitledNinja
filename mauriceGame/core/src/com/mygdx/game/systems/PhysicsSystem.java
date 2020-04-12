@@ -13,7 +13,7 @@ import com.mygdx.game.components.PositionComponent;
 
 public class PhysicsSystem extends IteratingSystem {
 
-    private static final float MAX_STEP_TIME = 1/45f;
+    private static final float MAX_STEP_TIME = 1/120f;
     private static float accumulator = 0f;
 
     private static final int velocityIterations = 6;
@@ -42,9 +42,7 @@ public class PhysicsSystem extends IteratingSystem {
             world.step(MAX_STEP_TIME, velocityIterations, positionIterations);
             accumulator -= MAX_STEP_TIME;
 
-
-
-        world.step(deltaTime,velocityIterations,positionIterations);
+            world.step(deltaTime,velocityIterations,positionIterations);
             //Entity Queue
             for (Entity entity : bodiesQueue) {
                 PositionComponent tfm = tm.get(entity);

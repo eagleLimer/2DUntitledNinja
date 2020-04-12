@@ -18,8 +18,6 @@ import com.mygdx.game.game.Tile;
 
 import java.util.Comparator;
 
-import static com.mygdx.game.game.MyGdxGame.worldHeight;
-import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
 public class Engine extends PooledEngine {
     private Array<Entity> renderQueue;
