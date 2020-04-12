@@ -161,6 +161,7 @@ public class PlayState extends GameState {
         position.position.set(3,3,0);
         bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 1,  1, BodyMaterial.GLASS,
                 BodyDef.BodyType.DynamicBody,false);
+        bodyComponent.body.setUserData(player);
         texture.region = new TextureRegion(texture1,0,0,32,32);
         type.type = TypeComponent.PLAYER;
 
@@ -171,6 +172,7 @@ public class PlayState extends GameState {
         player.add(bodyComponent);
         player.add(engine.createComponent(PlayerComponent.class));
         player.add(engine.createComponent(StateComponent.class));
+        player.add(engine.createComponent(CollisionComponent.class));
 
         engine.addEntity(player);
     }
@@ -196,6 +198,8 @@ public class PlayState extends GameState {
                     position.position.set(row , col, 0);
                     bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 1, 1, BodyMaterial.METAL,
                             BodyDef.BodyType.StaticBody, true);
+                    bodyComponent.body.setUserData(mapTile);
+
 
                     mapTile.add(position);
                     mapTile.add(bodyComponent);
@@ -218,7 +222,9 @@ public class PlayState extends GameState {
         BodyCreator entityBodyCreator = new BodyCreator(world);
         entityPosition.position.set(3,3,0);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 0.5f, BodyMaterial.BOUNCY,
-                BodyDef.BodyType.KinematicBody,false);
+                BodyDef.BodyType.DynamicBody,false);
+        entityBody.body.setUserData(entity);
+
         entityTexture.region = new TextureRegion(entityTexture1,0,0,32,32);
         type.type = TypeComponent.ENEMY;
 
@@ -228,6 +234,7 @@ public class PlayState extends GameState {
         entity.add(entityTexture);
         entity.add(entityBody);
         entity.add(engine.createComponent(StateComponent.class));
+        entity.add(engine.createComponent(CollisionComponent.class));
         engine.addEntity(entity);
     }
 

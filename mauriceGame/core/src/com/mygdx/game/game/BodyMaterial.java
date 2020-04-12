@@ -3,7 +3,7 @@ package com.mygdx.game.game;
 public enum BodyMaterial {
     // bird??? what the frick vad för typer är ens rimligt?
     METAL(3,0f,0.1f),GLASS(0.6f,0,0.5f),
-    WOOD(0.6f,0.3f,0.3f),BIRD(10,10,10), BOUNCY(1,1.11f,1);
+    WOOD(0.6f,0.3f,0.3f),BIRD(10,10,10), BOUNCY(1,1f,1);
     private float restitution;
     private float density;
     private float friction;
