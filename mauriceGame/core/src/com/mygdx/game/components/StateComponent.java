@@ -21,4 +21,19 @@ public class StateComponent implements Component {
     public int get(){
         return state;
     }
+    public String getByID(int id){
+        switch (id){
+            case STATE_NORMAL:
+                return "STATE_NORMAL";
+            case STATE_FALLING:
+                return "STATE FALLING";
+            case STATE_JUMPING:
+                return "STATE JUMPING";
+            case STATE_MOVING:
+                return "STATE MOVING";
+            case STATE_HIT:
+                return "STATE HIT";
+        }
+        return "unknown state";
+    }
 }

@@ -41,11 +41,11 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.applyLinearImpulse(0, -velocity.jumpForce*10, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
         }*/
 
-        if(b2body.body.getLinearVelocity().y < -0.1){
+        if(b2body.body.getLinearVelocity().y < 0){
             state.set(StateComponent.STATE_FALLING);
         }
 
-        if(b2body.body.getLinearVelocity().y > -0.1 && b2body.body.getLinearVelocity().y <= 0){
+        if(/*b2body.body.getLinearVelocity().y > -0.1 && b2body.body.getLinearVelocity().y <= 0*/ b2body.body.getLinearVelocity().y == 0){
             if(state.get() == StateComponent.STATE_FALLING){
                 state.set(StateComponent.STATE_NORMAL);
             }
@@ -64,11 +64,15 @@ public class PlayerControlSystem extends IteratingSystem {
         if(!controller.left && ! controller.right){
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, 0.1f),b2body.body.getLinearVelocity().y);
         }
-        if(controller.jump &&
-                (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)){
+
+        velocity.jumpCountDown -= deltaTime;
+        if(controller.jump && velocity.canJump && velocity.jumpCountDown < 0/*&&
+                (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)*/){
             b2body.body.applyForceToCenter(0, 40,true);
             b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
             state.set(StateComponent.STATE_JUMPING);
+            velocity.canJump = false;
+            velocity.jumpCountDown = velocity.jumpCooldown;
         }
     }
 }

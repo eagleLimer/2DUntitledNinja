@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -38,6 +39,8 @@ public class PlayState extends GameState {
     private Entity player;
     private World world;
     private Texture backgroundTexture;
+
+    private BitmapFont font;
 
     private static final float GRAVITY = -9.8f*1.8f;
 
@@ -81,6 +84,9 @@ public class PlayState extends GameState {
             CreateEntity(3,3);
         }
 
+        font = new BitmapFont();
+
+
     }
 
     @Override
@@ -101,6 +107,9 @@ public class PlayState extends GameState {
         renderer.setView(camera);
         renderer.render();
         engine.render();
+        batch.begin();
+        font.draw(batch, player.getComponent(StateComponent.class).getByID(player.getComponent(StateComponent.class).get()),100,100);
+        batch.end();
     }
 
     public void menuRender() {
@@ -161,6 +170,7 @@ public class PlayState extends GameState {
 
         velocity.sprintSpeed = 6;
         velocity.jumpForce = 9;
+        velocity.jumpCooldown = 0.5f;
         Texture texture1 = new Texture(Gdx.files.internal("charRight.png"));
         BodyCreator bodyCreator = new BodyCreator(world);
         position.position.set(3,3,0);
@@ -187,6 +197,7 @@ public class PlayState extends GameState {
         BodyCreator bodyCreator = new BodyCreator(world);
         BodyComponent bodyComponent;
         PositionComponent position;
+        TypeComponent type;
 
         for (int col = 0; col < level.map.getMapHeight(); col++) {
             for (int row = 0; row < level.map.getMapWidth(); row++) {
@@ -194,18 +205,20 @@ public class PlayState extends GameState {
                 if(level.map.getCell(row*Tile.tileSize,col*Tile.tileSize).getTile() != null) {
                     bodyComponent = engine.createComponent(BodyComponent.class);
                     position = engine.createComponent(PositionComponent.class);
+                    type = engine.createComponent(TypeComponent.class);
                     //TextureComponent texture = engine.createComponent(TextureComponent.class);
                     //texture.region = level.map.getCell(row * Tile.tileSize, col * Tile.tileSize).getTile().getTextureRegion();
                     //mapTile.add(texture);
 
                     Entity mapTile = engine.createEntity();
 
+                    type.type = TypeComponent.SCENERY;
                     position.position.set(row , col, 0);
                     bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 1, 1, BodyMaterial.METAL,
-                            BodyDef.BodyType.StaticBody, true);
+                            BodyDef.BodyType.KinematicBody, true);
                     bodyComponent.body.setUserData(mapTile);
 
-
+                    mapTile.add(type);
                     mapTile.add(position);
                     mapTile.add(bodyComponent);
                     engine.addEntity(mapTile);

@@ -67,8 +67,8 @@ public class Engine extends PooledEngine {
             float ogHeight = position.y*Tile.tileSize - 1;
             float newHeight = newCoords.y - basicCoords.y;
 
-            float scaleX = Math.abs(newWidth)/Math.abs(ogWidth);
-            float scaleY = Math.abs(newHeight)/Math.abs(ogHeight);
+            float scaleX = Math.abs(newWidth/ogWidth);
+            float scaleY = Math.abs(newHeight/ogHeight);
 
             batch.draw(region, newCoords.x ,newCoords.y, scaleX*width, scaleY*height);
         }

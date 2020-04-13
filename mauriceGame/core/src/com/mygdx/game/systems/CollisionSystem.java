@@ -11,6 +11,7 @@ import com.mygdx.game.game.Map;
 public class CollisionSystem  extends IteratingSystem {
     ComponentMapper<CollisionComponent> cm;
     ComponentMapper<PlayerComponent> pm;
+    ComponentMapper<VelocityComponent> vm;
     private Map map;
 
     @SuppressWarnings("unchecked")
@@ -20,6 +21,7 @@ public class CollisionSystem  extends IteratingSystem {
         this.map = map;
         cm = ComponentMapper.getFor(CollisionComponent.class);
         pm = ComponentMapper.getFor(PlayerComponent.class);
+        vm = ComponentMapper.getFor(VelocityComponent.class);
     }
 
     @Override
@@ -35,6 +37,7 @@ public class CollisionSystem  extends IteratingSystem {
                         System.out.println("player hit enemy");
                         break;
                     case TypeComponent.SCENERY:
+                        vm.get(entity).canJump = true;
                         System.out.println("player hit scenery");
                         break;
                     case TypeComponent.OTHER:
