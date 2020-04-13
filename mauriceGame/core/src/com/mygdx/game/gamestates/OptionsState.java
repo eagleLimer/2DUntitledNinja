@@ -95,7 +95,6 @@ public class OptionsState extends GameState {
 
     @Override
     public void show() {
-        //todo: Move this line into GameState?
         Gdx.input.setInputProcessor(stage);
     }
 

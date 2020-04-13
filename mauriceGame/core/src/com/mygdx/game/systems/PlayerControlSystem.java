@@ -12,7 +12,10 @@ import com.mygdx.game.components.VelocityComponent;
 import com.mygdx.game.game.KeyboardController;
 
 public class PlayerControlSystem extends IteratingSystem {
-
+    //todo:Move these variables to the correct place, if they shouldn't be here. I dunno man
+    private static final float JUMP_VELOCITY = 15;
+    private static final float GROUND_Y_CAP = 0.5f;
+    private static final float STAND_STILL_CAP = 0.1f;
     ComponentMapper<PlayerComponent> pm;
     ComponentMapper<BodyComponent> bodm;
     ComponentMapper<StateComponent> sm;
@@ -40,16 +43,15 @@ public class PlayerControlSystem extends IteratingSystem {
         /*if(controller.down){
             b2body.body.applyLinearImpulse(0, -velocity.jumpForce*10, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
         }*/
-
         if(b2body.body.getLinearVelocity().y < 0){
             state.set(StateComponent.STATE_FALLING);
         }
 
-        if(/*b2body.body.getLinearVelocity().y > -0.1 && b2body.body.getLinearVelocity().y <= 0*/ b2body.body.getLinearVelocity().y == 0){
+        if(/*b2body.body.getLinearVelocity().y == 0*/Math.abs(b2body.body.getLinearVelocity().y)<GROUND_Y_CAP){
             if(state.get() == StateComponent.STATE_FALLING){
                 state.set(StateComponent.STATE_NORMAL);
             }
-            if(b2body.body.getLinearVelocity().x != 0){
+            if(Math.abs(b2body.body.getLinearVelocity().x) > STAND_STILL_CAP){
                 state.set(StateComponent.STATE_MOVING);
             }
         }
@@ -66,10 +68,10 @@ public class PlayerControlSystem extends IteratingSystem {
         }
 
         velocity.jumpCountDown -= deltaTime;
-        if(controller.jump && velocity.canJump && velocity.jumpCountDown < 0/*&&
-                (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)*/){
-            b2body.body.applyForceToCenter(0, 40,true);
-            b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
+        if(controller.jump && velocity.canJump && velocity.jumpCountDown < 0 &&
+                (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)){
+            b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, JUMP_VELOCITY);
+            //b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
             state.set(StateComponent.STATE_JUMPING);
             velocity.canJump = false;
             velocity.jumpCountDown = velocity.jumpCooldown;
