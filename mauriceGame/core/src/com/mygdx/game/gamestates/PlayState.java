@@ -174,7 +174,7 @@ public class PlayState extends GameState {
         Texture texture1 = new Texture(Gdx.files.internal("charRight.png"));
         BodyCreator bodyCreator = new BodyCreator(world);
         position.position.set(3,3,0);
-        bodyComponent.body = bodyCreator.makeRectBody(position.position.x, position.position.y, 1,  1, BodyMaterial.GLASS,
+        bodyComponent.body = bodyCreator.makeCirclePolyBody(position.position.x, position.position.y, 1,   BodyMaterial.GLASS,
                 BodyDef.BodyType.DynamicBody,false);
         bodyComponent.body.setUserData(player);
         texture.region = new TextureRegion(texture1,0,0,32,32);
