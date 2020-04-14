@@ -39,8 +39,8 @@ public class CollisionSystem  extends IteratingSystem {
                         System.out.println("player hit enemy");
                         break;
                     case TypeComponent.SCENERY:
-                        int state = sm.get(entity).get();
-                        if(state != StateComponent.STATE_JUMPING) {
+                        StateComponent state = sm.get(entity);
+                        if(state.get() != StateComponent.STATE_JUMPING) {
                             vm.get(entity).canJump = true;
                         }
                         System.out.println("player hit scenery");

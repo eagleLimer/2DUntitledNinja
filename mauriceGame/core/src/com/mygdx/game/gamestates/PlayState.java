@@ -6,9 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -17,10 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.components.*;
 import com.mygdx.game.game.*;
-import com.mygdx.game.systems.CollisionSystem;
-import com.mygdx.game.systems.Engine;
-import com.mygdx.game.systems.PhysicsSystem;
-import com.mygdx.game.systems.PlayerControlSystem;
+import com.mygdx.game.resources.AnimationsRes;
+import com.mygdx.game.resources.ImagesRes;
+import com.mygdx.game.systems.*;
 
 
 public class PlayState extends GameState {
@@ -38,13 +35,14 @@ public class PlayState extends GameState {
     private Engine engine;
     private Entity player;
     private World world;
-    private Texture backgroundTexture;
+    private AnimationsRes animationsRes;
+    private ImagesRes imagesRes;
 
     private BitmapFont font;
 
     private static final float GRAVITY = -9.8f*1.8f;
 
-    TextureRegion backGroundImage;
+    TextureRegion backgroundImage;
 
 
     public PlayState(StateChangeListener stateChangeListener) {
@@ -70,8 +68,10 @@ public class PlayState extends GameState {
         inputMultiplexer.addProcessor(stage);
         inputMultiplexer.addProcessor(controller);
 
-        backgroundTexture = new Texture(Gdx.files.internal("meerkat.jpg"));
-        backGroundImage = new TextureRegion(backgroundTexture,0,0,1920,1080);
+        animationsRes = new AnimationsRes();
+        imagesRes = new ImagesRes();
+
+        backgroundImage = imagesRes.backgroundImage;
 
         world = new World(new Vector2(0, GRAVITY),true);
         world.setContactListener(new MyContactListener());
@@ -79,7 +79,7 @@ public class PlayState extends GameState {
         CreateEngine();
         CreatePlayer();
         AddMapToEngine();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 5; i++) {
 
             CreateEntity(3,3);
         }
@@ -101,7 +101,7 @@ public class PlayState extends GameState {
         camera.position.set(player.getComponent(PositionComponent.class).position.x*Tile.tileSize, player.getComponent(PositionComponent.class).position.y*Tile.tileSize, 0);
         camera.update();
         batch.begin();
-        batch.draw(backGroundImage,0,0);
+        batch.draw(backgroundImage,0,0);
         batch.end();
 
         renderer.setView(camera);
@@ -117,7 +117,7 @@ public class PlayState extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.begin();
-        batch.draw(backGroundImage,0,0);
+        batch.draw(backgroundImage,0,0);
         batch.end();
         renderer.setView(camera);
         renderer.render();
@@ -154,10 +154,12 @@ public class PlayState extends GameState {
         CollisionSystem collisionSystem = new CollisionSystem(level.map);
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
         PhysicsSystem physicsSystem = new PhysicsSystem(world);
+        AnimationSystem animationSystem = new AnimationSystem();
         engine = new Engine(viewport, batch);
         engine.addSystem(collisionSystem);
         engine.addSystem(playerControlSystem);
         engine.addSystem(physicsSystem);
+        engine.addSystem(animationSystem);
     }
 
     private void CreatePlayer() {
@@ -167,19 +169,25 @@ public class PlayState extends GameState {
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         VelocityComponent velocity = engine.createComponent(VelocityComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
+        AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
+
+        Animation animation = animationsRes.playerRight;
+        animationComponent.animationMap.put(StateComponent.STATE_RIGHT, animation);
+        animation = animationsRes.playerLeft;
+        animationComponent.animationMap.put(StateComponent.STATE_LEFT,animation);
 
         velocity.sprintSpeed = 6;
-        velocity.jumpForce = 9;
+        velocity.jumpSpeed = 15;
         velocity.jumpCooldown = 0.5f;
-        Texture texture1 = new Texture(Gdx.files.internal("charRight.png"));
+        texture.region = imagesRes.playerImage;
         BodyCreator bodyCreator = new BodyCreator(world);
         position.position.set(3,3,0);
-        bodyComponent.body = bodyCreator.makeCirclePolyBody(position.position.x, position.position.y, 1,   BodyMaterial.GLASS,
+        bodyComponent.body = bodyCreator.makeCirclePolyBody(position.position.x, position.position.y, 1f, BodyMaterial.GLASS,
                 BodyDef.BodyType.DynamicBody,false);
         bodyComponent.body.setUserData(player);
-        texture.region = new TextureRegion(texture1,0,0,32,32);
         type.type = TypeComponent.PLAYER;
 
+        player.add(animationComponent);
         player.add(type);
         player.add(velocity);
         player.add(position);
@@ -235,15 +243,15 @@ public class PlayState extends GameState {
         TypeComponent type = engine.createComponent(TypeComponent.class);
 
         entityVelocity.sprintSpeed = 7;
-        entityVelocity.jumpForce = 9;
-        Texture entityTexture1 = new Texture(Gdx.files.internal("charLeft.png"));
+        entityVelocity.jumpSpeed = 9;
+
+        entityTexture.region = imagesRes.entityImage;
         BodyCreator entityBodyCreator = new BodyCreator(world);
         entityPosition.position.set(posx,posy,0);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 0.5f, BodyMaterial.BOUNCY,
                 BodyDef.BodyType.DynamicBody,false);
         entityBody.body.setUserData(mosquito);
 
-        entityTexture.region = new TextureRegion(entityTexture1,0,0,32,32);
         type.type = TypeComponent.ENEMY;
 
         mosquito.add(type);
