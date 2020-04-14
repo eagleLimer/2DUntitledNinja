@@ -23,7 +23,6 @@ public class CollisionSystem  extends IteratingSystem {
         cm = ComponentMapper.getFor(CollisionComponent.class);
         pm = ComponentMapper.getFor(PlayerComponent.class);
         vm = ComponentMapper.getFor(VelocityComponent.class);
-        sm = ComponentMapper.getFor(StateComponent.class);
     }
 
     @Override
@@ -39,10 +38,6 @@ public class CollisionSystem  extends IteratingSystem {
                         System.out.println("player hit enemy");
                         break;
                     case TypeComponent.SCENERY:
-                        StateComponent state = sm.get(entity);
-                        if(state.get() != StateComponent.STATE_JUMPING) {
-                            vm.get(entity).canJump = true;
-                        }
                         System.out.println("player hit scenery");
                         break;
                     case TypeComponent.OTHER:

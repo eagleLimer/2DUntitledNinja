@@ -183,7 +183,7 @@ public class PlayState extends GameState {
         animationComponent.animationMap.put(StateComponent.STATE_JUMPING,animation);
 
         velocity.sprintSpeed = 6;
-        velocity.jumpSpeed = 15;
+        velocity.jumpSpeed = 12;
         velocity.jumpCooldown = 0.5f;
         texture.region = imagesRes.playerImage;
         BodyCreator bodyCreator = new BodyCreator(world);
