@@ -175,6 +175,12 @@ public class PlayState extends GameState {
         animationComponent.animationMap.put(StateComponent.STATE_RIGHT, animation);
         animation = animationsRes.playerLeft;
         animationComponent.animationMap.put(StateComponent.STATE_LEFT,animation);
+        animation = animationsRes.playerFalling;
+        animationComponent.animationMap.put(StateComponent.STATE_FALLING,animation);
+        animation = animationsRes.playerNormal;
+        animationComponent.animationMap.put(StateComponent.STATE_NORMAL,animation);
+        animation = animationsRes.playerJumping;
+        animationComponent.animationMap.put(StateComponent.STATE_JUMPING,animation);
 
         velocity.sprintSpeed = 6;
         velocity.jumpSpeed = 15;

@@ -13,9 +13,9 @@ import com.mygdx.game.game.KeyboardController;
 
 public class PlayerControlSystem extends IteratingSystem {
     //todo:Move these variables to the correct place, if they shouldn't be here. I dunno man
-    private static final float GROUND_Y_CAP = 0.5f;
+    private static final float GROUND_Y_CAP = 0.4f;
     private static final float STAND_STILL_CAP = 0.4f;
-    private static final float FALLING_CAP = -1f;
+    private static final float FALLING_CAP = -0.3f;
 
     private int stateChanged = 0;
     ComponentMapper<PlayerComponent> pm;
@@ -58,7 +58,14 @@ public class PlayerControlSystem extends IteratingSystem {
         }
         */
 
-
+        if(b2body.body.getLinearVelocity().y < 0){
+            stateChanged = StateComponent.STATE_FALLING;
+        }
+        if(Math.abs(b2body.body.getLinearVelocity().y)<GROUND_Y_CAP){
+            if(state.get() == StateComponent.STATE_FALLING){
+                stateChanged = StateComponent.STATE_NORMAL;
+            }
+        }
 
         if(controller.left){
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -velocity.sprintSpeed, 0.2f),b2body.body.getLinearVelocity().y);
@@ -77,14 +84,7 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, 0.1f),b2body.body.getLinearVelocity().y);
         }
 
-        if(b2body.body.getLinearVelocity().y < 0){
-            stateChanged = StateComponent.STATE_FALLING;
-        }
-        if(Math.abs(b2body.body.getLinearVelocity().y)<GROUND_Y_CAP){
-            if(state.get() == StateComponent.STATE_FALLING ){
-                stateChanged = StateComponent.STATE_NORMAL;
-            }
-        }
+
 
         velocity.jumpCountDown -= deltaTime;
         if(controller.jump && velocity.canJump && velocity.jumpCountDown < 0 &&

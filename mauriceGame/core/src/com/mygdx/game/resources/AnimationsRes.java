@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class AnimationsRes {
     public Animation playerRight;
     public Animation playerLeft;
+    public Animation playerNormal;
+    public Animation playerFalling;
+    public Animation playerJumping;
 
     public AnimationsRes(){
         loadAnimations();
@@ -25,6 +28,26 @@ public class AnimationsRes {
         float frameTime = 0.025f;
         playerRight = createAnimation(walkSheet,frame_rows,frame_cols, frameTime);
         playerLeft = createFlippedAnimation(walkSheet, frame_rows, frame_cols, frameTime);
+
+        walkSheet = new Texture(Gdx.files.internal("faling.png"));
+        frame_cols = 1;
+        frame_rows = 1;
+        frameTime = 1f;
+        playerFalling = createAnimation(walkSheet,frame_rows,frame_cols, frameTime);
+
+        walkSheet = new Texture(Gdx.files.internal("normal.png"));
+        frame_cols = 1;
+        frame_rows = 1;
+        frameTime = 1f;
+        playerNormal = createAnimation(walkSheet,frame_rows,frame_cols, frameTime);
+
+        walkSheet = new Texture(Gdx.files.internal("jumping.png"));
+        frame_cols = 1;
+        frame_rows = 1;
+        frameTime = 1f;
+        playerJumping = createAnimation(walkSheet,frame_rows,frame_cols, frameTime);
+
+
 
     }
 
