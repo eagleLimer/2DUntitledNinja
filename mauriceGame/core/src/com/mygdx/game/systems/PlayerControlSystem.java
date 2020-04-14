@@ -60,16 +60,15 @@ public class PlayerControlSystem extends IteratingSystem {
 
 
 
-
         if(controller.left){
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -velocity.sprintSpeed, 0.2f),b2body.body.getLinearVelocity().y);
-            if(state.get() != StateComponent.STATE_JUMPING) {
+            if(state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_RIGHT) {
                 stateChanged = StateComponent.STATE_LEFT;
             }
-            }
+        }
         if(controller.right){
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, velocity.sprintSpeed, 0.2f),b2body.body.getLinearVelocity().y);
-            if(state.get() != StateComponent.STATE_JUMPING){
+            if(state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_LEFT){
                 stateChanged = StateComponent.STATE_RIGHT;
             }
         }
@@ -78,7 +77,7 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, 0.1f),b2body.body.getLinearVelocity().y);
         }
 
-        if(b2body.body.getLinearVelocity().y < FALLING_CAP ){
+        if(b2body.body.getLinearVelocity().y < 0){
             stateChanged = StateComponent.STATE_FALLING;
         }
         if(Math.abs(b2body.body.getLinearVelocity().y)<GROUND_Y_CAP){

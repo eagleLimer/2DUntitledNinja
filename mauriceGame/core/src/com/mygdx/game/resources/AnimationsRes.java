@@ -37,20 +37,18 @@ public class AnimationsRes {
                 walkFrames[index++] = tmp[i][j];
             }
         }
-        return new Animation<TextureRegion>(0.025f,walkFrames);
+        return new Animation<TextureRegion>(frameTime,walkFrames);
     }
     private Animation createFlippedAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
-        Sprite walkSprite = new Sprite(sheet);
-        walkSprite.flip(true,false);
-        sheet = walkSprite.getTexture();
         TextureRegion[][] tmp = TextureRegion.split(sheet,sheet.getWidth()/frame_cols,sheet.getHeight()/frame_rows);
         TextureRegion[] walkFrames = new TextureRegion[frame_cols*frame_rows];
         int index = 0;
         for (int i = 0; i < frame_rows; i++) {
             for (int j = 0; j < frame_cols; j++) {
-                walkFrames[index++] = tmp[i][j];
+                walkFrames[index] = tmp[i][j];
+                walkFrames[index++].flip(true,false);
             }
         }
-        return new Animation<TextureRegion>(0.025f,walkFrames);
+        return new Animation<TextureRegion>(frameTime,walkFrames);
     }
 }
