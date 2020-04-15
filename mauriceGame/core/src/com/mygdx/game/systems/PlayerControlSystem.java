@@ -14,7 +14,8 @@ import com.mygdx.game.game.KeyboardController;
 import javax.swing.plaf.nimbus.State;
 
 public class PlayerControlSystem extends IteratingSystem {
-    //todo:Move these variables to the correct place, if they shouldn't be here. I dunno man
+    //todo:Move these variables to the correct place, if they shouldn't be here. I dunno man  ||
+    // Might be ok to keep them here, otherwise they should be moved to a component
     private static final float DEACCELERATION = 0.1f;
     private static final float ACCELERATION = 0.2f;
 

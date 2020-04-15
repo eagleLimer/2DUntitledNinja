@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -42,6 +43,8 @@ public class Engine extends PooledEngine {
         //put all entities in renderqueue and sort it after the z variable in position
         //alterantive render map then enemies then player.
 
+        Vector2 scaleVector = CalculateScale();
+
         renderQueue = new Array<>();
         entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class).get());
         for (Entity entity : entityArray) {
@@ -53,27 +56,33 @@ public class Engine extends PooledEngine {
             TextureRegion region = textureM.get(entity).region;
             Vector3 position = positionM.get(entity).position;
 
-            //there must be a better way....
-
-            Vector2 newCoords = viewport.project(new Vector2(position.x* Tile.tileSize, position.y*Tile.tileSize));
-            Vector2 basicCoords = viewport.project(new Vector2(1,1));
-
             float width = region.getRegionWidth();
             float height = region.getRegionHeight();
 
-            float ogWidth = position.x*Tile.tileSize - 1;
-            float newWidth = newCoords.x - basicCoords.x;
+            Vector2 newCoords = viewport.project(new Vector2(position.x* Tile.tileSize, position.y*Tile.tileSize));
 
-            float ogHeight = position.y*Tile.tileSize - 1;
-            float newHeight = newCoords.y - basicCoords.y;
-
-            float scaleX = Math.abs(newWidth/ogWidth);
-            float scaleY = Math.abs(newHeight/ogHeight);
-
-            batch.draw(region, newCoords.x ,newCoords.y, scaleX*width, scaleY*height);
+            batch.draw(region,
+                    newCoords.x- (width/2)*scaleVector.x,newCoords.y -(height/2)*scaleVector.y,
+                    scaleVector.x *width, scaleVector.y*height);
         }
+
+
         batch.end();
         renderQueue.clear();
+    }
+
+    private Vector2 CalculateScale() {
+        Vector2 scaleCoords1 = viewport.project(new Vector2(1,1));
+        Vector2 scaleCoords2 = viewport.project(new Vector2(2,2));
+
+        float ogWidth = 1 - 2;
+        float newWidth = scaleCoords1.x - scaleCoords2.x;
+        float ogHeight = 1 - 2;
+        float newHeight = scaleCoords1.y - scaleCoords2.y;
+
+        float scaleX = Math.abs(newWidth/ogWidth);
+        float scaleY = Math.abs(newHeight/ogHeight);
+        return new Vector2(scaleX,scaleY);
     }
 }
 

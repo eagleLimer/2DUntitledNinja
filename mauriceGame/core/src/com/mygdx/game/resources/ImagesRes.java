@@ -8,6 +8,8 @@ public class ImagesRes {
     public TextureRegion playerImage;
     public TextureRegion entityImage;
     public TextureRegion backgroundImage;
+    public TextureRegion bossImage;
+
 
     public ImagesRes(){
         loadImages();
@@ -22,5 +24,8 @@ public class ImagesRes {
 
         tmpTex = new Texture(Gdx.files.internal("meerkat.jpg"));
         backgroundImage = new TextureRegion(tmpTex,0,0,1920,1080);
+
+        tmpTex = new Texture(Gdx.files.internal("boss.png"));
+        bossImage = new TextureRegion(tmpTex, 0,0,256,256);
     }
 }

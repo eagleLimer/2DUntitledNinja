@@ -3,6 +3,7 @@ package com.mygdx.game.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
@@ -19,8 +20,16 @@ public class Map extends TiledMap {
     private int mapHeight;
     private int mapWidth;
     private String tileLayerName = "layer1";
-    private TextureRegion[] regions = new TextureRegion[50];
 
+    public static final String TILE_SET_NAME = "TileSet.png";
+    public static final int TILE_SET_WIDTH = 10;
+    public static final int TILE_SET_HEIGHT = 5;
+
+
+    public Map(){
+        super();
+        this.getTileSets().addTileSet(loadTileSet(TILE_SET_NAME,TILE_SET_WIDTH,TILE_SET_HEIGHT));
+    }
 
     public int getMapHeight() {
         return mapHeight;
@@ -126,9 +135,9 @@ public class Map extends TiledMap {
         this.getLayers().add(mapLayer);
     }
 
-    public void loadTileSet(String tileSetFilePath, int tileSetWidth, int tileSetHeight) {
+    public static TiledMapTileSet loadTileSet(String tileSetFilePath, int tileSetWidth, int tileSetHeight) {
         TiledMapTileSet tileSet = new TiledMapTileSet();
-        Tile[] tileList = new Tile[50];
+        Tile[] tileList = new Tile[tileSetWidth*tileSetHeight];
         tileSet.setName("set1");
         HashMap<Integer, Boolean> collideableMap = new HashMap<Integer, Boolean>();
         for (int i = 0; i < tileList.length; i++) {
@@ -136,22 +145,26 @@ public class Map extends TiledMap {
         }
         collideableMap.put(0, false);
         Texture texture = new Texture(Gdx.files.internal(tileSetFilePath));
+
+        TextureRegion region;
+        int currentTile = 0;
         for (int i = 0; i < tileSetHeight; i++) {
             for (int j = 0; j < tileSetWidth; j++) {
-                int currentTile = i * regions.length / 5 + j;
-
-                regions[currentTile] = new TextureRegion(texture, j * Tile.tileSize, i * Tile.tileSize, Tile.tileSize, Tile.tileSize);
+                region = new TextureRegion(texture, j * Tile.tileSize, i * Tile.tileSize, Tile.tileSize, Tile.tileSize);
                 tileList[currentTile] = new Tile();
                 tileList[currentTile].setId(currentTile);
-                tileList[currentTile].setTextureRegion(regions[currentTile]);
+                tileList[currentTile].setTextureRegion(region);
                 tileList[currentTile].setCollideable(collideableMap.get(currentTile));
-                tileSet.putTile(currentTile, tileList[currentTile]);
+                tileSet.putTile(currentTile, tileList[currentTile++]);
             }
         }
-        this.getTileSets().addTileSet(tileSet);
+        return tileSet;
     }
 
     public void changeTile(int x, int y, int tileSetId) {
+        if(tileSetId == -1){
+            this.getCell(x,y).setTile(null);
+        }
         this.getCell(x, y).setTile(this.getTileSets().getTile(tileSetId));
     }
 

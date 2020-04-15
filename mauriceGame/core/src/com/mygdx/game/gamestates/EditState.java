@@ -7,18 +7,22 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.game.KeyboardController;
-import com.mygdx.game.game.Level;
-import com.mygdx.game.game.MyGdxGame;
+import com.mygdx.game.game.*;
 
 import static com.mygdx.game.game.MyGdxGame.worldHeight;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
@@ -67,31 +71,39 @@ public class EditState extends GameState{
         //Set alignment of contents in the table.
         mainTable.right();
 
+        final TiledMapTileSet tileSet = Map.loadTileSet(Map.TILE_SET_NAME, Map.TILE_SET_WIDTH, Map.TILE_SET_HEIGHT);
+        int TileIndex = 0;
+        for (int i = 0; i < Map.TILE_SET_HEIGHT; i++) {
+            for (int j = 0; j < Map.TILE_SET_WIDTH; j++) {
+                TiledMapTile currentTile = tileSet.getTile(TileIndex);
+                if(currentTile.getTextureRegion() != null) {
+
+                    Drawabletile drawabletile = new Drawabletile(currentTile.getTextureRegion());
+                    ImageButton tileButton = new ImageButton(drawabletile);
+                    tileButton.addListener(new TileClickListener(currentTile.getId()) {
+                        public void clicked(InputEvent event, float x, float y) {
+                            currentTileId = getId();
+                        }
+                    });
+                    ImageButton newButton = tileButton;
+                    mainTable.add(newButton);
+                }
+                TileIndex++;
+            }
+            mainTable.row();
+        }
+
         //Create buttons
-        TextButton groundTileButton = new TextButton("ground", MyGdxGame.uiSkin);
-        TextButton dirtTileButton = new TextButton("dirt", MyGdxGame.uiSkin);
-        TextButton waterTileButton = new TextButton("water", MyGdxGame.uiSkin);
         TextButton saveLevelButton = new TextButton("save level", MyGdxGame.uiSkin);
-
         TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
-
+        TextButton removeTileButton = new TextButton("Remove tiles", MyGdxGame.uiSkin);
         //Add listeners to buttons
-        groundTileButton.addListener(new ClickListener(){
+
+
+        removeTileButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                currentTileId = 5;
-            }
-        });
-        dirtTileButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                currentTileId = 0;
-            }
-        });
-        waterTileButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                currentTileId = 20;
+                currentTileId = -1;
             }
         });
         saveLevelButton.addListener(new ClickListener(){
@@ -110,11 +122,7 @@ public class EditState extends GameState{
 
         //Add buttons to table
         mainTable.padTop(100);
-        mainTable.add(groundTileButton);
-        mainTable.row();
-        mainTable.add(dirtTileButton);
-        mainTable.row();
-        mainTable.add(waterTileButton);
+        mainTable.add(removeTileButton);
         mainTable.row();
         mainTable.add(saveLevelButton);
         mainTable.row();

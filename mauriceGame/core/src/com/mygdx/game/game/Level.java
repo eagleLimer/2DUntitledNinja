@@ -10,10 +10,7 @@ public class Level {
 
 
     public Level(){
-
         map = new Map();
-        //borde ändra tileset String, width och height men ok för tillfället.
-        map.loadTileSet("TileSet.png",10,5);
     }
 
     public void loadLevel(String fileName) {

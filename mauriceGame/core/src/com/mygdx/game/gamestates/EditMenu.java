@@ -5,14 +5,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.mygdx.game.game.Map;
 import com.mygdx.game.game.MyGdxGame;
 
 
@@ -45,6 +46,7 @@ public class EditMenu extends GameState {
         //Set alignment of contents in the table.
         leftTable.left();
         rightTable.right();
+
 
         Label widthLabel = new Label("Enter width: ", MyGdxGame.uiSkin);
         widthLabel.getStyle().fontColor = Color.WHITE;
@@ -106,6 +108,7 @@ public class EditMenu extends GameState {
         rightTable.row();
         rightTable.add();
         rightTable.add(backButton);
+
 
         leftTable.padTop(100);
         leftTable.add(fileLocLabel2).width(100);
