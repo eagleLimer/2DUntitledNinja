@@ -13,9 +13,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -44,6 +42,8 @@ public class EditState extends GameState {
     private int mouseY;
     private float zoom;
     private Table mainTable;
+    private String currentLayerName = Map.COLLISION_LAYER_NAME;
+    private Table sideTable;
 
     //todo: disable map drawing while in table area.
     public EditState(final StateChangeListener stateChangeListener) {
@@ -66,72 +66,9 @@ public class EditState extends GameState {
         font = new BitmapFont();
         controller = new KeyboardController();
 
-        mainTable = new Table();
-        //Set table to fill stage
-        mainTable.setFillParent(true);
-        //Set alignment of contents in the table.
-        mainTable.right();
+        createMainTable();
+        createTileTable();
 
-        final TiledMapTileSet tileSet = Map.loadTileSet(Map.TILE_SET_NAME, Map.TILE_SET_WIDTH, Map.TILE_SET_HEIGHT);
-        int TileIndex = 0;
-        for (int i = 0; i < Map.TILE_SET_HEIGHT; i++) {
-            for (int j = 0; j < Map.TILE_SET_WIDTH; j++) {
-                TiledMapTile currentTile = tileSet.getTile(TileIndex);
-                if (currentTile.getTextureRegion() != null) {
-
-                    Drawabletile drawabletile = new Drawabletile(currentTile.getTextureRegion());
-                    ImageButton tileButton = new ImageButton(drawabletile);
-                    tileButton.addListener(new TileClickListener(currentTile.getId()) {
-                        public void clicked(InputEvent event, float x, float y) {
-                            currentTileId = getId();
-                        }
-                    });
-                    ImageButton newButton = tileButton;
-                    mainTable.add(newButton);
-                }
-                TileIndex++;
-            }
-            mainTable.row();
-        }
-
-        //Create buttons
-        TextButton saveLevelButton = new TextButton("save level", MyGdxGame.uiSkin);
-        TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
-        TextButton removeTileButton = new TextButton("Remove tiles", MyGdxGame.uiSkin);
-        //Add listeners to buttons
-
-
-        removeTileButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                currentTileId = -1;
-            }
-        });
-        saveLevelButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                level.saveLevel();
-            }
-        });
-        exitButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                //maybe just call Gdx.app.exit(); instead :shrug:
-                stateChangeListener.popState();
-            }
-        });
-
-        //Add buttons to table
-        mainTable.padTop(100);
-        mainTable.add(removeTileButton);
-        mainTable.row();
-        mainTable.add(saveLevelButton);
-        mainTable.row();
-        mainTable.add(exitButton);
-
-        //Add table to stage
-        menuStage.addActor(mainTable);
-        //stage.addListener((EventListener) controller);
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
         inputMultiplexer.addProcessor(menuStage);
@@ -169,6 +106,7 @@ public class EditState extends GameState {
         coordinates = "X: " + String.valueOf(mouseX) + "  Y: " + String.valueOf(mouseY);
         batch.begin();
         font.draw(batch, coordinates, 100, 100);
+        font.draw(batch, currentLayerName, 500,100);
         batch.end();
         menuStage.act();
         menuStage.draw();
@@ -181,14 +119,15 @@ public class EditState extends GameState {
 
         mouseX = Gdx.input.getX();
         mouseY = Gdx.input.getY();
+        // this should be moved to Map.screenToMapCoords() however I like to have the real coords here to print while I'm testing stuff :)
         Vector2 vector2 = viewport.unproject(new Vector2(mouseX, mouseY));
         mouseX = (int) vector2.x;
         mouseY = (int) vector2.y;
 
-
+        //todo: add all buttons to a list and check isOver() method and disable changeTile if true
         if (level.map.mouseInbounds(mouseX, mouseY)) {
             if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-                level.map.changeTile(mouseX, mouseY, currentTileId);
+                level.map.changeTile(mouseX, mouseY, currentTileId, currentLayerName);
             }
         }
         if (controller.up) {
@@ -216,6 +155,125 @@ public class EditState extends GameState {
             viewport.apply();
         }
 
+    }
+
+    private void createTileTable() {
+        //todo: alternative way and also good for future.
+        /*ImageButton button = new ImageButton(MyGdxGame.uiSkin);
+        TiledMapTileSet set = Map.loadTileSet(Map.TILE_SET_NAME, Map.TILE_SET_WIDTH, Map.TILE_SET_HEIGHT);
+        TextureRegion region = set.getTile(0).getTextureRegion();
+        button.getStyle().imageUp = new TextureRegionDrawable(region);*/
+        sideTable = new Table();
+        sideTable.setFillParent(true);
+        sideTable.bottom();
+        final TiledMapTileSet tileSet = Map.loadTileSet(Map.TILE_SET_NAME, Map.TILE_SET_WIDTH, Map.TILE_SET_HEIGHT);
+        int TileIndex = 0;
+        for (int i = 0; i < Map.TILE_SET_HEIGHT; i++) {
+            for (int j = 0; j < Map.TILE_SET_WIDTH; j++) {
+                TiledMapTile currentTile = tileSet.getTile(TileIndex);
+                if (currentTile.getTextureRegion() != null) {
+
+                    Drawabletile drawabletile = new Drawabletile(currentTile.getTextureRegion());
+                    ImageButton tileButton = new ImageButton(drawabletile);
+                    //why this doesnt work I have no clue, but maybe it would look better idk.
+                    /*ImageButton tileButton = new ImageButton(MyGdxGame.uiSkin);
+                    tileButton.getStyle().imageUp = new TextureRegionDrawable(currentTile.getTextureRegion());*/
+                    tileButton.addListener(new TileClickListener(currentTile.getId()) {
+                        public void clicked(InputEvent event, float x, float y) {
+                            currentTileId = getId();
+                        }
+                    });
+                    ImageButton newButton = tileButton;
+                    sideTable.add(newButton);
+                }
+                TileIndex++;
+            }
+            sideTable.row();
+        }
+        menuStage.addActor(sideTable);
+
+    }
+
+    private void createMainTable() {
+        mainTable = new Table();
+        //Set table to fill stage
+        mainTable.setFillParent(true);
+        //Set alignment of contents in the table.
+        mainTable.right();
+
+
+
+        //Create buttons
+        TextButton saveLevelButton = new TextButton("save level", MyGdxGame.uiSkin);
+        TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
+        TextButton removeTileButton = new TextButton("Remove tiles", MyGdxGame.uiSkin);
+        TextButton visualLayerButton = new TextButton("Visual layer", MyGdxGame.uiSkin);
+        TextButton collisionLayerButton = new TextButton("Collision layer", MyGdxGame.uiSkin);
+        TextButton hideLayerButton = new TextButton("Hide layer", MyGdxGame.uiSkin);
+
+
+        //Add listeners to buttons
+
+        saveLevelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                level.saveLevel();
+            }
+        });
+        exitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                //maybe just call Gdx.app.exit(); instead :shrug:
+                stateChangeListener.popState();
+            }
+        });
+        removeTileButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                currentTileId = -1;
+            }
+        });
+        visualLayerButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                currentLayerName = Map.VISUAL_LAYER_NAME;
+            }
+        });
+        collisionLayerButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                currentLayerName = Map.COLLISION_LAYER_NAME;
+            }
+        });
+        hideLayerButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(level.map.getLayers().get(currentLayerName).isVisible()) {
+                    level.map.getLayers().get(currentLayerName).setVisible(false);
+                }else{
+                    level.map.getLayers().get(currentLayerName).setVisible(true);
+                }
+            }
+        });
+
+        //Add buttons to table
+        mainTable.padTop(100);
+        mainTable.add(removeTileButton);
+        mainTable.row();
+        mainTable.add(collisionLayerButton);
+        mainTable.row();
+        mainTable.add(visualLayerButton);
+        mainTable.row();
+        mainTable.add(hideLayerButton);
+        mainTable.row();
+        mainTable.add(saveLevelButton);
+        mainTable.row();
+        mainTable.add(exitButton);
+
+
+
+        //Add table to stage
+        menuStage.addActor(mainTable);
     }
 
     @Override

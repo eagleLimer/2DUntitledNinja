@@ -1,14 +1,16 @@
 package com.mygdx.game.gameData;
 
-public class MapData {
+public class LayerData {
     private int mapWidth;
     private int mapHeight;
     private int[] tileIdList;
 
 
+
     public void setTileIdList(int[] tileIdList) {
         this.tileIdList = tileIdList;
     }
+
 
     public void setMapWidth(int mapWidth) {
         this.mapWidth = mapWidth;
@@ -26,7 +28,7 @@ public class MapData {
         return mapHeight;
     }
 
-    public int[] getIdList() {
+    public int[] getTileIdList() {
         return tileIdList;
     }
 }

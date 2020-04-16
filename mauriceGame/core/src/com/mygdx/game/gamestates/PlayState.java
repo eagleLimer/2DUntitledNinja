@@ -191,11 +191,11 @@ public class PlayState extends GameState {
         animationComponent.animationMap.put(StateComponent.STATE_JUMPING, animation);
 
         velocity.sprintSpeed = 8;
-        velocity.jumpSpeed = 14;
+        velocity.jumpSpeed = 17;
         velocity.jumpCooldown = 0.5f;
         texture.region = imagesRes.playerImage;
         BodyCreator bodyCreator = new BodyCreator(world);
-        position.position.set(3, 3, 0);
+        position.position.set(5, 5, 0);
         bodyComponent.body = bodyCreator.makeCirclePolyBody(position.position.x, position.position.y, 1f, BodyMaterial.GLASS,
                 BodyDef.BodyType.DynamicBody, false);
         bodyComponent.body.setUserData(player);
@@ -224,7 +224,7 @@ public class PlayState extends GameState {
         for (int col = 0; col < level.map.getMapHeight(); col++) {
             for (int row = 0; row < level.map.getMapWidth(); row++) {
 
-                if (level.map.getCell(row * Tile.tileSize, col * Tile.tileSize).getTile() != null) {
+                if (level.map.getCell(row * Tile.tileSize, col * Tile.tileSize, Map.COLLISION_LAYER_NAME).getTile() != null) {
                     bodyComponent = engine.createComponent(BodyComponent.class);
                     position = engine.createComponent(PositionComponent.class);
                     type = engine.createComponent(TypeComponent.class);

@@ -7,6 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 public class Level {
     public Map map;
     private String levelName;
+    private static final String MAP_FILE_NAME = "/Map/";
 
 
     public Level() {
@@ -15,15 +16,15 @@ public class Level {
 
     public void loadLevel(String fileName) {
         levelName = fileName;
-        map.loadMap(levelName + "/map.json");
+        map.loadMap(levelName + MAP_FILE_NAME);
     }
 
     public void newLevel(String fileName, int mapWidth, int mapHeight) {
         levelName = fileName;
-        map.newMap(levelName + "/map.json", mapWidth, mapHeight);
+        map.newMap(mapWidth, mapHeight);
     }
 
     public void saveLevel() {
-        map.saveToFile(levelName + "/map.json");
+        map.saveToFile(levelName + MAP_FILE_NAME);
     }
 }
