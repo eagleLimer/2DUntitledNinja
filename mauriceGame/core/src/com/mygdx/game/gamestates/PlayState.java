@@ -5,9 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -109,8 +107,8 @@ public class PlayState extends GameState {
         batch.end();
         TiledMapImageLayer backgroundLayer = (TiledMapImageLayer) level.map.getLayers().get("layer2");
         System.out.println(backgroundLayer.getOffsetX());
-        backgroundLayer.setX(camera.position.x/2);
-        backgroundLayer.setY(camera.position.y/2);
+        backgroundLayer.setX(camera.position.x / 2);
+        backgroundLayer.setY(camera.position.y / 2);
 
         renderer.setView(camera);
         renderer.render();

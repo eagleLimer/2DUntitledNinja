@@ -106,7 +106,7 @@ public class EditState extends GameState {
         coordinates = "X: " + String.valueOf(mouseX) + "  Y: " + String.valueOf(mouseY);
         batch.begin();
         font.draw(batch, coordinates, 100, 100);
-        font.draw(batch, currentLayerName, 500,100);
+        font.draw(batch, currentLayerName, 500, 100);
         batch.end();
         menuStage.act();
         menuStage.draw();
@@ -202,7 +202,6 @@ public class EditState extends GameState {
         mainTable.right();
 
 
-
         //Create buttons
         TextButton saveLevelButton = new TextButton("save level", MyGdxGame.uiSkin);
         TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
@@ -248,9 +247,9 @@ public class EditState extends GameState {
         hideLayerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(level.map.getLayers().get(currentLayerName).isVisible()) {
+                if (level.map.getLayers().get(currentLayerName).isVisible()) {
                     level.map.getLayers().get(currentLayerName).setVisible(false);
-                }else{
+                } else {
                     level.map.getLayers().get(currentLayerName).setVisible(true);
                 }
             }
@@ -269,7 +268,6 @@ public class EditState extends GameState {
         mainTable.add(saveLevelButton);
         mainTable.row();
         mainTable.add(exitButton);
-
 
 
         //Add table to stage

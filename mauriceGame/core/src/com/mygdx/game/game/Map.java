@@ -57,7 +57,7 @@ public class Map extends TiledMap {
         this.mapWidth = mapWidth;
     }
 
-    public void newMap( int mapWidth, int mapHeight) {
+    public void newMap(int mapWidth, int mapHeight) {
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
 
@@ -79,20 +79,20 @@ public class Map extends TiledMap {
     }
 
     private TiledMapTileLayer createNewLayer(int mapWidth, int mapHeight) {
-        TiledMapTileLayer newLayer = new TiledMapTileLayer(mapWidth,mapHeight, Tile.tileSize, Tile.tileSize);
+        TiledMapTileLayer newLayer = new TiledMapTileLayer(mapWidth, mapHeight, Tile.tileSize, Tile.tileSize);
         for (int j = 0; j < mapHeight; j++) {
             for (int i = 0; i < mapWidth; i++) {
                 final TiledMapTileLayer.Cell tmpCell = new TiledMapTileLayer.Cell();
-                newLayer.setCell(i,j,tmpCell);
+                newLayer.setCell(i, j, tmpCell);
             }
         }
         return newLayer;
     }
 
     public void saveToFile(String fileName) {
-        FileHandle fileHandle = Gdx.files.local(fileName +  COLLISION_LAYER_PATH);
+        FileHandle fileHandle = Gdx.files.local(fileName + COLLISION_LAYER_PATH);
         saveLayer(fileHandle, COLLISION_LAYER_NAME);
-        FileHandle secondHandle  = Gdx.files.local(fileName + VISUAL_LAYER_PATH);
+        FileHandle secondHandle = Gdx.files.local(fileName + VISUAL_LAYER_PATH);
         saveLayer(secondHandle, VISUAL_LAYER_NAME);
     }
 
@@ -128,8 +128,8 @@ public class Map extends TiledMap {
         visualLayer.setName(VISUAL_LAYER_NAME);
 
         Texture texture = new Texture(Gdx.files.internal("meerkat.jpg"));
-        TextureRegion region = new TextureRegion(texture, 0,0,1920,1080);
-        TiledMapImageLayer backgroundLayer = new TiledMapImageLayer(region,0,0);
+        TextureRegion region = new TextureRegion(texture, 0, 0, 1920, 1080);
+        TiledMapImageLayer backgroundLayer = new TiledMapImageLayer(region, 0, 0);
         backgroundLayer.setName("layer2");
         backgroundLayer.setVisible(true);
         this.getLayers().add(backgroundLayer);
@@ -179,11 +179,11 @@ public class Map extends TiledMap {
     }
 
     public void changeTile(int x, int y, int tileSetId, String currentLayer) {
-        TiledMapTileLayer.Cell cell = getCell(x,y, currentLayer);
+        TiledMapTileLayer.Cell cell = getCell(x, y, currentLayer);
         if (tileSetId == -1) {
-            getCell(x,y,currentLayer).setTile(null);
-        }else {
-            getCell(x,y,currentLayer).setTile(this.getTileSets().getTile(tileSetId));
+            getCell(x, y, currentLayer).setTile(null);
+        } else {
+            getCell(x, y, currentLayer).setTile(this.getTileSets().getTile(tileSetId));
         }
     }
 

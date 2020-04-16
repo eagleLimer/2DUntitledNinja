@@ -6,7 +6,6 @@ public class LayerData {
     private int[] tileIdList;
 
 
-
     public void setTileIdList(int[] tileIdList) {
         this.tileIdList = tileIdList;
     }

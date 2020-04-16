@@ -77,8 +77,7 @@ public class EditMenu extends GameState {
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
-                }
-                else{
+                } else {
                     //todo: Please add message to tell user to enter information!
                 }
             }
@@ -86,9 +85,9 @@ public class EditMenu extends GameState {
         loadLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(enterFileName.getText() != null && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()){
+                if (enterFileName.getText() != null && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()) {
                     stateChangeListener.pushState(new EditState(stateChangeListener, FILE_PATH + enterFileName.getText()));
-                }else{
+                } else {
                     //todo: please add no such file message here also!
                 }
             }
