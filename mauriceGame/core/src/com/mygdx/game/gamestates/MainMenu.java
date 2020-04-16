@@ -46,25 +46,25 @@ public class MainMenu extends GameState {
         TextButton exitButton = new TextButton("Exit", MyGdxGame.uiSkin);
 
         //Add listeners to buttons
-        playButton.addListener(new ClickListener(){
+        playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stateChangeListener.pushState(new PlayState(stateChangeListener));
             }
         });
-        editLevelButton.addListener(new ClickListener(){
+        editLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stateChangeListener.pushState(new EditMenu(stateChangeListener));
             }
         });
-        optionsButton.addListener(new ClickListener(){
+        optionsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stateChangeListener.pushState(new OptionsState(stateChangeListener));
             }
         });
-        exitButton.addListener(new ClickListener(){
+        exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //maybe just call Gdx.app.exit(); instead :shrug:

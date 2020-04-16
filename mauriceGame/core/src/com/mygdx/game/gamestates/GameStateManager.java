@@ -4,16 +4,16 @@ import com.badlogic.gdx.Gdx;
 
 import java.util.Stack;
 
-public class GameStateManager implements StateChangeListener{
+public class GameStateManager implements StateChangeListener {
     private Stack<GameState> gameStates = new Stack<GameState>();
 
     public void render() {
-        if(gameStates.isEmpty())return;
+        if (gameStates.isEmpty()) return;
         gameStates.peek().render();
     }
 
     public void update(float step) {
-        if(gameStates.isEmpty())return;
+        if (gameStates.isEmpty()) return;
         gameStates.peek().update(step);
     }
 
@@ -21,16 +21,16 @@ public class GameStateManager implements StateChangeListener{
     public void popState() {
         GameState gameState = gameStates.pop();
         gameState.dispose();
-        if(!gameStates.isEmpty()) {
+        if (!gameStates.isEmpty()) {
             gameStates.peek().show();
-        }else{
+        } else {
             Gdx.app.exit();
         }
     }
 
     @Override
     public void pushState(GameState state) {
-        if(!gameStates.isEmpty()) {
+        if (!gameStates.isEmpty()) {
             gameStates.peek().hide();
         }
         gameStates.push(state);
@@ -38,14 +38,14 @@ public class GameStateManager implements StateChangeListener{
     }
 
     public void dispose() {
-        while(!gameStates.isEmpty()){
+        while (!gameStates.isEmpty()) {
             popState();
         }
     }
 
     public void resize(int width, int height) {
-        for (GameState g:gameStates) {
-            g.resize(width,height);
+        for (GameState g : gameStates) {
+            g.resize(width, height);
         }
     }
 }

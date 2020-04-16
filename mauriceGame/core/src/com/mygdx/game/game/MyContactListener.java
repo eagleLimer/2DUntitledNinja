@@ -9,27 +9,28 @@ public class MyContactListener implements ContactListener {
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        if(fa.getBody().getUserData() instanceof Entity){
+        if (fa.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fa.getBody().getUserData();
-            entityCollision(ent,fb);
+            entityCollision(ent, fb);
             return;
-        }else if(fb.getBody().getUserData() instanceof Entity){
+        } else if (fb.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fb.getBody().getUserData();
-            entityCollision(ent,fa);
+            entityCollision(ent, fa);
             return;
         }
     }
+
     private void entityCollision(Entity ent, Fixture fb) {
 
-        if(fb.getBody().getUserData() instanceof Entity){
+        if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
 
             CollisionComponent col = ent.getComponent(CollisionComponent.class);
             CollisionComponent colb = colEnt.getComponent(CollisionComponent.class);
 
-            if(col != null){
+            if (col != null) {
                 col.collisionEntity = colEnt;
-            }else if(colb != null){
+            } else if (colb != null) {
                 colb.collisionEntity = ent;
             }
         }

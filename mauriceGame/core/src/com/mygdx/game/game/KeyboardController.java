@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.InputProcessor;
 
 public class KeyboardController implements InputProcessor {
-    public boolean left,right,up,down,esc;
+    public boolean left, right, up, down, esc;
     public boolean leftButton;
     public boolean zoomIn, zoomOut;
     public boolean jump;
@@ -98,7 +98,7 @@ public class KeyboardController implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Boolean keyProcessed = false;
-        switch (button){
+        switch (button) {
             case Buttons.LEFT:
                 leftButton = true;
                 keyProcessed = true;
@@ -110,7 +110,7 @@ public class KeyboardController implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Boolean keyProcessed = false;
-        switch (button){
+        switch (button) {
             case Buttons.LEFT:
                 leftButton = false;
                 keyProcessed = true;

@@ -47,21 +47,21 @@ public class OptionsState extends GameState {
         mainTable.top();
 
         //Create buttons
-        final SelectBox<Resolution> resBox=new SelectBox<Resolution>(MyGdxGame.uiSkin);
+        final SelectBox<Resolution> resBox = new SelectBox<Resolution>(MyGdxGame.uiSkin);
         final Preferences prefs = Gdx.app.getPreferences(Preffies.FILE_NAME);
         int width = prefs.getInteger(Preffies.WIDTH_KEY, Preffies.BASE_RESOLUTION.width);
         int height = prefs.getInteger(Preffies.HEIGHT_KEY, Preffies.BASE_RESOLUTION.height);
         resBox.setItems(Preffies.RESOLUTIONS);
         //set chosen item to current resolution
         int chosenIndex = Arrays.asList(Preffies.RESOLUTIONS).indexOf(new Resolution(width, height));
-        if(chosenIndex==-1)chosenIndex=0;
+        if (chosenIndex == -1) chosenIndex = 0;
         resBox.setSelectedIndex(chosenIndex);
 
         final CheckBox fullscreenBox = new CheckBox("Fullscreen", MyGdxGame.uiSkin);
         TextButton applyButton = new TextButton("Apply", MyGdxGame.uiSkin);
         TextButton backButton = new TextButton("Back", MyGdxGame.uiSkin);
 
-        applyButton.addListener(new ClickListener(){
+        applyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 boolean choseFullscreen = fullscreenBox.isChecked();
@@ -73,7 +73,7 @@ public class OptionsState extends GameState {
             }
         });
 
-        backButton.addListener(new ClickListener(){
+        backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stateChangeListener.popState();

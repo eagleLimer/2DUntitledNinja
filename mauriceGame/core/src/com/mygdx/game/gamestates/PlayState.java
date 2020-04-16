@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -40,7 +42,7 @@ public class PlayState extends GameState {
 
     private BitmapFont font;
 
-    private static final float GRAVITY = -9.8f*1.8f;
+    private static final float GRAVITY = -9.8f * 1.8f;
 
     TextureRegion backgroundImage;
 
@@ -73,7 +75,7 @@ public class PlayState extends GameState {
 
         backgroundImage = imagesRes.backgroundImage;
 
-        world = new World(new Vector2(0, GRAVITY),true);
+        world = new World(new Vector2(0, GRAVITY), true);
         world.setContactListener(new MyContactListener());
 
         CreateEngine();
@@ -81,10 +83,10 @@ public class PlayState extends GameState {
         AddMapToEngine();
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 3; j++) {
-                CreateEntity(i+2,j+3);
+                CreateEntity(i + 2, j + 3);
             }
         }
-        CreateBoss(70,45);
+        CreateBoss(70, 45);
 
         font = new BitmapFont();
 
@@ -100,17 +102,21 @@ public class PlayState extends GameState {
     public void render() {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.position.set(player.getComponent(PositionComponent.class).position.x*Tile.tileSize, player.getComponent(PositionComponent.class).position.y*Tile.tileSize, 0);
+        camera.position.set(player.getComponent(PositionComponent.class).position.x * Tile.tileSize, player.getComponent(PositionComponent.class).position.y * Tile.tileSize, 0);
         camera.update();
         batch.begin();
-        batch.draw(backgroundImage,0,0);
+        batch.draw(backgroundImage, 0, 0);
         batch.end();
+        TiledMapImageLayer backgroundLayer = (TiledMapImageLayer) level.map.getLayers().get("layer2");
+        System.out.println(backgroundLayer.getOffsetX());
+        backgroundLayer.setX(camera.position.x/2);
+        backgroundLayer.setY(camera.position.y/2);
 
         renderer.setView(camera);
         renderer.render();
         engine.render();
         batch.begin();
-        font.draw(batch, player.getComponent(StateComponent.class).getByID(player.getComponent(StateComponent.class).get()),100,100);
+        font.draw(batch, player.getComponent(StateComponent.class).getByID(player.getComponent(StateComponent.class).get()), 100, 100);
         batch.end();
     }
 
@@ -119,7 +125,7 @@ public class PlayState extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.begin();
-        batch.draw(backgroundImage,0,0);
+        batch.draw(backgroundImage, 0, 0);
         batch.end();
         renderer.setView(camera);
         renderer.render();
@@ -131,7 +137,7 @@ public class PlayState extends GameState {
     public void update(float step) {
         if (controller.esc) {
             controller.esc = false;
-            stateChangeListener.pushState(new PlayMenu(stateChangeListener,this));
+            stateChangeListener.pushState(new PlayMenu(stateChangeListener, this));
         }
         engine.update(step);
     }
@@ -176,22 +182,22 @@ public class PlayState extends GameState {
         Animation animation = animationsRes.playerRight;
         animationComponent.animationMap.put(StateComponent.STATE_RIGHT, animation);
         animation = animationsRes.playerLeft;
-        animationComponent.animationMap.put(StateComponent.STATE_LEFT,animation);
+        animationComponent.animationMap.put(StateComponent.STATE_LEFT, animation);
         animation = animationsRes.playerFalling;
-        animationComponent.animationMap.put(StateComponent.STATE_FALLING,animation);
+        animationComponent.animationMap.put(StateComponent.STATE_FALLING, animation);
         animation = animationsRes.playerNormal;
-        animationComponent.animationMap.put(StateComponent.STATE_NORMAL,animation);
+        animationComponent.animationMap.put(StateComponent.STATE_NORMAL, animation);
         animation = animationsRes.playerJumping;
-        animationComponent.animationMap.put(StateComponent.STATE_JUMPING,animation);
+        animationComponent.animationMap.put(StateComponent.STATE_JUMPING, animation);
 
         velocity.sprintSpeed = 8;
         velocity.jumpSpeed = 14;
         velocity.jumpCooldown = 0.5f;
         texture.region = imagesRes.playerImage;
         BodyCreator bodyCreator = new BodyCreator(world);
-        position.position.set(3,3,0);
+        position.position.set(3, 3, 0);
         bodyComponent.body = bodyCreator.makeCirclePolyBody(position.position.x, position.position.y, 1f, BodyMaterial.GLASS,
-                BodyDef.BodyType.DynamicBody,false);
+                BodyDef.BodyType.DynamicBody, false);
         bodyComponent.body.setUserData(player);
         type.type = TypeComponent.PLAYER;
 
@@ -218,7 +224,7 @@ public class PlayState extends GameState {
         for (int col = 0; col < level.map.getMapHeight(); col++) {
             for (int row = 0; row < level.map.getMapWidth(); row++) {
 
-                if(level.map.getCell(row*Tile.tileSize,col*Tile.tileSize).getTile() != null) {
+                if (level.map.getCell(row * Tile.tileSize, col * Tile.tileSize).getTile() != null) {
                     bodyComponent = engine.createComponent(BodyComponent.class);
                     position = engine.createComponent(PositionComponent.class);
                     type = engine.createComponent(TypeComponent.class);
@@ -229,8 +235,8 @@ public class PlayState extends GameState {
                     Entity mapTile = engine.createEntity();
 
                     type.type = TypeComponent.SCENERY;
-                    position.position.set(row , col, 0);
-                    bodyComponent.body = bodyCreator.makeRectBody(position.position.x+0.5f, position.position.y+0.5f, 1, 1, BodyMaterial.METAL,
+                    position.position.set(row, col, 0);
+                    bodyComponent.body = bodyCreator.makeRectBody(position.position.x + 0.5f, position.position.y + 0.5f, 1, 1, BodyMaterial.METAL,
                             BodyDef.BodyType.KinematicBody, true);
                     bodyComponent.body.setUserData(mapTile);
 
@@ -242,7 +248,8 @@ public class PlayState extends GameState {
             }
         }
     }
-    public void CreateEntity(int posx , int posy){
+
+    public void CreateEntity(int posx, int posy) {
         Entity mosquito = engine.createEntity();
         BodyComponent entityBody = engine.createComponent(BodyComponent.class);
         PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
@@ -255,9 +262,9 @@ public class PlayState extends GameState {
 
         entityTexture.region = imagesRes.entityImage;
         BodyCreator entityBodyCreator = new BodyCreator(world);
-        entityPosition.position.set(posx,posy,0);
+        entityPosition.position.set(posx, posy, 0);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 0.5f, BodyMaterial.BOUNCY,
-                BodyDef.BodyType.DynamicBody,false);
+                BodyDef.BodyType.DynamicBody, false);
         entityBody.body.setUserData(mosquito);
 
         type.type = TypeComponent.ENEMY;
@@ -271,7 +278,8 @@ public class PlayState extends GameState {
         mosquito.add(engine.createComponent(CollisionComponent.class));
         engine.addEntity(mosquito);
     }
-    public void CreateBoss(int posx , int posy){
+
+    public void CreateBoss(int posx, int posy) {
         Entity boss = engine.createEntity();
         BodyComponent entityBody = engine.createComponent(BodyComponent.class);
         PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
@@ -284,9 +292,9 @@ public class PlayState extends GameState {
 
         entityTexture.region = imagesRes.bossImage;
         BodyCreator entityBodyCreator = new BodyCreator(world);
-        entityPosition.position.set(posx,posy,0);
-        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, (256/32)/2f, BodyMaterial.GLASS,
-                BodyDef.BodyType.DynamicBody,false);
+        entityPosition.position.set(posx, posy, 0);
+        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, (256 / 32) / 2f, BodyMaterial.GLASS,
+                BodyDef.BodyType.DynamicBody, false);
         entityBody.body.setUserData(boss);
 
         type.type = TypeComponent.ENEMY;

@@ -11,21 +11,21 @@ public class ImagesRes {
     public TextureRegion bossImage;
 
 
-    public ImagesRes(){
+    public ImagesRes() {
         loadImages();
     }
 
     private void loadImages() {
         Texture tmpTex = new Texture(Gdx.files.internal("epicRun.png"));
-        playerImage = new TextureRegion(tmpTex,0,0,64,64);
+        playerImage = new TextureRegion(tmpTex, 0, 0, 64, 64);
 
         tmpTex = new Texture(Gdx.files.internal("charLeft.png"));
-        entityImage = new TextureRegion(tmpTex,0,0,32,32);
+        entityImage = new TextureRegion(tmpTex, 0, 0, 32, 32);
 
         tmpTex = new Texture(Gdx.files.internal("meerkat.jpg"));
-        backgroundImage = new TextureRegion(tmpTex,0,0,1920,1080);
+        backgroundImage = new TextureRegion(tmpTex, 0, 0, 1920, 1080);
 
         tmpTex = new Texture(Gdx.files.internal("boss.png"));
-        bossImage = new TextureRegion(tmpTex, 0,0,256,256);
+        bossImage = new TextureRegion(tmpTex, 0, 0, 256, 256);
     }
 }

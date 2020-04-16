@@ -23,6 +23,7 @@ public class PlayMenu extends GameState {
     private PlayState playState;
     private KeyboardController controller;
     private InputMultiplexer inputMultiplexer;
+
     public PlayMenu(final StateChangeListener stateChangeListener, final PlayState playState) {
         super(stateChangeListener);
         this.playState = playState;
@@ -34,7 +35,7 @@ public class PlayMenu extends GameState {
 
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
-        stage = new Stage(viewport,batch);
+        stage = new Stage(viewport, batch);
 
         //Create Table
         Table mainTable = new Table();
@@ -50,25 +51,25 @@ public class PlayMenu extends GameState {
         TextButton mainMenuButton = new TextButton("Exit to MainMenu", MyGdxGame.uiSkin);
 
         //Add listeners to buttons
-        resumeButton.addListener(new ClickListener(){
+        resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stateChangeListener.popState();
             }
         });
-        saveGameButton.addListener(new ClickListener(){
+        saveGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //todo: create gameData and save progress there.
             }
         });
-        optionsButton.addListener(new ClickListener(){
+        optionsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                 stateChangeListener.pushState(new OptionsState(stateChangeListener));
+                stateChangeListener.pushState(new OptionsState(stateChangeListener));
             }
         });
-        mainMenuButton.addListener(new ClickListener(){
+        mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stateChangeListener.popState();
@@ -110,7 +111,7 @@ public class PlayMenu extends GameState {
 
     @Override
     public void update(float step) {
-        if(controller.esc){
+        if (controller.esc) {
             //MIGHT COLLIDE WITH THE OTHER MENU LEAVE IF UNLUCKY?
             controller.esc = false;
             stateChangeListener.popState();

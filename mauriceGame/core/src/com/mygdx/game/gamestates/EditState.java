@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -15,11 +14,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.game.*;
@@ -27,7 +24,9 @@ import com.mygdx.game.game.*;
 import static com.mygdx.game.game.MyGdxGame.worldHeight;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
-public class EditState extends GameState{
+public class EditState extends GameState {
+    private static final int CAMERA_SPEED = 400;
+    private static final float ZOOM_SPEED = 0.03f;
     private Stage menuStage;
     private Viewport menuviewport;
     private SpriteBatch batch;
@@ -43,9 +42,11 @@ public class EditState extends GameState{
     private int currentTileId = 5;
     private int mouseX;
     private int mouseY;
-    private float zoomAmount;
+    private float zoom;
+    private Table mainTable;
 
-    public EditState(final StateChangeListener stateChangeListener){
+    //todo: disable map drawing while in table area.
+    public EditState(final StateChangeListener stateChangeListener) {
         super(stateChangeListener);
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -58,14 +59,14 @@ public class EditState extends GameState{
         stage = new Stage(viewport, batch);
         menuStage = new Stage(menuviewport, batch);
 
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight/2 , 0);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
-        menucamera.position.set(menucamera.viewportWidth/2,menucamera.viewportHeight/2,0);
+        menucamera.position.set(menucamera.viewportWidth / 2, menucamera.viewportHeight / 2, 0);
         menucamera.update();
         font = new BitmapFont();
         controller = new KeyboardController();
 
-        Table mainTable = new Table();
+        mainTable = new Table();
         //Set table to fill stage
         mainTable.setFillParent(true);
         //Set alignment of contents in the table.
@@ -76,7 +77,7 @@ public class EditState extends GameState{
         for (int i = 0; i < Map.TILE_SET_HEIGHT; i++) {
             for (int j = 0; j < Map.TILE_SET_WIDTH; j++) {
                 TiledMapTile currentTile = tileSet.getTile(TileIndex);
-                if(currentTile.getTextureRegion() != null) {
+                if (currentTile.getTextureRegion() != null) {
 
                     Drawabletile drawabletile = new Drawabletile(currentTile.getTextureRegion());
                     ImageButton tileButton = new ImageButton(drawabletile);
@@ -100,19 +101,19 @@ public class EditState extends GameState{
         //Add listeners to buttons
 
 
-        removeTileButton.addListener(new ClickListener(){
+        removeTileButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 currentTileId = -1;
             }
         });
-        saveLevelButton.addListener(new ClickListener(){
+        saveLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 level.saveLevel();
             }
         });
-        exitButton.addListener(new ClickListener(){
+        exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //maybe just call Gdx.app.exit(); instead :shrug:
@@ -136,8 +137,8 @@ public class EditState extends GameState{
         inputMultiplexer.addProcessor(menuStage);
         inputMultiplexer.addProcessor(controller);
 
-        zoomAmount = 1;
-        }
+        zoom = 1;
+    }
 
     public EditState(StateChangeListener stateChangeListener, String fileName) {
         this(stateChangeListener);
@@ -151,7 +152,7 @@ public class EditState extends GameState{
     public EditState(StateChangeListener stateChangeListener, String fileName, int mapWidth, int mapHeight) {
         this(stateChangeListener);
         level = new Level();
-        level.newLevel(fileName,mapWidth,mapHeight);
+        level.newLevel(fileName, mapWidth, mapHeight);
         renderer = new OrthogonalTiledMapRenderer(level.map);
     }
 
@@ -167,7 +168,7 @@ public class EditState extends GameState{
         renderer.render();
         coordinates = "X: " + String.valueOf(mouseX) + "  Y: " + String.valueOf(mouseY);
         batch.begin();
-        font.draw(batch,coordinates, 100,100);
+        font.draw(batch, coordinates, 100, 100);
         batch.end();
         menuStage.act();
         menuStage.draw();
@@ -180,36 +181,38 @@ public class EditState extends GameState{
 
         mouseX = Gdx.input.getX();
         mouseY = Gdx.input.getY();
-        Vector2 vector2 = viewport.unproject(new Vector2(mouseX,mouseY));
-        mouseX = (int)vector2.x;
-        mouseY = (int)vector2.y;
-        if(level.map.mouseInbounds(mouseX,mouseY)) {
+        Vector2 vector2 = viewport.unproject(new Vector2(mouseX, mouseY));
+        mouseX = (int) vector2.x;
+        mouseY = (int) vector2.y;
+
+
+        if (level.map.mouseInbounds(mouseX, mouseY)) {
             if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                 level.map.changeTile(mouseX, mouseY, currentTileId);
             }
         }
-        if (controller.up){
-            camera.position.y += step*400*zoomAmount;
+        if (controller.up) {
+            camera.position.y += step * CAMERA_SPEED * zoom;
         }
-        if (controller.down){
-            camera.position.y -= step*400*zoomAmount;
+        if (controller.down) {
+            camera.position.y -= step * CAMERA_SPEED * zoom;
         }
-        if (controller.left){
-            camera.position.x -= step*400*zoomAmount;
+        if (controller.left) {
+            camera.position.x -= step * CAMERA_SPEED * zoom;
         }
-        if (controller.right){
-            camera.position.x += step*400*zoomAmount;
+        if (controller.right) {
+            camera.position.x += step * CAMERA_SPEED * zoom;
         }
-        if(controller.zoomIn){
-            zoomAmount += 0.03;
-            viewport.setWorldWidth(worldWidth*zoomAmount);
-            viewport.setWorldHeight(worldHeight*zoomAmount);
+        if (controller.zoomIn) {
+            zoom += ZOOM_SPEED;
+            viewport.setWorldWidth(worldWidth * zoom);
+            viewport.setWorldHeight(worldHeight * zoom);
             viewport.apply();
         }
-        if(controller.zoomOut){
-            zoomAmount -= 0.03;
-            viewport.setWorldWidth(worldWidth*zoomAmount);
-            viewport.setWorldHeight(worldHeight*zoomAmount);
+        if (controller.zoomOut) {
+            zoom -= ZOOM_SPEED;
+            viewport.setWorldWidth(worldWidth * zoom);
+            viewport.setWorldHeight(worldHeight * zoom);
             viewport.apply();
         }
 

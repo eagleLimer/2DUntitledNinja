@@ -12,6 +12,7 @@ public class Tile implements TiledMapTile {
     private BlendMode blendMode = BlendMode.ALPHA;
     //todo: ta bort collideable i guesss, collisionlayer blir simplare kanske ta bort hela denna klass? :)
     private boolean collideable = false;
+
     @Override
     public int getId() {
         return id;

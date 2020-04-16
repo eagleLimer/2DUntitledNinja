@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.mygdx.game.gameData.MapData;
+import com.mygdx.game.resources.ImagesRes;
 
 import java.util.HashMap;
 
@@ -26,9 +27,9 @@ public class Map extends TiledMap {
     public static final int TILE_SET_HEIGHT = 5;
 
 
-    public Map(){
+    public Map() {
         super();
-        this.getTileSets().addTileSet(loadTileSet(TILE_SET_NAME,TILE_SET_WIDTH,TILE_SET_HEIGHT));
+        this.getTileSets().addTileSet(loadTileSet(TILE_SET_NAME, TILE_SET_WIDTH, TILE_SET_HEIGHT));
     }
 
     public int getMapHeight() {
@@ -45,7 +46,7 @@ public class Map extends TiledMap {
 
     public Tile getTile(int x, int y) {
         TiledMapTileLayer layer = (TiledMapTileLayer) this.getLayers().get(tileLayerName);
-        return (Tile)layer.getCell(x / Tile.tileSize, y / Tile.tileSize).getTile();
+        return (Tile) layer.getCell(x / Tile.tileSize, y / Tile.tileSize).getTile();
     }
 
     public TiledMapTileLayer.Cell getCell(int x, int y) {
@@ -71,8 +72,8 @@ public class Map extends TiledMap {
         mapLayer.setName("layer1");
 
         Texture texture = new Texture(Gdx.files.internal("meerkat.jpg"));
-        TextureRegion region = new TextureRegion(texture, 0,0,1920,1080);
-        TiledMapImageLayer backgroundLayer = new TiledMapImageLayer(region,0,0);
+        TextureRegion region = new TextureRegion(texture, 0, 0, 1920, 1080);
+        TiledMapImageLayer backgroundLayer = new TiledMapImageLayer(region, 0, 0);
         backgroundLayer.setName("layer2");
         backgroundLayer.setVisible(true);
 
@@ -92,9 +93,9 @@ public class Map extends TiledMap {
         TiledMapTileLayer mapLayer = (TiledMapTileLayer) this.getLayers().get("layer1");
         for (int j = 0; j < mapHeight; j++) {
             for (int i = 0; i < mapWidth; i++) {
-                if(mapLayer.getCell(i,j).getTile() != null) {
+                if (mapLayer.getCell(i, j).getTile() != null) {
                     tileIdList[j * mapWidth + i] = mapLayer.getCell(i, j).getTile().getId();
-                }else{
+                } else {
                     tileIdList[j * mapWidth + i] = -1;
                 }
             }
@@ -114,34 +115,33 @@ public class Map extends TiledMap {
         TiledMapTileLayer mapLayer = new TiledMapTileLayer(mapWidth, mapHeight, Tile.tileSize, Tile.tileSize);
         for (int col = 0; col < mapHeight; col++) {
             for (int row = 0; row < mapWidth; row++) {
-                int currentTileId =  mapData.getIdList()[col * mapWidth + row];
+                int currentTileId = mapData.getIdList()[col * mapWidth + row];
                 final TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                if(currentTileId != -1) {
+                if (currentTileId != -1) {
                     cell.setTile(this.getTileSets().getTile(currentTileId));
                 }
                 mapLayer.setCell(row, col, cell);
             }
         }
         mapLayer.setName("layer1");
-        /*
+
         Texture texture = new Texture(Gdx.files.internal("meerkat.jpg"));
         TextureRegion region = new TextureRegion(texture, 0,0,1920,1080);
         TiledMapImageLayer backgroundLayer = new TiledMapImageLayer(region,0,0);
         backgroundLayer.setName("layer2");
         backgroundLayer.setVisible(true);
-
+        backgroundLayer.setX(-500);
         this.getLayers().add(backgroundLayer);
-        */
         this.getLayers().add(mapLayer);
     }
 
     public static TiledMapTileSet loadTileSet(String tileSetFilePath, int tileSetWidth, int tileSetHeight) {
         TiledMapTileSet tileSet = new TiledMapTileSet();
-        Tile[] tileList = new Tile[tileSetWidth*tileSetHeight];
         tileSet.setName("set1");
+        Tile[] tileList = new Tile[tileSetWidth * tileSetHeight];
         HashMap<Integer, Boolean> collideableMap = new HashMap<Integer, Boolean>();
         for (int i = 0; i < tileList.length; i++) {
-            collideableMap.put(i,true);
+            collideableMap.put(i, true);
         }
         collideableMap.put(0, false);
         Texture texture = new Texture(Gdx.files.internal(tileSetFilePath));
@@ -162,13 +162,13 @@ public class Map extends TiledMap {
     }
 
     public void changeTile(int x, int y, int tileSetId) {
-        if(tileSetId == -1){
-            this.getCell(x,y).setTile(null);
+        if (tileSetId == -1) {
+            this.getCell(x, y).setTile(null);
         }
         this.getCell(x, y).setTile(this.getTileSets().getTile(tileSetId));
     }
 
     public boolean mouseInbounds(int mouseX, int mouseY) {
-        return mouseX > 0 &&mouseY > 0 && mouseX < mapWidth*Tile.tileSize&& mouseY < mapHeight*Tile.tileSize;
+        return mouseX > 0 && mouseY > 0 && mouseX < mapWidth * Tile.tileSize && mouseY < mapHeight * Tile.tileSize;
     }
 }

@@ -1,20 +1,19 @@
 package com.mygdx.game.gamestates;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.mygdx.game.game.Map;
 import com.mygdx.game.game.MyGdxGame;
+
+import java.io.File;
 
 
 public class EditMenu extends GameState {
@@ -23,6 +22,8 @@ public class EditMenu extends GameState {
     private OrthographicCamera camera;
     private static final int MAX_HEIGHT = 500;
     private static final int MAX_WIDTH = 500;
+    private static final String FILE_PATH = "levelFiles/";
+
     public EditMenu(final StateChangeListener stateChangeListener) {
         super(stateChangeListener);
         batch = new SpriteBatch();
@@ -62,29 +63,37 @@ public class EditMenu extends GameState {
         final TextField enterFileName = new TextField("", MyGdxGame.uiSkin);
 
 
-        newLevelButton.addListener(new ClickListener(){
+        newLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                int enteredWidth = Integer.parseInt(enterMapWidth.getText());
-                int enteredHeight = Integer.parseInt(enterMapHeight.getText());
-                if(enteredWidth > 0 && enteredWidth <= MAX_WIDTH && enteredHeight > 0 && enteredHeight <= MAX_HEIGHT) {
+                if (enterMapWidth.getText() != null && enterMapHeight.getText() != null && enterNewFileName.getText() != null) {
                     try {
-                        stateChangeListener.pushState(new EditState(stateChangeListener, "levelFiles/" + enterNewFileName.getText(),
-                                enteredWidth, enteredHeight));
+                        int enteredWidth = Integer.parseInt(enterMapWidth.getText());
+                        int enteredHeight = Integer.parseInt(enterMapHeight.getText());
+                        if (enteredWidth > 0 && enteredWidth <= MAX_WIDTH && enteredHeight > 0 && enteredHeight <= MAX_HEIGHT) {
+                            stateChangeListener.pushState(new EditState(stateChangeListener, FILE_PATH + enterNewFileName.getText(),
+                                    enteredWidth, enteredHeight));
+                        }
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
                 }
+                else{
+                    //todo: Please add message to tell user to enter information!
+                }
             }
         });
-        loadLevelButton.addListener(new ClickListener(){
+        loadLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
-                stateChangeListener.pushState(new EditState(stateChangeListener, "levelFiles/"+enterFileName.getText()));
+                if(enterFileName.getText() != null && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()){
+                    stateChangeListener.pushState(new EditState(stateChangeListener, FILE_PATH + enterFileName.getText()));
+                }else{
+                    //todo: please add no such file message here also!
+                }
             }
         });
-        backButton.addListener(new ClickListener(){
+        backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stateChangeListener.popState();
@@ -116,7 +125,7 @@ public class EditMenu extends GameState {
         leftTable.row();
         leftTable.add();
         leftTable.add(loadLevelButton);
-        
+
         stage.addActor(rightTable);
         stage.addActor(leftTable);
     }

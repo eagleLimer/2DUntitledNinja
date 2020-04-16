@@ -39,7 +39,7 @@ public class Engine extends PooledEngine {
         comparator = new ZComparator();
     }
 
-    public void render(){
+    public void render() {
         //put all entities in renderqueue and sort it after the z variable in position
         //alterantive render map then enemies then player.
 
@@ -52,18 +52,18 @@ public class Engine extends PooledEngine {
         }
         renderQueue.sort(comparator);
         batch.begin();
-        for (Entity entity : renderQueue){
+        for (Entity entity : renderQueue) {
             TextureRegion region = textureM.get(entity).region;
             Vector3 position = positionM.get(entity).position;
 
             float width = region.getRegionWidth();
             float height = region.getRegionHeight();
 
-            Vector2 newCoords = viewport.project(new Vector2(position.x* Tile.tileSize, position.y*Tile.tileSize));
+            Vector2 newCoords = viewport.project(new Vector2(position.x * Tile.tileSize, position.y * Tile.tileSize));
 
             batch.draw(region,
-                    newCoords.x- (width/2)*scaleVector.x,newCoords.y -(height/2)*scaleVector.y,
-                    scaleVector.x *width, scaleVector.y*height);
+                    newCoords.x - (width / 2) * scaleVector.x, newCoords.y - (height / 2) * scaleVector.y,
+                    scaleVector.x * width, scaleVector.y * height);
         }
 
 
@@ -72,17 +72,17 @@ public class Engine extends PooledEngine {
     }
 
     private Vector2 CalculateScale() {
-        Vector2 scaleCoords1 = viewport.project(new Vector2(1,1));
-        Vector2 scaleCoords2 = viewport.project(new Vector2(2,2));
+        Vector2 scaleCoords1 = viewport.project(new Vector2(1, 1));
+        Vector2 scaleCoords2 = viewport.project(new Vector2(2, 2));
 
         float ogWidth = 1 - 2;
         float newWidth = scaleCoords1.x - scaleCoords2.x;
         float ogHeight = 1 - 2;
         float newHeight = scaleCoords1.y - scaleCoords2.y;
 
-        float scaleX = Math.abs(newWidth/ogWidth);
-        float scaleY = Math.abs(newHeight/ogHeight);
-        return new Vector2(scaleX,scaleY);
+        float scaleX = Math.abs(newWidth / ogWidth);
+        float scaleY = Math.abs(newHeight / ogHeight);
+        return new Vector2(scaleX, scaleY);
     }
 }
 

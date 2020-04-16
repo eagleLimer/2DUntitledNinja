@@ -14,16 +14,17 @@ public class StateComponent implements Component {
     public float time = 0.0f;
     public boolean isLooping = true;
 
-    public void set(int newState){
+    public void set(int newState) {
         state = newState;
         time = 0.0f;
     }
 
-    public int get(){
+    public int get() {
         return state;
     }
-    public String getByID(int id){
-        switch (id){
+
+    public String getByID(int id) {
+        switch (id) {
             case STATE_NORMAL:
                 return "STATE_NORMAL";
             case STATE_FALLING:

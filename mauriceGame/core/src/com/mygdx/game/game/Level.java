@@ -9,21 +9,21 @@ public class Level {
     private String levelName;
 
 
-    public Level(){
+    public Level() {
         map = new Map();
     }
 
     public void loadLevel(String fileName) {
         levelName = fileName;
-        map.loadMap(levelName+"/map.json");
+        map.loadMap(levelName + "/map.json");
     }
 
     public void newLevel(String fileName, int mapWidth, int mapHeight) {
         levelName = fileName;
-        map.newMap(levelName+"/map.json",mapWidth,mapHeight);
+        map.newMap(levelName + "/map.json", mapWidth, mapHeight);
     }
 
     public void saveLevel() {
-        map.saveToFile(levelName+"/map.json");
+        map.saveToFile(levelName + "/map.json");
     }
 }

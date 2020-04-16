@@ -41,6 +41,7 @@ public class PlayerControlSystem extends IteratingSystem {
         sm = ComponentMapper.getFor(StateComponent.class);
         vm = ComponentMapper.getFor(VelocityComponent.class);
     }
+
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
 
@@ -65,39 +66,38 @@ public class PlayerControlSystem extends IteratingSystem {
         }
         */
         //ugly as crap? Maybe.
-        if((state.get() == StateComponent.STATE_JUMPING && b2body.body.getLinearVelocity().y <0.00000001) || b2body.body.getLinearVelocity().y<FALLING_MIN){
+        if ((state.get() == StateComponent.STATE_JUMPING && b2body.body.getLinearVelocity().y < 0.00000001) || b2body.body.getLinearVelocity().y < FALLING_MIN) {
             stateChanged = StateComponent.STATE_FALLING;
-        }else if(state.get() != StateComponent.STATE_JUMPING){
+        } else if (state.get() != StateComponent.STATE_JUMPING) {
             stateChanged = StateComponent.STATE_NORMAL;
         }
 
         boolean airborne = stateChanged == StateComponent.STATE_FALLING || stateChanged == StateComponent.STATE_JUMPING;
         float accMultiplier = airborne ? AIRBORNE_CONTROL : 1;
-        if(controller.left){
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -velocity.sprintSpeed, ACCELERATION*accMultiplier),b2body.body.getLinearVelocity().y);
-            if(!airborne) {
+        if (controller.left) {
+            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
+            if (!airborne) {
                 stateChanged = StateComponent.STATE_LEFT;
             }
-            }else if(controller.right){
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION*accMultiplier),b2body.body.getLinearVelocity().y);
-            if(!airborne) {
+        } else if (controller.right) {
+            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
+            if (!airborne) {
                 stateChanged = StateComponent.STATE_RIGHT;
             }
-        }else{
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, DEACCELERATION*accMultiplier),b2body.body.getLinearVelocity().y);
+        } else {
+            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, DEACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
         }
 
 
-
         velocity.jumpCountDown -= deltaTime;
-        if(controller.jump && !airborne && velocity.jumpCountDown < 0 &&
-                (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_LEFT || state.get() == StateComponent.STATE_RIGHT)){
+        if (controller.jump && !airborne && velocity.jumpCountDown < 0 &&
+                (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_LEFT || state.get() == StateComponent.STATE_RIGHT)) {
             b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, velocity.jumpSpeed);
             //b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
             stateChanged = StateComponent.STATE_JUMPING;
             velocity.jumpCountDown = velocity.jumpCooldown;
         }
-        if(state.get()!= stateChanged){
+        if (state.get() != stateChanged) {
             state.set(stateChanged);
         }
     }
