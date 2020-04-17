@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
@@ -15,9 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.game.*;
+import com.mygdx.game.resources.ImagesRes;
 
 import static com.mygdx.game.game.MyGdxGame.worldHeight;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
@@ -44,6 +47,8 @@ public class EditState extends GameState {
     private Table mainTable;
     private String currentLayerName = Map.COLLISION_LAYER_NAME;
     private Table sideTable;
+    private float menuMouseX;
+    private float menuMouseY;
 
     //todo: disable map drawing while in table area.
     public EditState(final StateChangeListener stateChangeListener) {
@@ -106,7 +111,7 @@ public class EditState extends GameState {
         coordinates = "X: " + String.valueOf(mouseX) + "  Y: " + String.valueOf(mouseY);
         batch.begin();
         font.draw(batch, coordinates, 100, 100);
-        font.draw(batch, currentLayerName, 500, 100);
+        font.draw(batch, currentLayerName, worldWidth-100, worldHeight-100);
         batch.end();
         menuStage.act();
         menuStage.draw();
@@ -120,13 +125,16 @@ public class EditState extends GameState {
         mouseX = Gdx.input.getX();
         mouseY = Gdx.input.getY();
         // this should be moved to Map.screenToMapCoords() however I like to have the real coords here to print while I'm testing stuff :)
-        Vector2 vector2 = viewport.unproject(new Vector2(mouseX, mouseY));
-        mouseX = (int) vector2.x;
-        mouseY = (int) vector2.y;
+        Vector2 mouseVector = viewport.unproject(new Vector2(mouseX, mouseY));
+        mouseX = (int) mouseVector.x;
+        mouseY = (int) mouseVector.y;
 
-        //todo: add all buttons to a list and check isOver() method and disable changeTile if true
+        //todo: add all buttons to a list and check isOver() method and disable changeTile if true... might not be needed but is definitely an option
         if (level.map.mouseInbounds(mouseX, mouseY)) {
-            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) &&
+                    !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), mainTable) &&
+                    !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), sideTable)) {
+
                 level.map.changeTile(mouseX, mouseY, currentTileId, currentLayerName);
             }
         }
@@ -157,6 +165,16 @@ public class EditState extends GameState {
 
     }
 
+    private boolean mouseAtTable(float x, float y, Table table) {
+        Vector2 menuMouseVector = menuviewport.unproject(new Vector2(x,y));
+        float menuX = menuMouseVector.x;
+        float menuY = menuMouseVector.y;
+        if(menuX > table.getX() && menuX < table.getX()+table.getWidth() && menuY > table.getY() && menuY < table.getY()+table.getHeight()){
+            return true;
+        }
+         return false;
+    }
+
     private void createTileTable() {
         //todo: alternative way and also good for future.
         /*ImageButton button = new ImageButton(MyGdxGame.uiSkin);
@@ -164,7 +182,7 @@ public class EditState extends GameState {
         TextureRegion region = set.getTile(0).getTextureRegion();
         button.getStyle().imageUp = new TextureRegionDrawable(region);*/
         sideTable = new Table();
-        sideTable.setFillParent(true);
+        float buttonSize = worldHeight/20;
         sideTable.bottom();
         final TiledMapTileSet tileSet = Map.loadTileSet(Map.TILE_SET_NAME, Map.TILE_SET_WIDTH, Map.TILE_SET_HEIGHT);
         int TileIndex = 0;
@@ -184,21 +202,36 @@ public class EditState extends GameState {
                         }
                     });
                     ImageButton newButton = tileButton;
+                    newButton.setWidth(buttonSize);
+                    newButton.setHeight(buttonSize);
                     sideTable.add(newButton);
+
                 }
                 TileIndex++;
             }
             sideTable.row();
         }
+        sideTable.setWidth(buttonSize*Map.TILE_SET_WIDTH);
+        sideTable.setHeight(buttonSize*Map.TILE_SET_HEIGHT);
+        sideTable.setY(0);
+        sideTable.setX(worldWidth/2-(sideTable.getWidth()/2));
+
+        ImagesRes res = new ImagesRes();
+        NinePatch patch = new NinePatch(res.backgroundImage.getTexture(), 3,3,3,3);
+        NinePatchDrawable background = new NinePatchDrawable(patch);
+        sideTable.setBackground(background);
+
         menuStage.addActor(sideTable);
 
     }
 
     private void createMainTable() {
         mainTable = new Table();
-        //Set table to fill stage
-        mainTable.setFillParent(true);
-        //Set alignment of contents in the table.
+
+        float tableWidth = worldWidth/3.8f;
+        mainTable.setX(worldWidth-tableWidth);
+        mainTable.setWidth(tableWidth);
+        mainTable.setY(worldHeight/10);
         mainTable.right();
 
 
@@ -256,7 +289,6 @@ public class EditState extends GameState {
         });
 
         //Add buttons to table
-        mainTable.padTop(100);
         mainTable.add(removeTileButton);
         mainTable.row();
         mainTable.add(collisionLayerButton);
@@ -268,6 +300,13 @@ public class EditState extends GameState {
         mainTable.add(saveLevelButton);
         mainTable.row();
         mainTable.add(exitButton);
+
+        float buttonSize = worldHeight/12;
+        mainTable.setHeight(buttonSize*mainTable.getCells().size);
+        for (Cell cell:mainTable.getCells()) {
+            cell.width(mainTable.getWidth());
+            cell.height(buttonSize);
+        }
 
 
         //Add table to stage

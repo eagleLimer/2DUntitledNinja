@@ -66,7 +66,7 @@ public class EditMenu extends GameState {
         newLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (enterMapWidth.getText() != null && enterMapHeight.getText() != null && enterNewFileName.getText() != null) {
+                if (enterMapWidth.getText() != null && enterMapHeight.getText() != null && enterNewFileName.getText().equals(" ")) {
                     try {
                         int enteredWidth = Integer.parseInt(enterMapWidth.getText());
                         int enteredHeight = Integer.parseInt(enterMapHeight.getText());
@@ -85,7 +85,7 @@ public class EditMenu extends GameState {
         loadLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (enterFileName.getText() != null && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()) {
+                if (enterFileName.getText().equals(" ") && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()) {
                     stateChangeListener.pushState(new EditState(stateChangeListener, FILE_PATH + enterFileName.getText()));
                 } else {
                     //todo: please add no such file message here also!
