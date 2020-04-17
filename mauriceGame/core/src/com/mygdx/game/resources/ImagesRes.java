@@ -9,6 +9,7 @@ public class ImagesRes {
     public TextureRegion entityImage;
     public TextureRegion backgroundImage;
     public TextureRegion bossImage;
+    public TextureRegion rockImage;
 
 
     public ImagesRes() {
@@ -27,5 +28,8 @@ public class ImagesRes {
 
         tmpTex = new Texture(Gdx.files.internal("boss.png"));
         bossImage = new TextureRegion(tmpTex, 0, 0, 256, 256);
+
+        tmpTex = new Texture(Gdx.files.internal("smolRock.png"));
+        rockImage = new TextureRegion(tmpTex, 0, 0, 16, 16);
     }
 }

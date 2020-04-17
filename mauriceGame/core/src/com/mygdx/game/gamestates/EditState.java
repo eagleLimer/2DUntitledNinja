@@ -47,10 +47,7 @@ public class EditState extends GameState {
     private Table mainTable;
     private String currentLayerName = Map.COLLISION_LAYER_NAME;
     private Table sideTable;
-    private float menuMouseX;
-    private float menuMouseY;
 
-    //todo: disable map drawing while in table area.
     public EditState(final StateChangeListener stateChangeListener) {
         super(stateChangeListener);
         batch = new SpriteBatch();
@@ -66,6 +63,7 @@ public class EditState extends GameState {
 
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+        zoom = 1;
         menucamera.position.set(menucamera.viewportWidth / 2, menucamera.viewportHeight / 2, 0);
         menucamera.update();
         font = new BitmapFont();
@@ -78,8 +76,6 @@ public class EditState extends GameState {
         inputMultiplexer.addProcessor(stage);
         inputMultiplexer.addProcessor(menuStage);
         inputMultiplexer.addProcessor(controller);
-
-        zoom = 1;
     }
 
     public EditState(StateChangeListener stateChangeListener, String fileName) {
@@ -87,8 +83,6 @@ public class EditState extends GameState {
         level = new Level();
         level.loadLevel(fileName);
         renderer = new OrthogonalTiledMapRenderer(level.map);
-
-
     }
 
     public EditState(StateChangeListener stateChangeListener, String fileName, int mapWidth, int mapHeight) {
@@ -162,7 +156,6 @@ public class EditState extends GameState {
             viewport.setWorldHeight(worldHeight * zoom);
             viewport.apply();
         }
-
     }
 
     private boolean mouseAtTable(float x, float y, Table table) {
@@ -176,11 +169,6 @@ public class EditState extends GameState {
     }
 
     private void createTileTable() {
-        //todo: alternative way and also good for future.
-        /*ImageButton button = new ImageButton(MyGdxGame.uiSkin);
-        TiledMapTileSet set = Map.loadTileSet(Map.TILE_SET_NAME, Map.TILE_SET_WIDTH, Map.TILE_SET_HEIGHT);
-        TextureRegion region = set.getTile(0).getTextureRegion();
-        button.getStyle().imageUp = new TextureRegionDrawable(region);*/
         sideTable = new Table();
         float buttonSize = worldHeight/20;
         sideTable.bottom();
@@ -193,6 +181,7 @@ public class EditState extends GameState {
 
                     Drawabletile drawabletile = new Drawabletile(currentTile.getTextureRegion());
                     ImageButton tileButton = new ImageButton(drawabletile);
+                    //todo: alternative way and also good for future.
                     //why this doesnt work I have no clue, but maybe it would look better idk.
                     /*ImageButton tileButton = new ImageButton(MyGdxGame.uiSkin);
                     tileButton.getStyle().imageUp = new TextureRegionDrawable(currentTile.getTextureRegion());*/
@@ -234,17 +223,12 @@ public class EditState extends GameState {
         mainTable.setY(worldHeight/10);
         mainTable.right();
 
-
-        //Create buttons
         TextButton saveLevelButton = new TextButton("save level", MyGdxGame.uiSkin);
         TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
         TextButton removeTileButton = new TextButton("Remove tiles", MyGdxGame.uiSkin);
         TextButton visualLayerButton = new TextButton("Visual layer", MyGdxGame.uiSkin);
         TextButton collisionLayerButton = new TextButton("Collision layer", MyGdxGame.uiSkin);
         TextButton hideLayerButton = new TextButton("Hide layer", MyGdxGame.uiSkin);
-
-
-        //Add listeners to buttons
 
         saveLevelButton.addListener(new ClickListener() {
             @Override
@@ -288,7 +272,6 @@ public class EditState extends GameState {
             }
         });
 
-        //Add buttons to table
         mainTable.add(removeTileButton);
         mainTable.row();
         mainTable.add(collisionLayerButton);
@@ -307,16 +290,11 @@ public class EditState extends GameState {
             cell.width(mainTable.getWidth());
             cell.height(buttonSize);
         }
-
-
-        //Add table to stage
         menuStage.addActor(mainTable);
     }
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
@@ -324,6 +302,4 @@ public class EditState extends GameState {
         stage.dispose();
         menuStage.dispose();
     }
-
-
 }

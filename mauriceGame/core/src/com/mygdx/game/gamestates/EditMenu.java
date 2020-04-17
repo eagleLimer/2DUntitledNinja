@@ -1,7 +1,6 @@
 package com.mygdx.game.gamestates;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,9 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.game.MyGdxGame;
-
-import java.io.File;
-
 
 public class EditMenu extends GameState {
     private SpriteBatch batch;
@@ -36,18 +32,14 @@ public class EditMenu extends GameState {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
-
-        //Create Table
         Table rightTable = new Table();
         Table leftTable = new Table();
 
-        //Set table to fill stage
         rightTable.setFillParent(true);
         leftTable.setFillParent(true);
-        //Set alignment of contents in the table.
+
         leftTable.left();
         rightTable.right();
-
 
         Label widthLabel = new Label("Enter width: ", MyGdxGame.uiSkin);
         widthLabel.getStyle().fontColor = Color.WHITE;
@@ -61,7 +53,6 @@ public class EditMenu extends GameState {
         final TextField enterMapHeight = new TextField("", MyGdxGame.uiSkin);
         final TextField enterNewFileName = new TextField("", MyGdxGame.uiSkin);
         final TextField enterFileName = new TextField("", MyGdxGame.uiSkin);
-
 
         newLevelButton.addListener(new ClickListener() {
             @Override
@@ -85,7 +76,7 @@ public class EditMenu extends GameState {
         loadLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (enterFileName.getText().equals(" ") && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()) {
+                if (!enterFileName.getText().equals("") && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()) {
                     stateChangeListener.pushState(new EditState(stateChangeListener, FILE_PATH + enterFileName.getText()));
                 } else {
                     //todo: please add no such file message here also!
@@ -116,7 +107,6 @@ public class EditMenu extends GameState {
         rightTable.row();
         rightTable.add();
         rightTable.add(backButton);
-
 
         leftTable.padTop(100);
         leftTable.add(fileLocLabel2).width(100);

@@ -40,7 +40,7 @@ public class PlayState extends GameState {
 
     private BitmapFont font;
 
-    private static final float GRAVITY = -9.8f * 1.8f;
+    private static final float GRAVITY = -9.8f*2;
 
     TextureRegion backgroundImage;
 
@@ -77,14 +77,16 @@ public class PlayState extends GameState {
         world.setContactListener(new MyContactListener());
 
         CreateEngine();
-        CreatePlayer();
+        EntityCreator creator = new EntityCreator(engine, world);
+        creator.CreateBoss(70,45);
+        player = creator.CreatePlayer(5,5);
+        engine.addEntity(player);
         AddMapToEngine();
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 3; j++) {
-                CreateEntity(i + 2, j + 3);
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < 100; j++) {
+                creator.CreateBasicEnemy( 3+100, i + 2);
             }
         }
-        CreateBoss(70, 45);
 
         font = new BitmapFont();
 
@@ -106,7 +108,6 @@ public class PlayState extends GameState {
         batch.draw(backgroundImage, 0, 0);
         batch.end();
         TiledMapImageLayer backgroundLayer = (TiledMapImageLayer) level.map.getLayers().get("layer2");
-        System.out.println(backgroundLayer.getOffsetX());
         backgroundLayer.setX(camera.position.x / 2);
         backgroundLayer.setY(camera.position.y / 2);
 
@@ -128,7 +129,6 @@ public class PlayState extends GameState {
         renderer.setView(camera);
         renderer.render();
         engine.render();
-
     }
 
     @Override
@@ -168,50 +168,6 @@ public class PlayState extends GameState {
         engine.addSystem(animationSystem);
     }
 
-    private void CreatePlayer() {
-        player = engine.createEntity();
-        BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
-        PositionComponent position = engine.createComponent(PositionComponent.class);
-        TextureComponent texture = engine.createComponent(TextureComponent.class);
-        VelocityComponent velocity = engine.createComponent(VelocityComponent.class);
-        TypeComponent type = engine.createComponent(TypeComponent.class);
-        AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
-
-        Animation animation = animationsRes.playerRight;
-        animationComponent.animationMap.put(StateComponent.STATE_RIGHT, animation);
-        animation = animationsRes.playerLeft;
-        animationComponent.animationMap.put(StateComponent.STATE_LEFT, animation);
-        animation = animationsRes.playerFalling;
-        animationComponent.animationMap.put(StateComponent.STATE_FALLING, animation);
-        animation = animationsRes.playerNormal;
-        animationComponent.animationMap.put(StateComponent.STATE_NORMAL, animation);
-        animation = animationsRes.playerJumping;
-        animationComponent.animationMap.put(StateComponent.STATE_JUMPING, animation);
-
-        velocity.sprintSpeed = 8;
-        velocity.jumpSpeed = 17;
-        velocity.jumpCooldown = 0.5f;
-        texture.region = imagesRes.playerImage;
-        BodyCreator bodyCreator = new BodyCreator(world);
-        position.position.set(5, 5, 0);
-        bodyComponent.body = bodyCreator.makeCirclePolyBody(position.position.x, position.position.y, 1f, BodyMaterial.GLASS,
-                BodyDef.BodyType.DynamicBody, false);
-        bodyComponent.body.setUserData(player);
-        type.type = TypeComponent.PLAYER;
-
-        player.add(animationComponent);
-        player.add(type);
-        player.add(velocity);
-        player.add(position);
-        player.add(texture);
-        player.add(bodyComponent);
-        player.add(engine.createComponent(PlayerComponent.class));
-        player.add(engine.createComponent(StateComponent.class));
-        player.add(engine.createComponent(CollisionComponent.class));
-
-        engine.addEntity(player);
-    }
-
     private void AddMapToEngine() {
 
         BodyCreator bodyCreator = new BodyCreator(world);
@@ -246,66 +202,4 @@ public class PlayState extends GameState {
             }
         }
     }
-
-    public void CreateEntity(int posx, int posy) {
-        Entity mosquito = engine.createEntity();
-        BodyComponent entityBody = engine.createComponent(BodyComponent.class);
-        PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
-        TextureComponent entityTexture = engine.createComponent(TextureComponent.class);
-        VelocityComponent entityVelocity = engine.createComponent(VelocityComponent.class);
-        TypeComponent type = engine.createComponent(TypeComponent.class);
-
-        entityVelocity.sprintSpeed = 7;
-        entityVelocity.jumpSpeed = 9;
-
-        entityTexture.region = imagesRes.entityImage;
-        BodyCreator entityBodyCreator = new BodyCreator(world);
-        entityPosition.position.set(posx, posy, 0);
-        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, 0.5f, BodyMaterial.BOUNCY,
-                BodyDef.BodyType.DynamicBody, false);
-        entityBody.body.setUserData(mosquito);
-
-        type.type = TypeComponent.ENEMY;
-
-        mosquito.add(type);
-        mosquito.add(entityVelocity);
-        mosquito.add(entityPosition);
-        mosquito.add(entityTexture);
-        mosquito.add(entityBody);
-        mosquito.add(engine.createComponent(StateComponent.class));
-        mosquito.add(engine.createComponent(CollisionComponent.class));
-        engine.addEntity(mosquito);
-    }
-
-    public void CreateBoss(int posx, int posy) {
-        Entity boss = engine.createEntity();
-        BodyComponent entityBody = engine.createComponent(BodyComponent.class);
-        PositionComponent entityPosition = engine.createComponent(PositionComponent.class);
-        TextureComponent entityTexture = engine.createComponent(TextureComponent.class);
-        VelocityComponent entityVelocity = engine.createComponent(VelocityComponent.class);
-        TypeComponent type = engine.createComponent(TypeComponent.class);
-
-        entityVelocity.sprintSpeed = 7;
-        entityVelocity.jumpSpeed = 9;
-
-        entityTexture.region = imagesRes.bossImage;
-        BodyCreator entityBodyCreator = new BodyCreator(world);
-        entityPosition.position.set(posx, posy, 0);
-        entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, (256 / 32) / 2f, BodyMaterial.GLASS,
-                BodyDef.BodyType.DynamicBody, false);
-        entityBody.body.setUserData(boss);
-
-        type.type = TypeComponent.ENEMY;
-
-        boss.add(type);
-        boss.add(entityVelocity);
-        boss.add(entityPosition);
-        boss.add(entityTexture);
-        boss.add(entityBody);
-        boss.add(engine.createComponent(StateComponent.class));
-        boss.add(engine.createComponent(CollisionComponent.class));
-        engine.addEntity(boss);
-    }
-
-
 }
