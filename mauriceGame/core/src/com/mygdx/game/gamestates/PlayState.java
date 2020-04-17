@@ -99,6 +99,7 @@ public class PlayState extends GameState {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
+
     }
 
     @Override
@@ -110,12 +111,7 @@ public class PlayState extends GameState {
         camera.position.set(playerXPos, player.getComponent(PositionComponent.class).position.y * Tile.tileSize+worldHeight/5, 0);
         camera.update();
 
-        batch.begin();
-        batch.draw(backgroundSky,0,viewport.getScreenHeight()-imagesRes.skyImage.getRegionHeight(), srcx++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/ , 0, viewport.getScreenWidth(),imagesRes.skyImage.getRegionHeight());
-        batch.draw(backgroundTexture,0,200, (int)(playerXPos)/2 , 0, viewport.getScreenWidth(),imagesRes.backgroundImage.getRegionHeight());
-        batch.draw(backgroundTexture,0,50, (int)(playerXPos/1.6), 0, viewport.getScreenWidth(),imagesRes.backgroundImage.getRegionHeight());
-        batch.draw(backgroundHills,0,-200, (int)(playerXPos/1.2), 0, viewport.getScreenWidth(),imagesRes.hillsImage.getRegionHeight());
-        batch.end();
+        drawBackground();
 
         renderer.setView(camera);
         renderer.render();
@@ -125,16 +121,20 @@ public class PlayState extends GameState {
         batch.end();
     }
 
+    private void drawBackground() {
+        batch.begin();
+        batch.draw(backgroundSky, 0, viewport.getScreenHeight() - imagesRes.skyImage.getRegionHeight(), srcx++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/, 0, viewport.getScreenWidth(), imagesRes.skyImage.getRegionHeight());
+        batch.draw(backgroundTexture, 0, 200, (int) (playerXPos) / 2, 0, viewport.getScreenWidth(), imagesRes.backgroundImage.getRegionHeight());
+        batch.draw(backgroundTexture, 0, 50, (int) (playerXPos / 1.6), 0, viewport.getScreenWidth(), imagesRes.backgroundImage.getRegionHeight());
+        batch.draw(backgroundHills, 0, -200, (int) (playerXPos / 1.2), 0, viewport.getScreenWidth(), imagesRes.hillsImage.getRegionHeight());
+        batch.end();
+    }
+
     public void menuRender() {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
-        batch.begin();
-        batch.draw(backgroundSky,0,viewport.getScreenHeight()-imagesRes.skyImage.getRegionHeight(), srcx++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/ , 0, viewport.getScreenWidth(),imagesRes.skyImage.getRegionHeight());
-        batch.draw(backgroundTexture,0,200, (int)(playerXPos)/2 , 0, viewport.getScreenWidth(),imagesRes.backgroundImage.getRegionHeight());
-        batch.draw(backgroundTexture,0,50, (int)(playerXPos/1.6) , 0, viewport.getScreenWidth(),imagesRes.backgroundImage.getRegionHeight());
-        batch.draw(backgroundHills,0,-200, (int)(playerXPos/1.2) , 0, viewport.getScreenWidth(),imagesRes.hillsImage.getRegionHeight());
-        batch.end();
+        drawBackground();
         renderer.setView(camera);
         renderer.render();
         engine.render();
