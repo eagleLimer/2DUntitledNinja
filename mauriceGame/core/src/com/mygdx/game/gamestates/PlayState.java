@@ -5,8 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -19,12 +19,14 @@ import com.mygdx.game.resources.AnimationsRes;
 import com.mygdx.game.resources.ImagesRes;
 import com.mygdx.game.systems.*;
 
+import static com.mygdx.game.game.MyGdxGame.worldHeight;
+import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
 public class PlayState extends GameState {
 
     public static final String FIRST_LEVEL_NAME = "levelFiles/level2";
+    private static final float GRAVITY = -9.8f*2;
     private String levelName;
-
     private InputMultiplexer inputMultiplexer;
     private Stage stage;
     private OrthographicCamera camera;
@@ -37,19 +39,16 @@ public class PlayState extends GameState {
     private World world;
     private AnimationsRes animationsRes;
     private ImagesRes imagesRes;
-
     private BitmapFont font;
-
-    private static final float GRAVITY = -9.8f*2;
-
-    TextureRegion backgroundImage;
-
+    private Texture backgroundTexture;
+    private final Texture backgroundSky;
+    private int srcx = 0;
 
     public PlayState(StateChangeListener stateChangeListener) {
         super(stateChangeListener);
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(MyGdxGame.worldWidth, MyGdxGame.worldHeight, camera);
+        viewport = new FitViewport(worldWidth, MyGdxGame.worldHeight, camera);
         viewport.apply();
 
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
@@ -71,7 +70,10 @@ public class PlayState extends GameState {
         animationsRes = new AnimationsRes();
         imagesRes = new ImagesRes();
 
-        backgroundImage = imagesRes.backgroundImage;
+        backgroundTexture = imagesRes.backgroundImage.getTexture();
+        backgroundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        backgroundSky = imagesRes.skyImage.getTexture();
+        backgroundSky.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         world = new World(new Vector2(0, GRAVITY), true);
         world.setContactListener(new MyContactListener());
@@ -87,10 +89,7 @@ public class PlayState extends GameState {
                 creator.CreateBasicEnemy( 3+100, i + 2);
             }
         }
-
         font = new BitmapFont();
-
-
     }
 
     @Override
@@ -102,15 +101,12 @@ public class PlayState extends GameState {
     public void render() {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.position.set(player.getComponent(PositionComponent.class).position.x * Tile.tileSize, player.getComponent(PositionComponent.class).position.y * Tile.tileSize, 0);
+        camera.position.set(player.getComponent(PositionComponent.class).position.x * Tile.tileSize, player.getComponent(PositionComponent.class).position.y * Tile.tileSize+worldHeight/5, 0);
         camera.update();
         batch.begin();
-        batch.draw(backgroundImage, 0, 0);
+        batch.draw(backgroundSky,0,viewport.getScreenHeight()-imagesRes.skyImage.getRegionHeight(), srcx++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/ , 0, viewport.getScreenWidth(),imagesRes.skyImage.getRegionHeight());
+        batch.draw(backgroundTexture,0,0, (int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/2 , 0, viewport.getScreenWidth(),imagesRes.backgroundImage.getRegionHeight());
         batch.end();
-        TiledMapImageLayer backgroundLayer = (TiledMapImageLayer) level.map.getLayers().get("layer2");
-        backgroundLayer.setX(camera.position.x / 2);
-        backgroundLayer.setY(camera.position.y / 2);
-
         renderer.setView(camera);
         renderer.render();
         engine.render();
@@ -124,7 +120,8 @@ public class PlayState extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.begin();
-        batch.draw(backgroundImage, 0, 0);
+        batch.draw(backgroundSky,0,viewport.getScreenHeight()-imagesRes.skyImage.getRegionHeight(), srcx++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/ , 0, viewport.getScreenWidth(),imagesRes.skyImage.getRegionHeight());
+        batch.draw(backgroundTexture,0,0, (int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/2 , 0, viewport.getScreenWidth(),imagesRes.backgroundImage.getRegionHeight());
         batch.end();
         renderer.setView(camera);
         renderer.render();

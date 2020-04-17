@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -65,7 +64,6 @@ public class Engine extends PooledEngine {
                     newCoords.x - (width / 2) * scaleVector.x, newCoords.y - (height / 2) * scaleVector.y,
                     scaleVector.x * width, scaleVector.y * height);
         }
-
 
         batch.end();
         renderQueue.clear();

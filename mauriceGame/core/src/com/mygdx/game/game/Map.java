@@ -3,6 +3,7 @@ package com.mygdx.game.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.mygdx.game.gameData.LayerData;
+import com.mygdx.game.resources.ImagesRes;
 
 import static com.badlogic.gdx.net.HttpRequestBuilder.json;
 
@@ -126,12 +128,12 @@ public class Map extends TiledMap {
         TiledMapTileLayer visualLayer = loadLayer(secondHandle);
         visualLayer.setName(VISUAL_LAYER_NAME);
 
-        Texture texture = new Texture(Gdx.files.internal("meerkat.jpg"));
-        TextureRegion region = new TextureRegion(texture, 0, 0, 1920, 1080);
+        /*ImagesRes res = new ImagesRes();
+        TextureRegion region = res.backgroundImage;
         TiledMapImageLayer backgroundLayer = new TiledMapImageLayer(region, 0, 0);
         backgroundLayer.setName("layer2");
         backgroundLayer.setVisible(true);
-        this.getLayers().add(backgroundLayer);
+        this.getLayers().add(backgroundLayer);*/
         this.getLayers().add(collisionLayer);
         this.getLayers().add(visualLayer);
     }

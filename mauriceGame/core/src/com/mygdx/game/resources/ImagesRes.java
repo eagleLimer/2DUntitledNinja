@@ -10,7 +10,7 @@ public class ImagesRes {
     public TextureRegion backgroundImage;
     public TextureRegion bossImage;
     public TextureRegion rockImage;
-
+    public TextureRegion skyImage;
 
     public ImagesRes() {
         loadImages();
@@ -23,13 +23,16 @@ public class ImagesRes {
         tmpTex = new Texture(Gdx.files.internal("charLeft.png"));
         entityImage = new TextureRegion(tmpTex, 0, 0, 32, 32);
 
-        tmpTex = new Texture(Gdx.files.internal("meerkat.jpg"));
-        backgroundImage = new TextureRegion(tmpTex, 0, 0, 1920, 1080);
+        tmpTex = new Texture(Gdx.files.internal("brightBackground.png"));
+        backgroundImage = new TextureRegion(tmpTex, 0, 0, 653, 490);
 
         tmpTex = new Texture(Gdx.files.internal("boss.png"));
         bossImage = new TextureRegion(tmpTex, 0, 0, 256, 256);
 
         tmpTex = new Texture(Gdx.files.internal("smolRock.png"));
         rockImage = new TextureRegion(tmpTex, 0, 0, 16, 16);
+
+        tmpTex = new Texture(Gdx.files.internal("skyParallax.jpg"));
+        skyImage = new TextureRegion(tmpTex, 0, 0, 1663, 1060);
     }
 }
