@@ -21,16 +21,16 @@ public class EntityCreator {
         imagesRes = new ImagesRes();
         animationsRes = new AnimationsRes();
     }
-    public void CreateBoss(int posx, int posy) {
-        Entity boss = CreateBasicEntity(posx,posy,7,9,256/32,imagesRes.bossImage, BodyMaterial.GLASS, TypeComponent.ENEMY);
+    public void createBoss(int posx, int posy) {
+        Entity boss = createBasicEntity(posx,posy,7,9,256/32,imagesRes.bossImage, BodyMaterial.GLASS, TypeComponent.ENEMY);
         engine.addEntity(boss);
     }
-    public void CreateBasicEnemy(int posx, int posy){
-        Entity enemy = CreateBasicEntity(posx,posy,7,9,1/2f,imagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.ENEMY);
+    public void createBasicEnemy(int posx, int posy){
+        Entity enemy = createBasicEntity(posx,posy,7,9,1/2f,imagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.ENEMY);
         engine.addEntity(enemy);
     }
-    public Entity CreatePlayer(int posx, int posy) {
-        Entity player = CreateBasicEntity(posx,posy,8,17,2,imagesRes.playerImage,BodyMaterial.GLASS, TypeComponent.PLAYER);
+    public Entity createPlayer(int posx, int posy) {
+        Entity player = createBasicEntity(posx,posy,8,17,2,imagesRes.playerImage,BodyMaterial.GLASS, TypeComponent.PLAYER);
         VelocityComponent velocity = player.getComponent(VelocityComponent.class);
         velocity.jumpCooldown = 0.5f;
         AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
@@ -54,7 +54,7 @@ public class EntityCreator {
 
         return player;
     }
-    public Entity CreateBasicEntity(int posx, int posy, float sprintVelocity, float jumpVelocity, float size, TextureRegion region, BodyMaterial material, int type) {
+    public Entity createBasicEntity(int posx, int posy, float sprintVelocity, float jumpVelocity, float size, TextureRegion region, BodyMaterial material, int type) {
         Entity basicEntity = engine.createEntity();
         BodyComponent entityBody = engine.createComponent(BodyComponent.class);
         PositionComponent entityPosition = engine.createComponent(PositionComponent.class);

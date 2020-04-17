@@ -11,6 +11,7 @@ public class ImagesRes {
     public TextureRegion bossImage;
     public TextureRegion rockImage;
     public TextureRegion skyImage;
+    public TextureRegion hillsImage;
 
     public ImagesRes() {
         loadImages();
@@ -34,5 +35,8 @@ public class ImagesRes {
 
         tmpTex = new Texture(Gdx.files.internal("skyParallax.jpg"));
         skyImage = new TextureRegion(tmpTex, 0, 0, 1663, 1060);
+
+        tmpTex = new Texture(Gdx.files.internal("smoothHills.png"));
+        hillsImage = new TextureRegion(tmpTex, 0, 0, 1280, 720);
     }
 }
