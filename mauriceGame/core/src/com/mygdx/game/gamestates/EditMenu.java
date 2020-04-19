@@ -57,7 +57,7 @@ public class EditMenu extends GameState {
         newLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (enterMapWidth.getText() != null && enterMapHeight.getText() != null && enterNewFileName.getText().equals(" ")) {
+                if (enterMapWidth.getText() != null && enterMapHeight.getText() != null && !enterNewFileName.getText().equals("")) {
                     try {
                         int enteredWidth = Integer.parseInt(enterMapWidth.getText());
                         int enteredHeight = Integer.parseInt(enterMapHeight.getText());

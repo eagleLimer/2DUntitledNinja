@@ -23,10 +23,22 @@ public class EntityCreator {
     }
     public void createBoss(int posx, int posy) {
         Entity boss = createBasicEntity(posx,posy,7,9,256/32,imagesRes.bossImage, BodyMaterial.GLASS, TypeComponent.ENEMY);
+        HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
+        healthComponent.hidden = false;
+        healthComponent.maxHealth = 400;
+        healthComponent.health = 400;
+        healthComponent.healthHeight = 50;
+        healthComponent.healthWidth = 300;
+        boss.add(healthComponent);
         engine.addEntity(boss);
     }
     public void createBasicEnemy(int posx, int posy){
         Entity enemy = createBasicEntity(posx,posy,7,9,1/2f,imagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.ENEMY);
+        HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
+        healthComponent.hidden = false;
+        healthComponent.maxHealth = 10;
+        healthComponent.health = 10;
+        enemy.add(healthComponent);
         engine.addEntity(enemy);
     }
     public Entity createPlayer(int posx, int posy) {
@@ -34,7 +46,10 @@ public class EntityCreator {
         VelocityComponent velocity = player.getComponent(VelocityComponent.class);
         velocity.jumpCooldown = 0.5f;
         AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
+        HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
 
+        healthComponent.maxHealth = 100;
+        healthComponent.health = 100;
         Animation animation = animationsRes.playerRight;
         animationComponent.animationMap.put(StateComponent.STATE_RIGHT, animation);
         animation = animationsRes.playerLeft;
@@ -48,6 +63,7 @@ public class EntityCreator {
 
         velocity.jumpCooldown = 0.5f;
 
+        player.add(healthComponent);
         player.add(animationComponent);
         player.add(velocity);
         player.add(engine.createComponent(PlayerComponent.class));
@@ -61,6 +77,7 @@ public class EntityCreator {
         TextureComponent entityTexture = engine.createComponent(TextureComponent.class);
         VelocityComponent entityVelocity = engine.createComponent(VelocityComponent.class);
         TypeComponent typeComponent = engine.createComponent(TypeComponent.class);
+
 
         typeComponent.type = type;
         entityVelocity.sprintSpeed = sprintVelocity;

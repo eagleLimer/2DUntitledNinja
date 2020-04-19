@@ -46,6 +46,7 @@ public class KeyboardController implements InputProcessor {
             case Keys.SPACE:
                 jump = true;
                 keyProcessed = true;
+                break;
         }
         return keyProcessed;    //  return our peyProcessed flag
     }

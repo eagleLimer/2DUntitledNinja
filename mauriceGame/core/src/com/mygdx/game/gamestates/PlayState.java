@@ -26,6 +26,13 @@ import static com.mygdx.game.game.MyGdxGame.worldWidth;
 public class PlayState extends GameState {
     public static final String FIRST_LEVEL_NAME = "levelFiles/level2";
     private static final float GRAVITY = -9.8f*2;
+    private static final int MOUNTAINS_HEIGHT_1 = 200;
+    private static final int MOUNTAINS_HEIGHT_2 = 50;
+    private static final int HILLS_HEIGHT = -200;
+    private static final float MOUNTAINS_MOVEMENT_1 = 2;
+    private static final float MOUNTAINS_MOVEMENT_2 = 1.6f;
+    private static final float HILLS_MOVEMENT = 1.2f;
+
     private final Texture backgroundHills;
     private String levelName;
     private InputMultiplexer inputMultiplexer;
@@ -84,15 +91,16 @@ public class PlayState extends GameState {
 
         createEngine();
         EntityCreator creator = new EntityCreator(engine, world);
-        creator.createBoss(70,45);
+        //if u create entity before u create player, playerCollisionSystem wont work with that entity??
         player = creator.createPlayer(5,5);
         engine.addEntity(player);
         addMapToEngine();
-        for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 100; j++) {
-                creator.createBasicEnemy( 3+100, i + 2);
+        for (int i = 0; i < 50; i++) {
+            for (int j = 0; j < 20; j++) {
+                creator.createBasicEnemy( i+50, j + 2);
             }
         }
+        creator.createBoss(70,45);
         font = new BitmapFont();
     }
 
@@ -116,17 +124,17 @@ public class PlayState extends GameState {
         renderer.setView(camera);
         renderer.render();
         engine.render();
-        batch.begin();
+        /*batch.begin();
         font.draw(batch, player.getComponent(StateComponent.class).getByID(player.getComponent(StateComponent.class).get()), 100, 100);
-        batch.end();
+        batch.end();*/
     }
 
     private void drawBackground() {
         batch.begin();
         batch.draw(backgroundSky, 0, viewport.getScreenHeight() - imagesRes.skyImage.getRegionHeight(), srcx++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/, 0, viewport.getScreenWidth(), imagesRes.skyImage.getRegionHeight());
-        batch.draw(backgroundTexture, 0, 200, (int) (playerXPos) / 2, 0, viewport.getScreenWidth(), imagesRes.backgroundImage.getRegionHeight());
-        batch.draw(backgroundTexture, 0, 50, (int) (playerXPos / 1.6), 0, viewport.getScreenWidth(), imagesRes.backgroundImage.getRegionHeight());
-        batch.draw(backgroundHills, 0, -200, (int) (playerXPos / 1.2), 0, viewport.getScreenWidth(), imagesRes.hillsImage.getRegionHeight());
+        batch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_1, (int) (playerXPos / MOUNTAINS_MOVEMENT_1), 0, viewport.getScreenWidth(), imagesRes.backgroundImage.getRegionHeight());
+        batch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_2, (int) (playerXPos / MOUNTAINS_MOVEMENT_2), 0, viewport.getScreenWidth(), imagesRes.backgroundImage.getRegionHeight());
+        batch.draw(backgroundHills, 0, HILLS_HEIGHT, (int) (playerXPos / HILLS_MOVEMENT), 0, viewport.getScreenWidth(), imagesRes.hillsImage.getRegionHeight());
         batch.end();
     }
 
@@ -147,6 +155,9 @@ public class PlayState extends GameState {
             stateChangeListener.pushState(new PlayMenu(stateChangeListener, this));
         }
         engine.update(step);
+        if(player.getComponent(HealthComponent.class).health <= 0){
+            stateChangeListener.popState();
+        }
     }
 
     @Override
@@ -156,6 +167,7 @@ public class PlayState extends GameState {
 
     @Override
     public void dispose() {
+        world.dispose();
         batch.dispose();
         stage.dispose();
     }
@@ -166,11 +178,14 @@ public class PlayState extends GameState {
     }
 
     private void createEngine() {
-        CollisionSystem collisionSystem = new CollisionSystem(level.map);
+        PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem();
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
         PhysicsSystem physicsSystem = new PhysicsSystem(world);
         AnimationSystem animationSystem = new AnimationSystem();
-        engine = new Engine(viewport, batch);
+        MyEntityListener entityListener = new MyEntityListener(world);
+
+        engine = new Engine(viewport, batch, stateChangeListener);
+        engine.addEntityListener(entityListener);
         engine.addSystem(collisionSystem);
         engine.addSystem(playerControlSystem);
         engine.addSystem(physicsSystem);

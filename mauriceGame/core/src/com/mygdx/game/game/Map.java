@@ -181,10 +181,12 @@ public class Map extends TiledMap {
 
     public void changeTile(int x, int y, int tileSetId, String currentLayer) {
         TiledMapTileLayer.Cell cell = getCell(x, y, currentLayer);
-        if (tileSetId == -1) {
-            getCell(x, y, currentLayer).setTile(null);
-        } else {
-            getCell(x, y, currentLayer).setTile(this.getTileSets().getTile(tileSetId));
+        if(cell != null) {
+            if (tileSetId == -1) {
+                cell.setTile(null);
+            } else {
+                cell.setTile(this.getTileSets().getTile(tileSetId));
+            }
         }
     }
 

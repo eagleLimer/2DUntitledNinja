@@ -47,6 +47,7 @@ public class PhysicsSystem extends IteratingSystem {
             for (Entity entity : bodiesQueue) {
                 PositionComponent tfm = tm.get(entity);
                 BodyComponent bodyComponent = bm.get(entity);
+
                 Vector2 position = bodyComponent.body.getPosition();
                 tfm.position.x = position.x;
                 tfm.position.y = position.y;

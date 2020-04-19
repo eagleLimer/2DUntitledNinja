@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.game.*;
@@ -44,6 +46,7 @@ public class EditState extends GameState {
     private int mouseX;
     private int mouseY;
     private float zoom;
+    private int mouseSize;
     private Table mainTable;
     private String currentLayerName = Map.COLLISION_LAYER_NAME;
     private Table sideTable;
@@ -64,6 +67,7 @@ public class EditState extends GameState {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
         zoom = 1;
+        mouseSize = 1;
         menucamera.position.set(menucamera.viewportWidth / 2, menucamera.viewportHeight / 2, 0);
         menucamera.update();
         font = new BitmapFont();
@@ -102,7 +106,7 @@ public class EditState extends GameState {
         camera.update();
         renderer.setView(camera);
         renderer.render();
-        coordinates = "X: " + String.valueOf(mouseX) + "  Y: " + String.valueOf(mouseY);
+        coordinates = "X: " + String.valueOf(mouseX/32) + "  Y: " + String.valueOf(mouseY/32);
         batch.begin();
         font.draw(batch, coordinates, 100, 100);
         font.draw(batch, currentLayerName, worldWidth-100, worldHeight-100);
@@ -124,14 +128,21 @@ public class EditState extends GameState {
         mouseY = (int) mouseVector.y;
 
         //todo: add all buttons to a list and check isOver() method and disable changeTile if true... might not be needed but is definitely an option
-        if (level.map.mouseInbounds(mouseX, mouseY)) {
+        //if (level.map.mouseInbounds(mouseX, mouseY)) {
             if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) &&
                     !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), mainTable) &&
                     !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), sideTable)) {
 
+
+                for (int i = 0; i < mouseSize; i++) {
+                    for (int j = 0; j < mouseSize; j++) {
+                        level.map.changeTile(mouseX-(mouseSize-1)* Tile.tileSize/2 + i*Tile.tileSize,
+                                mouseY-(mouseSize-1)* Tile.tileSize/2 + j*Tile.tileSize,currentTileId,currentLayerName);
+                    }
+                }
                 level.map.changeTile(mouseX, mouseY, currentTileId, currentLayerName);
             }
-        }
+
         if (controller.up) {
             camera.position.y += step * CAMERA_SPEED * zoom;
         }
@@ -172,6 +183,31 @@ public class EditState extends GameState {
         sideTable = new Table();
         float buttonSize = worldHeight/20;
         sideTable.bottom();
+
+        TextButton increaseMouseSizeButton = new TextButton("+",MyGdxGame.uiSkin);
+        final Label currentMouseSizeLabel = new Label(Integer.toString(mouseSize), MyGdxGame.uiSkin);
+        TextButton decreaseMouseSizeButton = new TextButton("-",MyGdxGame.uiSkin);
+
+        increaseMouseSizeButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                mouseSize++;
+                currentMouseSizeLabel.setText(Integer.toString(mouseSize));
+            }
+        });
+        decreaseMouseSizeButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                if (mouseSize > 1) {
+                    mouseSize--;
+                    currentMouseSizeLabel.setText(Integer.toString(mouseSize));
+                }
+            }
+        });
+        sideTable.add(increaseMouseSizeButton);
+        sideTable.add(currentMouseSizeLabel);
+        sideTable.add(decreaseMouseSizeButton);
+        sideTable.row();
         final TiledMapTileSet tileSet = Map.loadTileSet(Map.TILE_SET_NAME, Map.TILE_SET_WIDTH, Map.TILE_SET_HEIGHT);
         int TileIndex = 0;
         for (int i = 0; i < Map.TILE_SET_HEIGHT; i++) {
@@ -201,7 +237,7 @@ public class EditState extends GameState {
             sideTable.row();
         }
         sideTable.setWidth(buttonSize*Map.TILE_SET_WIDTH);
-        sideTable.setHeight(buttonSize*Map.TILE_SET_HEIGHT);
+        sideTable.setHeight(buttonSize*Map.TILE_SET_HEIGHT+ increaseMouseSizeButton.getHeight());
         sideTable.setY(0);
         sideTable.setX(worldWidth/2-(sideTable.getWidth()/2));
 

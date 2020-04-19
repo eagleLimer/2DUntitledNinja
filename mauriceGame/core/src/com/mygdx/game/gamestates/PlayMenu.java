@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.game.KeyboardController;
 import com.mygdx.game.game.MyGdxGame;
 
-import javax.swing.text.html.Option;
 
 public class PlayMenu extends GameState {
     private OrthographicCamera camera;

@@ -6,28 +6,28 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
 import com.mygdx.game.components.*;
-import com.mygdx.game.game.Map;
 
-public class CollisionSystem extends IteratingSystem {
-    ComponentMapper<CollisionComponent> cm;
-    ComponentMapper<PlayerComponent> pm;
-    ComponentMapper<VelocityComponent> vm;
-    ComponentMapper<StateComponent> sm;
-    private Map map;
+public class PlayerCollisionSystem extends IteratingSystem {
+    private ComponentMapper<CollisionComponent> cm;
+    private ComponentMapper<PlayerComponent> pm;
+    private ComponentMapper<VelocityComponent> vm;
+    private ComponentMapper<HealthComponent> hm;
+    private ComponentMapper<TextureComponent> tm;
 
     @SuppressWarnings("unchecked")
-    public CollisionSystem(Map map) {
-        // only player collision for now
+    public PlayerCollisionSystem() {
         super(Family.all(CollisionComponent.class, PlayerComponent.class).get());
-        this.map = map;
         cm = ComponentMapper.getFor(CollisionComponent.class);
         pm = ComponentMapper.getFor(PlayerComponent.class);
         vm = ComponentMapper.getFor(VelocityComponent.class);
+        hm = ComponentMapper.getFor(HealthComponent.class);
+        tm = ComponentMapper.getFor(TextureComponent.class);
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         CollisionComponent cc = cm.get(entity);
+
 
         Entity collidedEntity = cc.collisionEntity;
         if (collidedEntity != null) {
@@ -35,13 +35,16 @@ public class CollisionSystem extends IteratingSystem {
             if (type != null) {
                 switch (type.type) {
                     case TypeComponent.ENEMY:
-                        //System.out.println("player hit enemy");
+                        //hm.get(entity).health -= 2;
+                        hm.get(collidedEntity).health -= 10;
+                        System.out.println("player hit enemy");
                         break;
                     case TypeComponent.SCENERY:
                         //System.out.println("player hit scenery");
                         break;
                     case TypeComponent.OTHER:
-                        //System.out.println("player hit other");
+                        hm.get(collidedEntity).health -= 50;
+                        System.out.println("player hit other");
                         break;
                 }
                 cc.collisionEntity = null; // collision handled reset component
