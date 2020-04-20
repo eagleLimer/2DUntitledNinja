@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.components.*;
 import com.mygdx.game.game.Tile;
-import com.mygdx.game.gamestates.StateChangeListener;
 
 import java.util.Comparator;
 
@@ -32,15 +31,11 @@ public class Engine extends PooledEngine {
     private SpriteBatch batch;
     private Vector2 scaleVector;
 
-    private StateChangeListener stateChangeListener;
-
-
-    public Engine(Viewport viewport, SpriteBatch batch, StateChangeListener stateChangeListener) {
+    public Engine(Viewport viewport, SpriteBatch batch) {
         super();
         this.viewport = viewport;
         this.batch = batch;
         comparator = new ZComparator();
-        this.stateChangeListener = stateChangeListener;
     }
 
     public void render() {
@@ -48,7 +43,7 @@ public class Engine extends PooledEngine {
         //alternative render map then enemies then player.
 
         CalculateScale();
-        renderHealthBars(); // this was healthBars doesn't cover anything.
+        renderHealthBars(); // this way healthBars doesn't cover anything.
         renderQueue = new Array<>();
         entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class).get());
         for (Entity entity : entityArray) {
@@ -134,5 +129,6 @@ public class Engine extends PooledEngine {
         float scaleY = Math.abs(newHeight / ogHeight);
         scaleVector = new Vector2(scaleX, scaleY);
     }
+
 }
 

@@ -35,15 +35,14 @@ public class PlayerCollisionSystem extends IteratingSystem {
             if (type != null) {
                 switch (type.type) {
                     case TypeComponent.ENEMY:
-                        //hm.get(entity).health -= 2;
-                        hm.get(collidedEntity).health -= 10;
-                        System.out.println("player hit enemy");
+                        //hm.get(collidedEntity).health -= 10;
+                        //System.out.println("player hit enemy");
                         break;
                     case TypeComponent.SCENERY:
                         //System.out.println("player hit scenery");
                         break;
                     case TypeComponent.OTHER:
-                        hm.get(collidedEntity).health -= 50;
+                        //hm.get(collidedEntity).health -= 50;
                         System.out.println("player hit other");
                         break;
                 }

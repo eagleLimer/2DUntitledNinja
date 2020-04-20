@@ -9,6 +9,7 @@ import com.mygdx.game.components.*;
 import com.mygdx.game.resources.AnimationsRes;
 import com.mygdx.game.resources.ImagesRes;
 import com.mygdx.game.systems.Engine;
+
 //todo: make enum class containing different types of entities. hårdkodat är inte ok!
 public class EntityCreator {
     Engine engine;
@@ -22,22 +23,27 @@ public class EntityCreator {
         animationsRes = new AnimationsRes();
     }
     public void createBoss(int posx, int posy) {
-        Entity boss = createBasicEntity(posx,posy,7,9,256/32,imagesRes.bossImage, BodyMaterial.GLASS, TypeComponent.ENEMY);
+        Entity boss = createBasicEntity(posx,posy,3,9,256/32,imagesRes.bossImage, BodyMaterial.GLASS, TypeComponent.ENEMY);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
+        BasicEnemyComponent enemyComponent = engine.createComponent(BasicEnemyComponent.class);
         healthComponent.hidden = false;
         healthComponent.maxHealth = 400;
         healthComponent.health = 400;
         healthComponent.healthHeight = 50;
         healthComponent.healthWidth = 300;
+        boss.add(enemyComponent);
         boss.add(healthComponent);
         engine.addEntity(boss);
     }
     public void createBasicEnemy(int posx, int posy){
-        Entity enemy = createBasicEntity(posx,posy,7,9,1/2f,imagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.ENEMY);
+        Entity enemy = createBasicEntity(posx,posy,6,9,1/2f,imagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.ENEMY);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
-        healthComponent.hidden = false;
+        BasicEnemyComponent enemyComponent = engine.createComponent(BasicEnemyComponent.class);
+
+        healthComponent.hidden = true;
         healthComponent.maxHealth = 10;
         healthComponent.health = 10;
+        enemy.add(enemyComponent);
         enemy.add(healthComponent);
         engine.addEntity(enemy);
     }

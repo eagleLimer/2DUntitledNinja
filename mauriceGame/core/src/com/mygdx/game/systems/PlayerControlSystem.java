@@ -25,11 +25,11 @@ public class PlayerControlSystem extends IteratingSystem {
     private static final float FALLING_MIN = -0.3f;
 
     private int stateChanged = 0;
-    ComponentMapper<PlayerComponent> pm;
-    ComponentMapper<BodyComponent> bodm;
-    ComponentMapper<StateComponent> sm;
-    ComponentMapper<VelocityComponent> vm;
-    KeyboardController controller;
+    private ComponentMapper<PlayerComponent> pm;
+    private ComponentMapper<BodyComponent> bodm;
+    private ComponentMapper<StateComponent> sm;
+    private ComponentMapper<VelocityComponent> vm;
+    private KeyboardController controller;
 
 
     @SuppressWarnings("unchecked")

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,8 +20,6 @@ import com.mygdx.game.resources.AnimationsRes;
 import com.mygdx.game.resources.ImagesRes;
 import com.mygdx.game.systems.*;
 
-import static com.mygdx.game.game.MyGdxGame.worldHeight;
-import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
 //todo: this class is getting a bit too big, maybe move createEngine and addMapToEngine to engine.class
 public class PlayState extends GameState {
@@ -57,7 +56,9 @@ public class PlayState extends GameState {
         super(stateChangeListener);
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(worldWidth, MyGdxGame.worldHeight, camera);
+
+        viewport = new FitViewport(MyGdxGame.worldWidth, MyGdxGame.worldHeight, camera);
+        //viewport = new ScalingViewport(MyGdxGame.worldWidth, MyGdxGame.worldHeight, camera);
         viewport.apply();
 
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
@@ -96,10 +97,14 @@ public class PlayState extends GameState {
         engine.addEntity(player);
         addMapToEngine();
         for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 20; j++) {
+            for (int j = 0; j < 4; j++) {
                 creator.createBasicEnemy( i+50, j + 2);
             }
         }
+        BasicEnemyMovement enemyMovement = new BasicEnemyMovement(player);
+
+        engine.addSystem(enemyMovement);
+
         creator.createBoss(70,45);
         font = new BitmapFont();
     }
@@ -107,7 +112,6 @@ public class PlayState extends GameState {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
-
     }
 
     @Override
@@ -116,7 +120,9 @@ public class PlayState extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         playerXPos = player.getComponent(PositionComponent.class).position.x *Tile.tileSize;
-        camera.position.set(playerXPos, player.getComponent(PositionComponent.class).position.y * Tile.tileSize+worldHeight/5, 0);
+        camera.position.set(playerXPos, player.getComponent(PositionComponent.class).position.y * Tile.tileSize+MyGdxGame.worldHeight/5, 0);
+
+        //camVector.x = camVector.x*32;
         camera.update();
 
         drawBackground();
@@ -174,6 +180,8 @@ public class PlayState extends GameState {
 
     @Override
     public void resize(int width, int height) {
+        //viewport.update(width,height, true);
+        //stage.getViewport().update(width,height,true);
         //todo: handle background zoom.
     }
 
@@ -184,7 +192,7 @@ public class PlayState extends GameState {
         AnimationSystem animationSystem = new AnimationSystem();
         MyEntityListener entityListener = new MyEntityListener(world);
 
-        engine = new Engine(viewport, batch, stateChangeListener);
+        engine = new Engine(viewport, batch);
         engine.addEntityListener(entityListener);
         engine.addSystem(collisionSystem);
         engine.addSystem(playerControlSystem);
@@ -203,14 +211,14 @@ public class PlayState extends GameState {
             for (int row = 0; row < level.map.getMapWidth(); row++) {
 
                 if (level.map.getCell(row * Tile.tileSize, col * Tile.tileSize, Map.COLLISION_LAYER_NAME).getTile() != null) {
-                    //TextureComponent texture = engine.createComponent(TextureComponent.class);
-                    //texture.region = level.map.getCell(row * Tile.tileSize, col * Tile.tileSize).getTile().getTextureRegion();
-                    //mapTile.add(texture);
+                    /*TextureComponent texture = engine2.createComponent(TextureComponent.class);
+                    texture.region = level.map.getCell(row*Tile.tileSize, col*Tile.tileSize, Map.COLLISION_LAYER_NAME).getTile().getTextureRegion();
+                    mapTile.add(texture);*/
                     Entity mapTile = engine.createEntity();
                     type.type = TypeComponent.SCENERY;
                     position.position.set(row, col, 0);
                     bodyComponent.body = bodyCreator.makeRectBody(position.position.x + 0.5f, position.position.y + 0.5f, 1, 1, BodyMaterial.METAL,
-                            BodyDef.BodyType.KinematicBody, true);
+                            BodyDef.BodyType.StaticBody, true);
                     bodyComponent.body.setUserData(mapTile);
 
                     mapTile.add(type);
