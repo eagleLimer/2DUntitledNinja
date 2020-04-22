@@ -53,6 +53,8 @@ public class EntityCreator {
         velocity.jumpCooldown = 0.5f;
         AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
+        BodyComponent bodyComponent = player.getComponent(BodyComponent.class);
+        bodyComponent.body.setFixedRotation(true);
 
         healthComponent.maxHealth = 100;
         healthComponent.health = 100;

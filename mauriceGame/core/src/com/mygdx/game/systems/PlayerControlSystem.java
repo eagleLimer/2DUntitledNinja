@@ -17,10 +17,10 @@ public class PlayerControlSystem extends IteratingSystem {
     //todo:Move these variables to the correct place, if they shouldn't be here. I dunno man  ||
     // Might be ok to keep them here, otherwise they should be moved to a component
     private static final float DEACCELERATION = 0.1f;
-    private static final float ACCELERATION = 0.2f;
+    private static final float ACCELERATION = 0.5f;
 
     private static final float GROUND_Y_CAP = 0.6f;
-    private static final float AIRBORNE_CONTROL = 0.3f;
+    private static final float AIRBORNE_CONTROL = 0.15f;
     private static final float STAND_STILL_CAP = 0.4f;
     private static final float FALLING_MIN = -0.3f;
 

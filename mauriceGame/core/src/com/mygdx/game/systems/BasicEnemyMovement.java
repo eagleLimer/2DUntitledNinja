@@ -31,6 +31,8 @@ public class BasicEnemyMovement extends IteratingSystem {
             Vector3 enemyPos = pm.get(entity).position;
             BodyComponent body = bodm.get(entity);
             VelocityComponent velocity = vm.get(entity);
+
+
             if (playerPos.x < enemyPos.x) {
                 body.body.setLinearVelocity(MathUtils.lerp(body.body.getLinearVelocity().x, -velocity.sprintSpeed, ACCELERATION), body.body.getLinearVelocity().y);
             } else {

@@ -103,7 +103,7 @@ public class PlayMenu extends GameState {
     public void render() {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        playState.menuRender();
+        playState.render();
         stage.act();
         stage.draw();
     }

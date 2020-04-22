@@ -76,7 +76,7 @@ public class MyContactListener implements ContactListener {
                     damage += imp;
                 }
                 if (damage > 2) {
-                    health.health -= damage;
+                    //health.health -= damage;
                 }
                 System.out.println(damage);
             }

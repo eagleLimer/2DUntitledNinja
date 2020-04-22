@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.components.*;
+
 import com.mygdx.game.game.Tile;
 
 import java.util.Comparator;
@@ -28,22 +30,22 @@ public class Engine extends PooledEngine {
     private ComponentMapper<HealthComponent> healthM = ComponentMapper.getFor(HealthComponent.class);
 
     private Viewport viewport;
-    private SpriteBatch batch;
     private Vector2 scaleVector;
+    //OrthographicCamera camera;
 
-    public Engine(Viewport viewport, SpriteBatch batch) {
+    public Engine(Viewport viewport) {
         super();
         this.viewport = viewport;
-        this.batch = batch;
         comparator = new ZComparator();
+        //this.camera = (OrthographicCamera) viewport.getCamera();
+        //batch.setProjectionMatrix(camera.combined);
     }
 
-    public void render() {
+    public void render(OrthographicCamera camera, SpriteBatch batch) {
         //put all entities in renderqueue and sort it after the z variable in position
         //alternative render map then enemies then player.
-
-        CalculateScale();
-        renderHealthBars(); // this way healthBars doesn't cover anything.
+        //CalculateScale();
+        renderHealthBars(batch); // this way healthBars doesn't cover anything.
         renderQueue = new Array<>();
         entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class).get());
         for (Entity entity : entityArray) {
@@ -58,11 +60,18 @@ public class Engine extends PooledEngine {
             float width = region.getRegionWidth();
             float height = region.getRegionHeight();
 
-            Vector2 newCoords = viewport.project(new Vector2(position.x * Tile.tileSize, position.y * Tile.tileSize));
+            float originX = width/2;
+            float originY = height/2;
 
+            //float scaleX = viewport.get/viewport.getWorldWidth();
+            //float scaleY = viewport.getScreenHeight()/viewport.getWorldHeight();
+            //batch.draw(region, position.x*Tile.tileSize - originX, position.y*Tile.tileSize - originY); //this works fine however got no rotation.
             batch.draw(region,
-                    newCoords.x - (width / 2) * scaleVector.x, newCoords.y - (height / 2) * scaleVector.y,
-                    scaleVector.x * width, scaleVector.y * height);
+                    position.x*Tile.tileSize-originX, position.y*Tile.tileSize - originY,
+                    originX, originY,
+                     width,  height,
+                    1,1,
+                    positionM.get(entity).rotation);
             /*if(entity.getComponent(HealthComponent.class) != null){
                 HealthComponent healthComponent = healthM.get(entity);
                 if(healthM.get(entity).health <= 0) {
@@ -81,7 +90,7 @@ public class Engine extends PooledEngine {
         renderQueue.clear();
     }
 
-    private void renderHealthBars() {
+    private void renderHealthBars(SpriteBatch batch) {
         renderQueue = new Array<>();
         entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class,HealthComponent.class).get());
         for (Entity entity : entityArray) {
@@ -96,19 +105,22 @@ public class Engine extends PooledEngine {
         renderQueue.sort(comparator);
         batch.begin();
         for (Entity entity : renderQueue) {
-
             Vector3 position = positionM.get(entity).position;
             TextureRegion region = textureM.get(entity).region;
             HealthComponent healthComponent = healthM.get(entity);
 
-
             float width = healthComponent.healthWidth;
             float height = healthComponent.healthHeight;
 
-            Vector2 newCoords = viewport.project(new Vector2(position.x * Tile.tileSize, position.y * Tile.tileSize));
+            float originX = width/2;
+            float originY = height/2;
+
             batch.draw(healthComponent.region,
-                    newCoords.x - (width/2)*scaleVector.x , newCoords.y + (region.getRegionHeight() / 2) * scaleVector.y + height*scaleVector.y,
-                    scaleVector.x * healthComponent.healthWidth * healthComponent.health/healthComponent.maxHealth, scaleVector.y * healthComponent.healthHeight);
+                    position.x*Tile.tileSize - originX, position.y*Tile.tileSize + (region.getRegionHeight() / 2) + height,
+                    originX * healthComponent.health/healthComponent.maxHealth, originY,
+                    healthComponent.healthWidth*healthComponent.health/healthComponent.maxHealth, healthComponent.healthHeight,
+                    1,1,
+                    0);
 
         }
         batch.end();
@@ -130,5 +142,8 @@ public class Engine extends PooledEngine {
         scaleVector = new Vector2(scaleX, scaleY);
     }
 
+    public void setViewport(Viewport viewport) {
+        this.viewport = viewport;
+    }
 }
 
