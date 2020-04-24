@@ -165,7 +165,6 @@ public class Engine extends PooledEngine {
         playerStartY = engineData.getPlayerStartY();
         EntityData[] entityDataList = engineData.getEntitiesDataList();
         for (EntityData entityData : entityDataList) {
-            System.out.println(entityData.getId());
             creator.createEntity(entityData.getId(), entityData.getxPos(), entityData.getyPos());
         }
     }
@@ -187,12 +186,10 @@ public class Engine extends PooledEngine {
         }
         engineData.setEntitiesLength(entityDataArray.size());
         EntityData[] entityDataList = new EntityData[index++];
-        System.out.println("entityData size: " + entityDataArray.size());
         index = 0;
         for (Entity entity : entityDataArray) {
             TypeComponent typeComponent = typeM.get(entity);
             if(typeComponent.type != TypeComponent.SCENERY && typeComponent.type != TypeComponent.PLAYER) {
-                System.out.println("currentType: " + typeComponent.type);
                 Vector3 position = positionM.get(entity).position;
                 entityDataList[index] = new EntityData();
                 entityDataList[index].setId(typeComponent.type);

@@ -120,6 +120,6 @@ public class Level {
             }
         };
         world.QueryAABB(mycallBack, mouseX-0.1f, mouseY-0.1f,mouseX+0.1f,mouseY+0.1f);
-        engine.getSystem(PhysicsSystem.class).update(0);
+        //engine.getSystem(PhysicsSystem.class).update(0);
     }
 }

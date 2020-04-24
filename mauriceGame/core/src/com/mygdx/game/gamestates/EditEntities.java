@@ -100,7 +100,7 @@ public class EditEntities extends GameState {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 currentEntityId = entityBox.getSelected().getId();
-                System.out.println(entityBox.getSelected().getId());
+                System.out.println("selected box: "+entityBox.getSelected().getId());
             }
         });
         saveLevelButton.addListener(new ClickListener() {
