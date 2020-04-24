@@ -5,20 +5,17 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.game.*;
@@ -27,9 +24,10 @@ import com.mygdx.game.resources.ImagesRes;
 import static com.mygdx.game.game.MyGdxGame.worldHeight;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
-public class EditState extends GameState {
+public class EditMap extends GameState {
     private static final int CAMERA_SPEED = 400;
     private static final float ZOOM_SPEED = 0.03f;
+    private final SpriteBatch menuBatch;
     private Stage menuStage;
     private Viewport menuviewport;
     private SpriteBatch batch;
@@ -37,7 +35,6 @@ public class EditState extends GameState {
     private OrthographicCamera camera;
     private OrthographicCamera menucamera;
     private Level level;
-    private OrthogonalTiledMapRenderer renderer;
     private BitmapFont font;
     private String coordinates;
     private KeyboardController controller;
@@ -51,9 +48,10 @@ public class EditState extends GameState {
     private String currentLayerName = Map.COLLISION_LAYER_NAME;
     private Table sideTable;
 
-    public EditState(final StateChangeListener stateChangeListener) {
+    public EditMap(final StateChangeListener stateChangeListener) {
         super(stateChangeListener);
         batch = new SpriteBatch();
+        menuBatch = new SpriteBatch();
         camera = new OrthographicCamera();
         menucamera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, MyGdxGame.worldHeight, camera);
@@ -62,7 +60,7 @@ public class EditState extends GameState {
         viewport.apply();
         menuviewport.apply();
         stage = new Stage(viewport, batch);
-        menuStage = new Stage(menuviewport, batch);
+        menuStage = new Stage(menuviewport, menuBatch);
 
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
@@ -82,18 +80,14 @@ public class EditState extends GameState {
         inputMultiplexer.addProcessor(controller);
     }
 
-    public EditState(StateChangeListener stateChangeListener, String fileName) {
+    public EditMap(StateChangeListener stateChangeListener, String fileName) {
         this(stateChangeListener);
-        level = new Level();
-        level.loadLevel(fileName);
-        renderer = new OrthogonalTiledMapRenderer(level.map);
+        level = new Level(fileName, controller);
     }
 
-    public EditState(StateChangeListener stateChangeListener, String fileName, int mapWidth, int mapHeight) {
+    public EditMap(StateChangeListener stateChangeListener, String fileName, int mapWidth, int mapHeight) {
         this(stateChangeListener);
-        level = new Level();
-        level.newLevel(fileName, mapWidth, mapHeight);
-        renderer = new OrthogonalTiledMapRenderer(level.map);
+        level = new Level(fileName,mapWidth,mapHeight,controller);
     }
 
     @Override
@@ -103,22 +97,21 @@ public class EditState extends GameState {
 
     @Override
     public void render() {
+        Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
-        renderer.setView(camera);
-        renderer.render();
+        level.render(camera, batch);
         coordinates = "X: " + String.valueOf(mouseX/32) + "  Y: " + String.valueOf(mouseY/32);
-        batch.begin();
-        font.draw(batch, coordinates, 100, 100);
-        font.draw(batch, currentLayerName, worldWidth-100, worldHeight-100);
-        batch.end();
+        menuBatch.begin();
+        font.draw(menuBatch, coordinates, 100, 100);
+        font.draw(menuBatch, currentLayerName, worldWidth-100, worldHeight-100);
+        menuBatch.end();
         menuStage.act();
         menuStage.draw();
     }
 
     @Override
     public void update(float step) {
-        Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         mouseX = Gdx.input.getX();
         mouseY = Gdx.input.getY();
@@ -129,10 +122,8 @@ public class EditState extends GameState {
 
         //todo: add all buttons to a list and check isOver() method and disable changeTile if true... might not be needed but is definitely an option
         //if (level.map.mouseInbounds(mouseX, mouseY)) {
-            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) &&
-                    !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), mainTable) &&
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), mainTable) &&
                     !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), sideTable)) {
-
 
                 for (int i = 0; i < mouseSize; i++) {
                     for (int j = 0; j < mouseSize; j++) {
@@ -173,10 +164,7 @@ public class EditState extends GameState {
         Vector2 menuMouseVector = menuviewport.unproject(new Vector2(x,y));
         float menuX = menuMouseVector.x;
         float menuY = menuMouseVector.y;
-        if(menuX > table.getX() && menuX < table.getX()+table.getWidth() && menuY > table.getY() && menuY < table.getY()+table.getHeight()){
-            return true;
-        }
-         return false;
+        return(menuX > table.getX() && menuX < table.getX()+table.getWidth() && menuY > table.getY() && menuY < table.getY()+table.getHeight());
     }
 
     private void createTileTable() {
@@ -265,6 +253,8 @@ public class EditState extends GameState {
         TextButton visualLayerButton = new TextButton("Visual layer", MyGdxGame.uiSkin);
         TextButton collisionLayerButton = new TextButton("Collision layer", MyGdxGame.uiSkin);
         TextButton hideLayerButton = new TextButton("Hide layer", MyGdxGame.uiSkin);
+        TextButton editEntitiesButton = new TextButton("Edit Entities", MyGdxGame.uiSkin);
+
 
         saveLevelButton.addListener(new ClickListener() {
             @Override
@@ -307,6 +297,12 @@ public class EditState extends GameState {
                 }
             }
         });
+        editEntitiesButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                stateChangeListener.pushState(new EditEntities(stateChangeListener, level, zoom));
+            }
+        });
 
         mainTable.add(removeTileButton);
         mainTable.row();
@@ -315,6 +311,8 @@ public class EditState extends GameState {
         mainTable.add(visualLayerButton);
         mainTable.row();
         mainTable.add(hideLayerButton);
+        mainTable.row();
+        mainTable.add(editEntitiesButton);
         mainTable.row();
         mainTable.add(saveLevelButton);
         mainTable.row();
@@ -337,5 +335,6 @@ public class EditState extends GameState {
         batch.dispose();
         stage.dispose();
         menuStage.dispose();
+        level.dispose();
     }
 }

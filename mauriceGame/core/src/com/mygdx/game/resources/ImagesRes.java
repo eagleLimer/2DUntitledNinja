@@ -5,19 +5,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class ImagesRes {
-    public TextureRegion playerImage;
-    public TextureRegion entityImage;
-    public TextureRegion backgroundImage;
-    public TextureRegion bossImage;
-    public TextureRegion rockImage;
-    public TextureRegion skyImage;
-    public TextureRegion hillsImage;
+    public static TextureRegion playerImage;
+    public static TextureRegion entityImage;
+    public static TextureRegion backgroundImage;
+    public static TextureRegion bossImage;
+    public static TextureRegion rockImage;
+    public static TextureRegion skyImage;
+    public static TextureRegion hillsImage;
 
-    public ImagesRes() {
-        loadImages();
-    }
-
-    private void loadImages() {
+    public static void loadImages() {
         Texture tmpTex = new Texture(Gdx.files.internal("epicRun.png"));
         playerImage = new TextureRegion(tmpTex, 0, 0, 64, 64);
 

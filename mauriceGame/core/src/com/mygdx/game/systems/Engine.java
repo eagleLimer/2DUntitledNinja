@@ -5,19 +5,24 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.Base64Coder;
 import com.mygdx.game.components.*;
-
-import com.mygdx.game.game.Tile;
+import com.mygdx.game.game.*;
+import com.mygdx.game.gameData.EngineData;
+import com.mygdx.game.gameData.EntityData;
 
 import java.util.Comparator;
+
+import static com.badlogic.gdx.net.HttpRequestBuilder.json;
 
 
 public class Engine extends PooledEngine {
@@ -28,23 +33,20 @@ public class Engine extends PooledEngine {
     private ComponentMapper<TextureComponent> textureM = ComponentMapper.getFor(TextureComponent.class);
     private ComponentMapper<PositionComponent> positionM = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<HealthComponent> healthM = ComponentMapper.getFor(HealthComponent.class);
+    private ComponentMapper<TypeComponent> typeM = ComponentMapper.getFor(TypeComponent.class);
+    private ComponentMapper<PlayerComponent> playerM = ComponentMapper.getFor(PlayerComponent.class);
 
-    private Viewport viewport;
-    private Vector2 scaleVector;
-    //OrthographicCamera camera;
+    private World world;
+    private int playerStartX = 3;
+    private int playerStartY = 3;
 
-    public Engine(Viewport viewport) {
+    public Engine(World world) {
         super();
-        this.viewport = viewport;
+        this.world = world;
         comparator = new ZComparator();
-        //this.camera = (OrthographicCamera) viewport.getCamera();
-        //batch.setProjectionMatrix(camera.combined);
     }
 
-    public void render(OrthographicCamera camera, SpriteBatch batch) {
-        //put all entities in renderqueue and sort it after the z variable in position
-        //alternative render map then enemies then player.
-        //CalculateScale();
+    public void render(SpriteBatch batch) {
         renderHealthBars(batch); // this way healthBars doesn't cover anything.
         renderQueue = new Array<>();
         entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class).get());
@@ -60,31 +62,15 @@ public class Engine extends PooledEngine {
             float width = region.getRegionWidth();
             float height = region.getRegionHeight();
 
-            float originX = width/2;
-            float originY = height/2;
+            float originX = width / 2;
+            float originY = height / 2;
 
-            //float scaleX = viewport.get/viewport.getWorldWidth();
-            //float scaleY = viewport.getScreenHeight()/viewport.getWorldHeight();
-            //batch.draw(region, position.x*Tile.tileSize - originX, position.y*Tile.tileSize - originY); //this works fine however got no rotation.
             batch.draw(region,
-                    position.x*Tile.tileSize-originX, position.y*Tile.tileSize - originY,
+                    position.x * Tile.tileSize - originX, position.y * Tile.tileSize - originY,
                     originX, originY,
-                     width,  height,
-                    1,1,
+                    width, height,
+                    1, 1,
                     positionM.get(entity).rotation);
-            /*if(entity.getComponent(HealthComponent.class) != null){
-                HealthComponent healthComponent = healthM.get(entity);
-                if(healthM.get(entity).health <= 0) {
-                    if (entity.getComponent(PlayerComponent.class) == null) {
-                        this.removeEntity(entity);
-                    }
-                }
-                float healthWidth = healthComponent.healthWidth;
-                float healthHeight = healthComponent.healthHeight;
-                batch.draw(healthComponent.region,
-                        newCoords.x - (healthWidth/2)*scaleVector.x , newCoords.y + (height / 2) * scaleVector.y + healthHeight*scaleVector.y,
-                        scaleVector.x * healthComponent.healthWidth * healthComponent.health/healthComponent.maxHealth, scaleVector.y * healthComponent.healthHeight);
-            }*/
         }
         batch.end();
         renderQueue.clear();
@@ -92,13 +78,13 @@ public class Engine extends PooledEngine {
 
     private void renderHealthBars(SpriteBatch batch) {
         renderQueue = new Array<>();
-        entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class,HealthComponent.class).get());
+        entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class, HealthComponent.class).get());
         for (Entity entity : entityArray) {
-            if(healthM.get(entity).health <= 0){
-                if(entity.getComponent(PlayerComponent.class) == null) {
+            if (healthM.get(entity).health <= 0) {
+                if (playerM.get(entity) == null) {
                     this.removeEntity(entity);
                 }
-            }else {
+            } else {
                 if (!healthM.get(entity).hidden) renderQueue.add(entity);
             }
         }
@@ -112,38 +98,118 @@ public class Engine extends PooledEngine {
             float width = healthComponent.healthWidth;
             float height = healthComponent.healthHeight;
 
-            float originX = width/2;
-            float originY = height/2;
+            float originX = width / 2;
+            float originY = height / 2;
 
             batch.draw(healthComponent.region,
-                    position.x*Tile.tileSize - originX, position.y*Tile.tileSize + (region.getRegionHeight() / 2) + height,
-                    originX * healthComponent.health/healthComponent.maxHealth, originY,
-                    healthComponent.healthWidth*healthComponent.health/healthComponent.maxHealth, healthComponent.healthHeight,
-                    1,1,
+                    position.x * Tile.tileSize - originX, position.y * Tile.tileSize + (region.getRegionHeight() / 2) + height,
+                    originX * healthComponent.health / healthComponent.maxHealth, originY,
+                    healthComponent.healthWidth * healthComponent.health / healthComponent.maxHealth, healthComponent.healthHeight,
+                    1, 1,
                     0);
-
         }
         batch.end();
         renderQueue.clear();
+    }
+
+    public void createSystems(KeyboardController controller) {
+        PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem();
+        PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
+        PhysicsSystem physicsSystem = new PhysicsSystem(world);
+        AnimationSystem animationSystem = new AnimationSystem();
+        MyEntityListener entityListener = new MyEntityListener(world);
+
+        this.addEntityListener(entityListener);
+        this.addSystem(collisionSystem);
+        this.addSystem(playerControlSystem);
+        this.addSystem(physicsSystem);
+        this.addSystem(animationSystem);
 
     }
 
-    private void CalculateScale() {
-        Vector2 scaleCoords1 = viewport.project(new Vector2(1, 1));
-        Vector2 scaleCoords2 = viewport.project(new Vector2(2, 2));
+    public void addMapToEngine(Map map) {
+        BodyCreator bodyCreator = new BodyCreator(world);
+        BodyComponent bodyComponent = this.createComponent(BodyComponent.class);
+        PositionComponent position = this.createComponent(PositionComponent.class);
+        TypeComponent type = this.createComponent(TypeComponent.class);
 
-        float ogWidth = 1 - 2;
-        float newWidth = scaleCoords1.x - scaleCoords2.x;
-        float ogHeight = 1 - 2;
-        float newHeight = scaleCoords1.y - scaleCoords2.y;
+        for (int col = 0; col < map.getMapHeight(); col++) {
+            for (int row = 0; row < map.getMapWidth(); row++) {
+                TiledMapTile tile = map.getCell(row * Tile.tileSize, col * Tile.tileSize, Map.COLLISION_LAYER_NAME).getTile();
 
-        float scaleX = Math.abs(newWidth / ogWidth);
-        float scaleY = Math.abs(newHeight / ogHeight);
-        scaleVector = new Vector2(scaleX, scaleY);
+                if (tile != null) {
+                    /*TextureComponent texture = createComponent(TextureComponent.class);
+                    texture.region = tile.getTextureRegion();
+                    mapTile.add(texture);*/
+                    Entity mapTile = createEntity();
+                    type.type = TypeComponent.SCENERY;
+                    position.position.set(row, col, 0);
+                    bodyComponent.body = bodyCreator.makeRectBody(position.position.x + 0.5f, position.position.y + 0.5f, 1, 1, BodyMaterial.METAL,
+                            BodyDef.BodyType.StaticBody, true);
+                    bodyComponent.body.setUserData(mapTile);
+
+                    mapTile.add(type);
+                    mapTile.add(position);
+                    mapTile.add(bodyComponent);
+                    this.addEntity(mapTile);
+                }
+            }
+        }
     }
 
-    public void setViewport(Viewport viewport) {
-        this.viewport = viewport;
+    public void loadFromFile(String fileName) {
+        EntityCreator creator = new EntityCreator(this, world);
+        FileHandle fileHandle = Gdx.files.local(fileName);
+        EngineData engineData = json.fromJson(EngineData.class, Base64Coder.decodeString(fileHandle.readString()));
+        playerStartX = engineData.getPlayerStartX();
+        playerStartY = engineData.getPlayerStartY();
+        EntityData[] entityDataList = engineData.getEntitiesDataList();
+        for (EntityData entityData : entityDataList) {
+            System.out.println(entityData.getId());
+            creator.createEntity(entityData.getId(), entityData.getxPos(), entityData.getyPos());
+        }
+    }
+
+    public void saveToFile(String fileName) {
+        FileHandle fileHandle = Gdx.files.local(fileName);
+        EngineData engineData = new EngineData();
+        engineData.setPlayerStartX(playerStartX);
+        engineData.setPlayerStartY(playerStartY);
+        ImmutableArray<Entity> entityDataArray = getEntitiesFor(Family.all(TypeComponent.class, PositionComponent.class).get());
+        //todo: change the way this is done because shouldnt need to loop through twice. Can be changed by using another type of list in EngineData.
+        //check important length of entityDataArray
+        int index = 0;
+        for (Entity entity : entityDataArray) {
+            TypeComponent type = typeM.get(entity);
+            if(type.type != TypeComponent.SCENERY && type.type != TypeComponent.PLAYER){
+                index++;
+            }
+        }
+        engineData.setEntitiesLength(entityDataArray.size());
+        EntityData[] entityDataList = new EntityData[index++];
+        System.out.println("entityData size: " + entityDataArray.size());
+        index = 0;
+        for (Entity entity : entityDataArray) {
+            TypeComponent typeComponent = typeM.get(entity);
+            if(typeComponent.type != TypeComponent.SCENERY && typeComponent.type != TypeComponent.PLAYER) {
+                System.out.println("currentType: " + typeComponent.type);
+                Vector3 position = positionM.get(entity).position;
+                entityDataList[index] = new EntityData();
+                entityDataList[index].setId(typeComponent.type);
+                entityDataList[index].setxPos(position.x);
+                entityDataList[index].setyPos(position.y);
+                index++;
+            }
+        }
+        engineData.setEntitiesDataList(entityDataList);
+        fileHandle.writeString(Base64Coder.encodeString(json.toJson(engineData)), false);
+    }
+
+    public float getPlayerStartX() {
+        return playerStartX;
+    }
+    public float getPlayerStartY() {
+        return playerStartY;
     }
 }
 

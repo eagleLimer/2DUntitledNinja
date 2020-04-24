@@ -6,8 +6,9 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.game.gamestates.GameStateManager;
 import com.mygdx.game.gamestates.MainMenu;
-import com.mygdx.game.gamestates.PlayState;
 import com.mygdx.game.preferences.Preffies;
+import com.mygdx.game.resources.AnimationsRes;
+import com.mygdx.game.resources.ImagesRes;
 
 
 public class MyGdxGame extends ApplicationAdapter {
@@ -25,7 +26,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
         uiSkin = new Skin(Gdx.files.internal("rainbow-ui.json"));
         updateGraphics(Gdx.app.getPreferences(Preffies.FILE_NAME));
-
+        ImagesRes.loadImages();
+        AnimationsRes.loadAnimations();
         gsm = new GameStateManager();
         gsm.pushState(new MainMenu(gsm));
     }

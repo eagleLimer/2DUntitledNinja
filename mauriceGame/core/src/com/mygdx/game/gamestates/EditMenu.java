@@ -62,7 +62,7 @@ public class EditMenu extends GameState {
                         int enteredWidth = Integer.parseInt(enterMapWidth.getText());
                         int enteredHeight = Integer.parseInt(enterMapHeight.getText());
                         if (enteredWidth > 0 && enteredWidth <= MAX_WIDTH && enteredHeight > 0 && enteredHeight <= MAX_HEIGHT) {
-                            stateChangeListener.pushState(new EditState(stateChangeListener, FILE_PATH + enterNewFileName.getText(),
+                            stateChangeListener.pushState(new EditMap(stateChangeListener, FILE_PATH + enterNewFileName.getText(),
                                     enteredWidth, enteredHeight));
                         }
                     } catch (NumberFormatException e) {
@@ -77,7 +77,7 @@ public class EditMenu extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!enterFileName.getText().equals("") && Gdx.files.local(FILE_PATH + enterFileName.getText()).exists()) {
-                    stateChangeListener.pushState(new EditState(stateChangeListener, FILE_PATH + enterFileName.getText()));
+                    stateChangeListener.pushState(new EditMap(stateChangeListener, FILE_PATH + enterFileName.getText()));
                 } else {
                     //todo: please add no such file message here also!
                 }

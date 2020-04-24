@@ -181,7 +181,7 @@ public class Map extends TiledMap {
 
     public void changeTile(int x, int y, int tileSetId, String currentLayer) {
         TiledMapTileLayer.Cell cell = getCell(x, y, currentLayer);
-        if(cell != null) {
+        if (cell != null) {
             if (tileSetId == -1) {
                 cell.setTile(null);
             } else {

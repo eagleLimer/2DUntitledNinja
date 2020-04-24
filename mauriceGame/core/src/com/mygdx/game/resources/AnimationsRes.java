@@ -8,21 +8,18 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class AnimationsRes {
-    public Animation playerRight;
-    public Animation playerLeft;
-    public Animation playerNormal;
-    public Animation playerFalling;
-    public Animation playerJumping;
+    public static Animation playerRight;
+    public static Animation playerLeft;
+    public static Animation playerNormal;
+    public static Animation playerFalling;
+    public static Animation playerJumping;
 
-    public AnimationsRes() {
-        loadAnimations();
-    }
 
-    private void loadAnimations() {
+    public static void loadAnimations() {
         loadPlayerAnimations();
     }
 
-    private void loadPlayerAnimations() {
+    private static void loadPlayerAnimations() {
         Texture walkSheet = new Texture(Gdx.files.internal("epicRun.png"));
         int frame_cols = 8;
         int frame_rows = 1;
@@ -51,7 +48,7 @@ public class AnimationsRes {
 
     }
 
-    private Animation createAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
+    private static Animation createAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
         TextureRegion[][] tmp = TextureRegion.split(sheet, sheet.getWidth() / frame_cols, sheet.getHeight() / frame_rows);
         TextureRegion[] walkFrames = new TextureRegion[frame_cols * frame_rows];
         int index = 0;
@@ -63,7 +60,7 @@ public class AnimationsRes {
         return new Animation<TextureRegion>(frameTime, walkFrames);
     }
 
-    private Animation createFlippedAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
+    private static Animation createFlippedAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
         TextureRegion[][] tmp = TextureRegion.split(sheet, sheet.getWidth() / frame_cols, sheet.getHeight() / frame_rows);
         TextureRegion[] walkFrames = new TextureRegion[frame_cols * frame_rows];
         int index = 0;

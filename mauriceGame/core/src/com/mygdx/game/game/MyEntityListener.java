@@ -7,9 +7,11 @@ import com.mygdx.game.components.BodyComponent;
 
 public class MyEntityListener implements EntityListener {
     private World world;
-    public MyEntityListener(World world){
+
+    public MyEntityListener(World world) {
         this.world = world;
     }
+
     @Override
     public void entityAdded(Entity entity) {
     }

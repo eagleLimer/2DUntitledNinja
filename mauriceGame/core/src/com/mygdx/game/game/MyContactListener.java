@@ -43,6 +43,11 @@ public class MyContactListener implements ContactListener {
 
     }
 
+    /*
+    If the fixture never needs to collide with anything you could make it a sensor.
+    If you need it to collide with some things but not others you could do contact->SetEnabled(false)
+    in the PreSolve of the collision listener, depending on what it collided with.
+     */
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
 
@@ -59,7 +64,8 @@ public class MyContactListener implements ContactListener {
             Entity ent = (Entity) fa.getBody().getUserData();
             entityImpact(ent, fb, impulse);
             return;
-        }  if (fb.getBody().getUserData() instanceof Entity) {
+        }
+        if (fb.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fb.getBody().getUserData();
             entityImpact(ent, fa, impulse);
             return;
@@ -67,7 +73,7 @@ public class MyContactListener implements ContactListener {
     }
 
     private void entityImpact(Entity ent, Fixture fb, ContactImpulse impulse) {
-        if(ent.getComponent(PlayerComponent.class) != null) {
+        if (ent.getComponent(PlayerComponent.class) != null) {
             HealthComponent health = ent.getComponent(HealthComponent.class);
             if (health != null) {
                 float damage = 0;

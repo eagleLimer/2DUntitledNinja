@@ -15,18 +15,20 @@ public class BasicEnemyMovement extends IteratingSystem {
     private ComponentMapper<VelocityComponent> vm;
     private ComponentMapper<PositionComponent> pm;
     private Entity player;
+
     public BasicEnemyMovement(Entity player) {
         super(Family.all(BasicEnemyComponent.class).get());
         bodm = ComponentMapper.getFor(BodyComponent.class);
         sm = ComponentMapper.getFor(StateComponent.class);
         vm = ComponentMapper.getFor(VelocityComponent.class);
         pm = ComponentMapper.getFor(PositionComponent.class);
+        //todo: change to search for player?
         this.player = player;
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if(pm.get(player) != null) {
+        if (pm.get(player) != null) {
             Vector3 playerPos = pm.get(player).position;
             Vector3 enemyPos = pm.get(entity).position;
             BodyComponent body = bodm.get(entity);

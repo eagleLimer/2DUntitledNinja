@@ -20,7 +20,7 @@ public class PlayerControlSystem extends IteratingSystem {
     private static final float ACCELERATION = 0.5f;
 
     private static final float GROUND_Y_CAP = 0.6f;
-    private static final float AIRBORNE_CONTROL = 0.15f;
+    private static final float AIRBORNE_CONTROL = 0.1f;
     private static final float STAND_STILL_CAP = 0.4f;
     private static final float FALLING_MIN = -0.3f;
 
@@ -68,6 +68,7 @@ public class PlayerControlSystem extends IteratingSystem {
         //ugly as crap? Maybe.
         if ((state.get() == StateComponent.STATE_JUMPING && b2body.body.getLinearVelocity().y < 0.00000001) || b2body.body.getLinearVelocity().y < FALLING_MIN) {
             stateChanged = StateComponent.STATE_FALLING;
+
         } else if (state.get() != StateComponent.STATE_JUMPING) {
             stateChanged = StateComponent.STATE_NORMAL;
         }
@@ -83,6 +84,7 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
             if (!airborne) {
                 stateChanged = StateComponent.STATE_RIGHT;
+
             }
         } else {
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, DEACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
