@@ -15,7 +15,6 @@ import com.mygdx.game.resources.AnimationsRes;
 import com.mygdx.game.resources.ImagesRes;
 
 
-//todo: this class is getting a bit too big, maybe move createEngine and addMapToEngine to engine.class
 public class PlayState extends GameState {
     public static final String FIRST_LEVEL_NAME = "levelFiles/level2";
     private static final int MOUNTAINS_HEIGHT_1 = 200;
@@ -42,7 +41,7 @@ public class PlayState extends GameState {
     private BitmapFont font;
     private Texture backgroundTexture;
     private final Texture backgroundSky;
-    private int srcx = 0;
+    private int srcX = 0;
     private float playerXPos;
     private float playerYPos;
 
@@ -111,7 +110,7 @@ public class PlayState extends GameState {
 
     private void drawBackground() {
         backgroundBatch.begin();
-        backgroundBatch.draw(backgroundSky, 0, backgroundViewport.getWorldHeight() - ImagesRes.skyImage.getRegionHeight(), srcx++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/, 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.skyImage.getRegionHeight());
+        backgroundBatch.draw(backgroundSky, 0, backgroundViewport.getWorldHeight() - ImagesRes.skyImage.getRegionHeight(), srcX++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/, 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.skyImage.getRegionHeight());
         backgroundBatch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_1, (int) (playerXPos / MOUNTAINS_MOVEMENT_1), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.backgroundImage.getRegionHeight());
         backgroundBatch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_2, (int) (playerXPos / MOUNTAINS_MOVEMENT_2), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.backgroundImage.getRegionHeight());
         backgroundBatch.draw(backgroundHills, 0, HILLS_HEIGHT, (int) (playerXPos / HILLS_MOVEMENT), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.hillsImage.getRegionHeight());
@@ -146,6 +145,5 @@ public class PlayState extends GameState {
         viewport.update(width, height, true);
         backgroundViewport.update(width, height, true);
         //stage.getViewport().update(width,height,true);
-        //todo: handle background zoom.
     }
 }
