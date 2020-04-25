@@ -133,6 +133,8 @@ public class EditEntities extends GameState {
 
         mainTable.add(entityBox);
         mainTable.row();
+        mainTable.add();
+        mainTable.row();
         mainTable.add(removeEntitiesButton);
         mainTable.row();
         mainTable.add(editMapButton);

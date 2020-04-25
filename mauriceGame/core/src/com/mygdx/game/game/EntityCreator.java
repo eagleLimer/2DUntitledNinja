@@ -39,13 +39,13 @@ public class EntityCreator {
     private void createBoss(float posx, float posy) {
         Entity boss = createBasicEntity(posx, posy, 3, 9, 256 / 32, ImagesRes.bossImage, BodyMaterial.GLASS, TypeComponent.BOSS);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
-        BasicEnemyComponent enemyComponent = engine.createComponent(BasicEnemyComponent.class);
+        //BasicEnemyComponent enemyComponent = engine.createComponent(BasicEnemyComponent.class);
         healthComponent.hidden = false;
         healthComponent.maxHealth = 400;
         healthComponent.health = 400;
         healthComponent.healthHeight = 50;
         healthComponent.healthWidth = 300;
-        boss.add(enemyComponent);
+        //boss.add(enemyComponent);
         boss.add(healthComponent);
         engine.addEntity(boss);
     }
