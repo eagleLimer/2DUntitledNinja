@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.components.*;
 
 public class MyContactListener implements ContactListener {
+    //THIS IS USEFUL IF WE WANT COLLISIONS TO IGNORE VELOCITY AND MASS
     @Override
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -51,6 +52,7 @@ public class MyContactListener implements ContactListener {
 
     }
 
+    //THIS IS USEFUL IF WE WANT COLLISION DAMAGE TO DEPEND ON VELOCITY AND MASS.
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
         Fixture fa = contact.getFixtureA();

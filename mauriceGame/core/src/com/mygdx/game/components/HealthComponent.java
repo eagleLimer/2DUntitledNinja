@@ -11,6 +11,7 @@ public class HealthComponent implements Component {
     public int health = maxHealth;
     public float healthWidth = 60;
     public float healthHeight = 15;
+    public float healthReg;
     public boolean hidden = false;
     public TextureRegion region = createTexture((int) healthWidth, (int) healthHeight, Color.RED);
 

@@ -122,6 +122,7 @@ public class Engine extends PooledEngine {
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world,controller,viewport);
 
         this.addEntityListener(entityListener);
+        this.addSystem(new HealthSystem());
         this.addSystem(powerSystem);
         this.addSystem(collisionSystem);
         this.addSystem(playerControlSystem);

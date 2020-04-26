@@ -52,11 +52,12 @@ public class EntityCreator {
     }
 
     private void createBasicEnemy(float posx, float posy) {
-        Entity enemy = createBasicEntity(posx, posy, 6, 9, 1, ImagesRes.entityImage, BodyMaterial.GLASS, TypeComponent.BASIC_ENEMY);
+        Entity enemy = createBasicEntity(posx, posy, 6, 9, 1-0.05f, ImagesRes.entityImage, BodyMaterial.GLASS, TypeComponent.BASIC_ENEMY);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
         BasicEnemyComponent enemyComponent = engine.createComponent(BasicEnemyComponent.class);
 
         healthComponent.hidden = false;
+        healthComponent.healthReg = 1;
         healthComponent.maxHealth = 40;
         healthComponent.health = 40;
         enemy.add(enemyComponent);
@@ -64,10 +65,11 @@ public class EntityCreator {
         engine.addEntity(enemy);
     }
     private void createBall(float posx, float posy) {
-        Entity ball = createBasicEntity(posx, posy, 6, 9, 1 / 2f-0.05f, ImagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.BALL);
+        Entity ball = createBasicEntity(posx, posy, 6, 9, 1 / 2f, ImagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.BALL);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
 
         healthComponent.hidden = true;
+        healthComponent.healthReg = 1;
         healthComponent.maxHealth = 10;
         healthComponent.health = 10;
         ball.add(healthComponent);
@@ -83,6 +85,7 @@ public class EntityCreator {
         BodyComponent bodyComponent = player.getComponent(BodyComponent.class);
         bodyComponent.body.setFixedRotation(true);
 
+        healthComponent.healthReg = 1;
         healthComponent.maxHealth = 100;
         healthComponent.health = 100;
         Animation animation = AnimationsRes.playerRight;

@@ -21,7 +21,7 @@ import com.mygdx.game.game.Tile;
 
 public class PlayerPowerSystem extends IteratingSystem {
     //todo: should move this also lol
-    private static final float IMPULSE_STRENGTH = 0.1f;
+    private static final float IMPULSE_STRENGTH = 0.2f;
     private static final float LIFT_STRENGTH = 1;
     private static final float IMPULSE_AOE = 1;
     private static final float MAX_SPEED = 30;
@@ -54,7 +54,9 @@ public class PlayerPowerSystem extends IteratingSystem {
                     BodyComponent bodyComponent = bodyM.get(entity);
                     if(bodyComponent != null && typeM.get(entity).type == TypeComponent.BALL){
                         if(bodyComponent.body.getMass() < LIFT_STRENGTH){
-                            entityList.add(entity);
+                            if(!entityList.contains(entity,true)) {
+                                entityList.add(entity);
+                            }
                         }
                     }
                 }
