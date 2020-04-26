@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Base64Coder;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.components.*;
 import com.mygdx.game.game.*;
 import com.mygdx.game.gameData.EngineData;
@@ -112,14 +113,16 @@ public class Engine extends PooledEngine {
         renderQueue.clear();
     }
 
-    public void createSystems(KeyboardController controller) {
+    public void createSystems(KeyboardController controller, Viewport viewport) {
         PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem();
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
         PhysicsSystem physicsSystem = new PhysicsSystem(world);
         AnimationSystem animationSystem = new AnimationSystem();
         MyEntityListener entityListener = new MyEntityListener(world);
+        PlayerPowerSystem powerSystem = new PlayerPowerSystem(world,controller,viewport);
 
         this.addEntityListener(entityListener);
+        this.addSystem(powerSystem);
         this.addSystem(collisionSystem);
         this.addSystem(playerControlSystem);
         this.addSystem(physicsSystem);

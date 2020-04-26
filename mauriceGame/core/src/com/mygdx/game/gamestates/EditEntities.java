@@ -5,19 +5,20 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.components.TypeComponent;
 import com.mygdx.game.game.*;
+import com.mygdx.game.resources.ImagesRes;
+
+import java.util.HashMap;
 
 import static com.mygdx.game.game.MyGdxGame.worldHeight;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
@@ -41,6 +42,7 @@ public class EditEntities extends GameState {
     private float mouseX;
     private float mouseY;
     private int entityTimer;
+    private HashMap<Integer, Texture> imageMap;
 
     public EditEntities(StateChangeListener stateListener, Level level, float zoom) {
         super(stateListener);
@@ -76,6 +78,11 @@ public class EditEntities extends GameState {
         viewport.setWorldWidth(worldWidth * zoom);
         viewport.setWorldHeight(worldHeight * zoom);
         viewport.apply();
+
+        imageMap = new HashMap<Integer, Texture>();
+        imageMap.put(TypeComponent.BASIC_ENEMY, ImagesRes.entityImage.getTexture());
+        imageMap.put(TypeComponent.BALL, ImagesRes.rockImage.getTexture());
+        imageMap.put(TypeComponent.BOSS, ImagesRes.bossImage.getTexture());
     }
 
     private void createMainTable() {
@@ -163,6 +170,12 @@ public class EditEntities extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         level.render(camera, batch);
+        Texture currentEntity = imageMap.get(currentEntityId);
+        if(currentEntity != null){
+            batch.begin();
+            batch.draw(currentEntity, mouseX-currentEntity.getWidth()/2,mouseY-currentEntity.getHeight()/2);
+            batch.end();
+        }
         menuStage.act();
         menuStage.draw();
     }

@@ -11,6 +11,7 @@ import com.mygdx.game.resources.ImagesRes;
 import com.mygdx.game.systems.Engine;
 
 //todo: make enum class containing different types of entities. hårdkodat är inte ok!
+//todo: make different health bar types and sizes, maybe depending on rarity and health amount.
 public class EntityCreator {
     Engine engine;
     World world;
@@ -63,18 +64,18 @@ public class EntityCreator {
         engine.addEntity(enemy);
     }
     private void createBall(float posx, float posy) {
-        Entity enemy = createBasicEntity(posx, posy, 6, 9, 1 / 2f, ImagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.BALL);
+        Entity ball = createBasicEntity(posx, posy, 6, 9, 1 / 2f-0.05f, ImagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.BALL);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
 
         healthComponent.hidden = true;
         healthComponent.maxHealth = 10;
         healthComponent.health = 10;
-        enemy.add(healthComponent);
-        engine.addEntity(enemy);
+        ball.add(healthComponent);
+        engine.addEntity(ball);
     }
 
     public Entity createPlayer(float posx, float posy) {
-        Entity player = createBasicEntity(posx, posy, 8, 19, 2, ImagesRes.playerImage, BodyMaterial.GLASS, TypeComponent.PLAYER);
+        Entity player = createBasicEntity(posx, posy, 8, 19, 2-0.05f, ImagesRes.playerImage, BodyMaterial.GLASS, TypeComponent.PLAYER);
         VelocityComponent velocity = player.getComponent(VelocityComponent.class);
         velocity.jumpCooldown = 0.5f;
         AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
@@ -122,6 +123,8 @@ public class EntityCreator {
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, size / 2, material,
                 BodyDef.BodyType.DynamicBody, false);
         entityBody.body.setUserData(basicEntity);
+
+        System.out.println(type);
 
         basicEntity.add(typeComponent);
         basicEntity.add(entityVelocity);

@@ -2,9 +2,7 @@ package com.mygdx.game.game;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.*;
-import com.mygdx.game.components.CollisionComponent;
-import com.mygdx.game.components.HealthComponent;
-import com.mygdx.game.components.PlayerComponent;
+import com.mygdx.game.components.*;
 
 public class MyContactListener implements ContactListener {
     @Override
@@ -82,9 +80,33 @@ public class MyContactListener implements ContactListener {
                     damage += imp;
                 }
                 if (damage > 2) {
-                    //health.health -= damage;
+                    health.health -= damage;
                 }
                 System.out.println(damage);
+            }
+        }
+        if(ent.getComponent(BasicEnemyComponent.class)!= null){
+            if(fb.getBody().getUserData() instanceof Entity){
+                Entity entb = (Entity) fb.getBody().getUserData();
+                TypeComponent type = entb.getComponent(TypeComponent.class);
+                if(type != null){
+                    //System.out.println(type.type);
+                    if(type.type == TypeComponent.BALL){
+                        System.out.println("what happens here");
+                        HealthComponent health = ent.getComponent(HealthComponent.class);
+                        if (health != null) {
+                            float damage = 0;
+                            for (float imp : impulse.getNormalImpulses()
+                            ) {
+                                damage += imp;
+                            }
+                            if (damage > 2) {
+                                health.health -= damage*10;
+                            }
+                            System.out.println("enemy took damge: " + damage*10);
+                        }
+                    }
+                }
             }
         }
     }

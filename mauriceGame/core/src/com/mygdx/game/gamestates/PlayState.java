@@ -68,7 +68,7 @@ public class PlayState extends GameState {
 
         levelName = FIRST_LEVEL_NAME;
         controller = new KeyboardController();
-        level = new Level(levelName, controller);
+        level = new Level(levelName, controller, viewport);
         renderer = new OrthogonalTiledMapRenderer(level.map);
 
         inputMultiplexer = new InputMultiplexer();
@@ -106,6 +106,7 @@ public class PlayState extends GameState {
         backgroundBatch.setProjectionMatrix(backgroundCamera.combined);
         camera.position.set(playerXPos, playerYPos/*+MyGdxGame.worldHeight/5*/, 0);
         level.render(camera, batch);
+        level.renderUi(backgroundCamera,backgroundBatch);
     }
 
     private void drawBackground() {

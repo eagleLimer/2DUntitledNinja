@@ -16,5 +16,4 @@ public class EntityBox {
     public int getId(){
         return id;
     }
-
 }

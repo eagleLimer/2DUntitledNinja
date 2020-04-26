@@ -82,12 +82,12 @@ public class EditMap extends GameState {
 
     public EditMap(StateChangeListener stateChangeListener, String fileName) {
         this(stateChangeListener);
-        level = new Level(fileName, controller);
+        level = new Level(fileName, controller, viewport);
     }
 
     public EditMap(StateChangeListener stateChangeListener, String fileName, int mapWidth, int mapHeight) {
         this(stateChangeListener);
-        level = new Level(fileName,mapWidth,mapHeight,controller);
+        level = new Level(fileName,mapWidth,mapHeight,controller, viewport);
     }
 
     @Override
