@@ -77,7 +77,12 @@ public class PlayerPowerSystem extends IteratingSystem {
         EnergyComponent energy = energyM.get(entity);
         if (controller.rightButton && energy.mana > 1) {
             world.QueryAABB(mycallBack, mouseX - IMPULSE_AOE, mouseY - IMPULSE_AOE, mouseX + IMPULSE_AOE, mouseY + IMPULSE_AOE);
-        } else {
+        } else if(controller.explode && energy.mana > 1) {
+            //todo: add bang bang iväg från spelaren.
+        } else if(controller.implode && energy.mana > 1){
+            //todo: Add dra skit till spelaren.
+        }
+        else{
             entityList.clear();
         }
         for (Entity ball : entityList) {
