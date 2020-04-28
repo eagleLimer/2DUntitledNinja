@@ -188,6 +188,7 @@ public class EditEntities extends GameState {
         mouseX = mouseVector.x;
         mouseY = mouseVector.y;
         entityTimer--;
+        level.editUpdate(step);
 
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), mainTable)){
             if(currentEntityId == -1){

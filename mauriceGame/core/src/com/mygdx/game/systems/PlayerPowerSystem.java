@@ -14,8 +14,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.components.*;
-import com.mygdx.game.game.BulletInfo;
-import com.mygdx.game.game.BulletType;
 import com.mygdx.game.game.KeyboardController;
 import com.mygdx.game.game.Tile;
 
@@ -75,7 +73,7 @@ public class PlayerPowerSystem extends IteratingSystem {
         mouseX = mousePos.x / Tile.tileSize;
         mouseY = mousePos.y / Tile.tileSize;
         EnergyComponent energy = energyM.get(entity);
-        if (controller.rightButton && energy.mana > 1) {
+        if (controller.elementPull && energy.mana > 1) {
             world.QueryAABB(mycallBack, mouseX - IMPULSE_AOE, mouseY - IMPULSE_AOE, mouseX + IMPULSE_AOE, mouseY + IMPULSE_AOE);
         } else if(controller.explode && energy.mana > 1) {
             //todo: add bang bang iväg från spelaren.
@@ -103,7 +101,7 @@ public class PlayerPowerSystem extends IteratingSystem {
                 }*/
             }
         }
-        if(controller.leftButton){
+        if(controller.shoot){
             ShooterComponent shooter = shooterM.get(entity);
             Vector3 playerPos = posM.get(entity).position;
             shooter.dir = new Vector2(mouseX-playerPos.x, mouseY - playerPos.y);

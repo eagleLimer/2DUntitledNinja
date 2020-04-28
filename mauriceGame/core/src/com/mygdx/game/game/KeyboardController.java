@@ -7,7 +7,7 @@ import com.badlogic.gdx.InputProcessor;
 public class KeyboardController implements InputProcessor {
     //should be private with getters?
     public boolean left, right, up, down, esc;
-    public boolean leftButton, rightButton;
+    public boolean shoot, elementPull;
     public boolean zoomIn, zoomOut;
     public boolean jump;
     public boolean explode, implode;
@@ -119,11 +119,11 @@ public class KeyboardController implements InputProcessor {
         Boolean keyProcessed = false;
         switch (button) {
             case Buttons.LEFT:
-                leftButton = true;
+                shoot = true;
                 keyProcessed = true;
                 break;
             case Buttons.RIGHT:
-                rightButton = true;
+                elementPull = true;
                 keyProcessed = true;
                 break;
         }
@@ -135,11 +135,11 @@ public class KeyboardController implements InputProcessor {
         Boolean keyProcessed = false;
         switch (button) {
             case Buttons.LEFT:
-                leftButton = false;
+                shoot = false;
                 keyProcessed = true;
                 break;
             case Buttons.RIGHT:
-                rightButton = false;
+                elementPull = false;
                 keyProcessed = true;
                 break;
         }

@@ -3,11 +3,14 @@ package com.mygdx.game.gamestates;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.math.Vector2;
@@ -47,6 +50,7 @@ public class EditMap extends GameState {
     private Table mainTable;
     private String currentLayerName = Map.COLLISION_LAYER_NAME;
     private Table sideTable;
+    private TextureRegion currentTileRegion;
 
     public EditMap(final StateChangeListener stateChangeListener) {
         super(stateChangeListener);
@@ -93,6 +97,7 @@ public class EditMap extends GameState {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
+        currentTileRegion = level.map.getTileSets().getTile(currentTileId).getTextureRegion();
     }
 
     @Override
@@ -106,6 +111,18 @@ public class EditMap extends GameState {
         font.draw(menuBatch, coordinates, 100, 100);
         font.draw(menuBatch, currentLayerName, worldWidth-100, worldHeight-100);
         menuBatch.end();
+        batch.begin();
+        Color c = batch.getColor();
+        batch.setColor(c.r, c.g, c.b, 0.5f);
+        for (int i = 0; i < mouseSize; i++) {
+            for (int j = 0; j < mouseSize; j++) {
+                batch.draw(currentTileRegion,(mouseX-(mouseSize-1)* Tile.tileSize/2 + i*Tile.tileSize)/32*32,
+                        (mouseY-(mouseSize-1)* Tile.tileSize/2 + j*Tile.tileSize)/32*32);
+
+            }
+        }
+        batch.end();
+        batch.setColor(c.r, c.g, c.b, 1f);
         menuStage.act();
         menuStage.draw();
     }
@@ -212,6 +229,7 @@ public class EditMap extends GameState {
                     tileButton.addListener(new TileClickListener(currentTile.getId()) {
                         public void clicked(InputEvent event, float x, float y) {
                             currentTileId = getId();
+                            currentTileRegion = level.map.getTileSets().getTile(currentTileId).getTextureRegion();
                         }
                     });
                     ImageButton newButton = tileButton;

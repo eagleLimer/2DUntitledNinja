@@ -25,7 +25,6 @@ import java.util.Comparator;
 
 import static com.badlogic.gdx.net.HttpRequestBuilder.json;
 
-
 public class Engine extends PooledEngine {
     private Array<Entity> renderQueue;
     private ImmutableArray<Entity> entityArray;
@@ -60,6 +59,9 @@ public class Engine extends PooledEngine {
             creator.createBullet(bulletInfo);
         }
         newBullets.clear();
+        removeOldEntities();
+    }
+    public void removeOldEntities(){
         for (Entity entity: toBeRemoved) {
             this.removeEntity(entity);
             if (entity != null) {
@@ -233,6 +235,10 @@ public class Engine extends PooledEngine {
     }
     public float getPlayerStartY() {
         return playerStartY;
+    }
+
+    public void scheduleForRemoval(Entity entity) {
+        toBeRemoved.add(entity);
     }
 }
 

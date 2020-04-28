@@ -99,7 +99,7 @@ public class EntityCreator {
         shooter.bulletType = BulletType.PLAYER_BULLET;
         energyComponent.maxMana = 200;
         energyComponent.mana = 200;
-        energyComponent.manaReg = 10f;
+        energyComponent.manaReg = 15f;
 
         healthComponent.healthReg = 10f;
         healthComponent.maxHealth = 100;
@@ -167,6 +167,7 @@ public class EntityCreator {
                 bulletInfo.bulletType.radius, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false);
         bulletBody.body.applyLinearImpulse(bulletInfo.dir,bulletBody.body.getWorldCenter(),true);
         bulletBody.body.setUserData(bullet);
+        bulletBody.body.setAngularVelocity(300);
 
         bulletPosition.position.set(bulletInfo.pos,0);
         bulletTexture.region = bulletInfo.bulletType.region;

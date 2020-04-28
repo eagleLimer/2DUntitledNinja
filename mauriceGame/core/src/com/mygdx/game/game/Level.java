@@ -94,8 +94,11 @@ public class Level {
             stateChangeListener.popState();
         }
     }
+    public void editUpdate(float step) {
+        engine.removeOldEntities();
+    }
 
-    public float getPlayerXpos() {
+        public float getPlayerXpos() {
         return player.getComponent(PositionComponent.class).position.x * Tile.tileSize;
     }
     public float getPlayerYpos() {
@@ -112,11 +115,7 @@ public class Level {
             public boolean reportFixture(Fixture fixture) {
                 if(fixture.getBody().getUserData() instanceof Entity){
                     Entity entity = (Entity) fixture.getBody().getUserData();
-                    HealthComponent healthComponent = healthM.get(entity);
-                    //todo: change this to some kind of removal listener.
-                    if(healthComponent != null) {
-                        healthComponent.health = 0;
-                    }
+                    engine.scheduleForRemoval(entity);
                 }
              return false;
             }

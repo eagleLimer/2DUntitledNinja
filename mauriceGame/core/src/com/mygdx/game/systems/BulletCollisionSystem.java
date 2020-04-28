@@ -29,9 +29,7 @@ public class BulletCollisionSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         bulletM.get(entity).bulletTimer -= deltaTime;
-        if(bodyM.get(entity).body.getLinearVelocity().len() < bulletM.get(entity).bulletMinSpeed){
-            toBeRemoved.add(entity);
-        }
+
         CollisionComponent cc = collisionM.get(entity);
         Entity collidedEntity = cc.collisionEntity;
         if (collidedEntity != null) {
@@ -53,6 +51,9 @@ public class BulletCollisionSystem extends IteratingSystem {
                         break;
                 }
                 cc.collisionEntity = null; // collision handled reset component
+            }
+            if(bodyM.get(entity).body.getLinearVelocity().len() < bulletM.get(entity).bulletMinSpeed){
+                toBeRemoved.add(entity);
             }
         }
     }
