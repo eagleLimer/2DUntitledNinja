@@ -35,7 +35,7 @@ public class BodyCreator {
         //create the body to attach bodyDef
         Body circleBody = world.createBody(bodyDef);
         CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(radius * 2 / 2);
+        circleShape.setRadius(radius);
         circleBody.createFixture(makeFixture(material, circleShape));
         circleShape.dispose();
         return circleBody;

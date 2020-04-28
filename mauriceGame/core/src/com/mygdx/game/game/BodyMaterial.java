@@ -14,7 +14,6 @@ public enum BodyMaterial {
         this.friction = friction;
     }
 
-
     public float getDensity() {
         return density;
     }

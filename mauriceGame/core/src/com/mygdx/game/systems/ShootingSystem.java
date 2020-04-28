@@ -31,7 +31,7 @@ public class ShootingSystem extends IteratingSystem {
             Vector3 playerPos = posM.get(entity).position;
             Vector2 dir = shooter.dir.nor();
             Vector2 pos = new Vector2(playerPos.x+dir.x *shooter.bulletSpawn,playerPos.y+dir.y*shooter.bulletSpawn);
-            newBullets.add(new BulletInfo(pos,dir.scl(0.2f), shooter.bulletType));
+            newBullets.add(new BulletInfo(pos,dir.scl(0.1f), shooter.bulletType));
             shooter.bulletTick = shooter.bulletCd;
             shooter.shoot = false;
         }else{

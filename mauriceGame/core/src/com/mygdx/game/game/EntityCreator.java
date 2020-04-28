@@ -61,7 +61,7 @@ public class EntityCreator {
 
         damageComponent.damage = 10;
         healthComponent.hidden = false;
-        healthComponent.healthReg = 0.1f;
+        healthComponent.healthReg = 2f;
         healthComponent.maxHealth = 40;
         healthComponent.health = 40;
 
@@ -95,7 +95,7 @@ public class EntityCreator {
 
         shooter.bulletCd = 0.5f;
         //playerRadius+bulletRadius
-        shooter.bulletSpawn = 1.5f+BulletType.PLAYER_BULLET.radius;
+        shooter.bulletSpawn = 1f+BulletType.PLAYER_BULLET.radius;
         shooter.bulletType = BulletType.PLAYER_BULLET;
         energyComponent.maxMana = 200;
         energyComponent.mana = 200;
@@ -135,7 +135,6 @@ public class EntityCreator {
         VelocityComponent entityVelocity = engine.createComponent(VelocityComponent.class);
         TypeComponent typeComponent = engine.createComponent(TypeComponent.class);
 
-
         typeComponent.type = type;
         entityVelocity.sprintSpeed = sprintVelocity;
         entityVelocity.jumpSpeed = jumpVelocity;
@@ -144,8 +143,6 @@ public class EntityCreator {
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, size / 2, material,
                 BodyDef.BodyType.DynamicBody, false);
         entityBody.body.setUserData(basicEntity);
-
-        System.out.println(type);
 
         basicEntity.add(typeComponent);
         basicEntity.add(entityVelocity);
@@ -167,7 +164,7 @@ public class EntityCreator {
 
         bulletType.type = bulletInfo.bulletType.type;
         bulletBody.body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x,bulletInfo.pos.y,
-                bulletInfo.bulletType.radius*2, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false);
+                bulletInfo.bulletType.radius, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false);
         bulletBody.body.applyLinearImpulse(bulletInfo.dir,bulletBody.body.getWorldCenter(),true);
         bulletBody.body.setUserData(bullet);
 
