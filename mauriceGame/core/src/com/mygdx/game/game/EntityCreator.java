@@ -10,7 +10,7 @@ import com.mygdx.game.resources.AnimationsRes;
 import com.mygdx.game.resources.ImagesRes;
 import com.mygdx.game.systems.Engine;
 
-//todo: make enum class containing different types of entities. hårdkodat är inte ok!
+//todo: make enum class containing different types of entities. hårdkodat är inte det bästa :/
 //todo: make different health bar types and sizes, maybe depending on rarity and health amount.
 public class EntityCreator {
     private Engine engine;
