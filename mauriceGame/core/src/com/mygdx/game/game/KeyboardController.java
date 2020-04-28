@@ -5,10 +5,12 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.InputProcessor;
 
 public class KeyboardController implements InputProcessor {
+    //should be private with getters?
     public boolean left, right, up, down, esc;
     public boolean leftButton, rightButton;
     public boolean zoomIn, zoomOut;
     public boolean jump;
+    public boolean explode, implode;
 
     @Override
     public boolean keyDown(int keycode) {
@@ -22,6 +24,14 @@ public class KeyboardController implements InputProcessor {
             case Keys.D:    // if keycode is the same as Keys.LEFT a.k.a 22
                 right = true;   // do this
                 keyProcessed = true;    // we have reacted to a keypress
+                break;
+            case Keys.E:
+                explode = true;
+                keyProcessed = true;
+                break;
+            case Keys.Q:
+                implode = true;
+                keyProcessed = true;
                 break;
             case Keys.W:       // if keycode is the same as Keys.LEFT a.k.a 19
                 up = true;      // do this
@@ -64,6 +74,14 @@ public class KeyboardController implements InputProcessor {
                 right = false;
                 keyProcessed = true;
                 break;
+            case Keys.E:
+                explode = false;
+                keyProcessed = true;
+                break;
+            case Keys.Q:
+                implode = false;
+                keyProcessed = true;
+                break;
             case Keys.W:
                 up = false;
                 keyProcessed = true;
@@ -104,10 +122,10 @@ public class KeyboardController implements InputProcessor {
                 leftButton = true;
                 keyProcessed = true;
                 break;
-                case Buttons.RIGHT:
-                    rightButton = true;
-                    keyProcessed = true;
-                    break;
+            case Buttons.RIGHT:
+                rightButton = true;
+                keyProcessed = true;
+                break;
         }
         return keyProcessed;
     }
@@ -120,10 +138,10 @@ public class KeyboardController implements InputProcessor {
                 leftButton = false;
                 keyProcessed = true;
                 break;
-                case Buttons.RIGHT:
-                    rightButton = false;
-                    keyProcessed = true;
-                    break;
+            case Buttons.RIGHT:
+                rightButton = false;
+                keyProcessed = true;
+                break;
         }
         return keyProcessed;
     }
