@@ -29,6 +29,8 @@ import static com.badlogic.gdx.net.HttpRequestBuilder.json;
 public class Engine extends PooledEngine {
     private Array<Entity> renderQueue;
     private ImmutableArray<Entity> entityArray;
+    private Array<BulletInfo> newBullets;
+    private Array<Entity> toBeRemoved;
 
     private Comparator<Entity> comparator;
     private ComponentMapper<TextureComponent> textureM = ComponentMapper.getFor(TextureComponent.class);
@@ -38,6 +40,7 @@ public class Engine extends PooledEngine {
     private ComponentMapper<PlayerComponent> playerM = ComponentMapper.getFor(PlayerComponent.class);
 
     private World world;
+    private EntityCreator creator;
     private int playerStartX = 3;
     private int playerStartY = 3;
 
@@ -45,6 +48,24 @@ public class Engine extends PooledEngine {
         super();
         this.world = world;
         comparator = new ZComparator();
+        newBullets = new Array<>();
+        toBeRemoved = new Array<>();
+        creator = new EntityCreator(this,world);
+    }
+
+    @Override
+    public void update(float deltaTime){
+        super.update(deltaTime);
+        for (BulletInfo bulletInfo:newBullets) {
+            creator.createBullet(bulletInfo);
+        }
+        newBullets.clear();
+        for (Entity entity: toBeRemoved) {
+            this.removeEntity(entity);
+            if (entity != null) {
+            }
+        }
+        toBeRemoved.clear();
     }
 
     public void render(SpriteBatch batch) {
@@ -83,7 +104,7 @@ public class Engine extends PooledEngine {
         for (Entity entity : entityArray) {
             if (healthM.get(entity).health <= 0) {
                 if (playerM.get(entity) == null) {
-                    this.removeEntity(entity);
+                    toBeRemoved.add(entity);
                 }
             } else {
                 if (!healthM.get(entity).hidden) renderQueue.add(entity);
@@ -121,14 +142,17 @@ public class Engine extends PooledEngine {
         MyEntityListener entityListener = new MyEntityListener(world);
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world,controller,viewport);
 
+        this.addSystem(new DamageSystem());
         this.addEntityListener(entityListener);
+        this.addSystem(new ShootingSystem(newBullets));
+        this.addSystem(new BulletCollisionSystem(toBeRemoved));
         this.addSystem(new HealthSystem());
+        this.addSystem(new EnergySystem());
         this.addSystem(powerSystem);
         this.addSystem(collisionSystem);
         this.addSystem(playerControlSystem);
         this.addSystem(physicsSystem);
         this.addSystem(animationSystem);
-
     }
 
     public void addMapToEngine(Map map) {
@@ -162,7 +186,6 @@ public class Engine extends PooledEngine {
     }
 
     public void loadFromFile(String fileName) {
-        EntityCreator creator = new EntityCreator(this, world);
         FileHandle fileHandle = Gdx.files.local(fileName);
         EngineData engineData = json.fromJson(EngineData.class, Base64Coder.decodeString(fileHandle.readString()));
         playerStartX = engineData.getPlayerStartX();
@@ -179,7 +202,6 @@ public class Engine extends PooledEngine {
         engineData.setPlayerStartX(playerStartX);
         engineData.setPlayerStartY(playerStartY);
         ImmutableArray<Entity> entityDataArray = getEntitiesFor(Family.all(TypeComponent.class, PositionComponent.class).get());
-        //todo: change the way this is done because shouldnt need to loop through twice. Can be changed by using another type of list in EngineData.
         //check important length of entityDataArray
         int index = 0;
         for (Entity entity : entityDataArray) {
@@ -189,7 +211,7 @@ public class Engine extends PooledEngine {
             }
         }
         engineData.setEntitiesLength(entityDataArray.size());
-        EntityData[] entityDataList = new EntityData[index++];
+        EntityData[] entityDataList = new EntityData[index];
         index = 0;
         for (Entity entity : entityDataArray) {
             TypeComponent typeComponent = typeM.get(entity);

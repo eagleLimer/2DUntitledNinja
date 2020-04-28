@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 
 public class KeyboardController implements InputProcessor {
     public boolean left, right, up, down, esc;
-    public boolean leftButton;
+    public boolean leftButton, rightButton;
     public boolean zoomIn, zoomOut;
     public boolean jump;
 
@@ -104,6 +104,10 @@ public class KeyboardController implements InputProcessor {
                 leftButton = true;
                 keyProcessed = true;
                 break;
+                case Buttons.RIGHT:
+                    rightButton = true;
+                    keyProcessed = true;
+                    break;
         }
         return keyProcessed;
     }
@@ -116,6 +120,10 @@ public class KeyboardController implements InputProcessor {
                 leftButton = false;
                 keyProcessed = true;
                 break;
+                case Buttons.RIGHT:
+                    rightButton = false;
+                    keyProcessed = true;
+                    break;
         }
         return keyProcessed;
     }

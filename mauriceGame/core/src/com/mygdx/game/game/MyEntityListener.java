@@ -18,7 +18,9 @@ public class MyEntityListener implements EntityListener {
 
     @Override
     public void entityRemoved(Entity entity) {
-        world.destroyBody(entity.getComponent(BodyComponent.class).body);
+        if(entity.getComponent(BodyComponent.class) !=null) {
+            world.destroyBody(entity.getComponent(BodyComponent.class).body);
+        }
         entity.removeAll();
     }
 }

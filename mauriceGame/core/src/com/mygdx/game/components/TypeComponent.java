@@ -8,7 +8,8 @@ public class TypeComponent implements Component {
     public static final int BOSS = 2;
     public static final int BALL = 3;
     public static final int SCENERY = 4;
-    public static final int OTHER = 5;
+    public static final int BULLET = 5;
+    public static final int OTHER = 6;
 
     public int type = OTHER;
 

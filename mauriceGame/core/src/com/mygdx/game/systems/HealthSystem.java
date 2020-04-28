@@ -16,8 +16,9 @@ public class HealthSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         HealthComponent healthComponent = healthM.get(entity);
+        //todo: add kill if health <= 0
         if(healthComponent.health < healthComponent.maxHealth){
-            healthComponent.health += healthComponent.healthReg;
+            healthComponent.health += healthComponent.healthReg*deltaTime;
         }
     }
 }

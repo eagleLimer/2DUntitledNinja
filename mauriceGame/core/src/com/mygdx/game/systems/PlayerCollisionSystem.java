@@ -8,34 +8,39 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.mygdx.game.components.*;
 
 public class PlayerCollisionSystem extends IteratingSystem {
-    private ComponentMapper<CollisionComponent> cm;
-    private ComponentMapper<PlayerComponent> pm;
-    private ComponentMapper<VelocityComponent> vm;
-    private ComponentMapper<HealthComponent> hm;
-    private ComponentMapper<TextureComponent> tm;
+    private ComponentMapper<CollisionComponent> collisionM;
+    private ComponentMapper<TypeComponent> typeM;
+    private ComponentMapper<HealthComponent> healthM;
+    private ComponentMapper<DamageComponent> damageM;
+
+
 
     @SuppressWarnings("unchecked")
     public PlayerCollisionSystem() {
         super(Family.all(CollisionComponent.class, PlayerComponent.class).get());
-        cm = ComponentMapper.getFor(CollisionComponent.class);
-        pm = ComponentMapper.getFor(PlayerComponent.class);
-        vm = ComponentMapper.getFor(VelocityComponent.class);
-        hm = ComponentMapper.getFor(HealthComponent.class);
-        tm = ComponentMapper.getFor(TextureComponent.class);
+        collisionM = ComponentMapper.getFor(CollisionComponent.class);
+        typeM = ComponentMapper.getFor(TypeComponent.class);
+        healthM = ComponentMapper.getFor(HealthComponent.class);
+        damageM = ComponentMapper.getFor(DamageComponent.class);
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        CollisionComponent cc = cm.get(entity);
-
-
+        CollisionComponent cc = collisionM.get(entity);
         Entity collidedEntity = cc.collisionEntity;
         if (collidedEntity != null) {
-            TypeComponent type = collidedEntity.getComponent(TypeComponent.class);
+            TypeComponent type = typeM.get(collidedEntity);
             if (type != null) {
+                if(type.type == TypeComponent.BULLET){
+                    //healthM.get(entity).health -= damageM.get(collidedEntity).damage;
+                }
                 switch (type.type) {
                     case TypeComponent.BASIC_ENEMY:
-                        //hm.get(collidedEntity).health -= 10;
+                        DamageComponent damageComponent = damageM.get(collidedEntity);
+                        if(damageComponent.damageTimer<= 0){
+                            healthM.get(entity).health -= damageComponent.damage;
+                            damageComponent.damageTimer = damageComponent.damageCD;
+                        }
                         //System.out.println("player hit enemy");
                         break;
                     case TypeComponent.SCENERY:
@@ -46,6 +51,7 @@ public class PlayerCollisionSystem extends IteratingSystem {
                         System.out.println("player hit other");
                         break;
                 }
+                //todo: fix: damage isn't dealt every time enemy can deal damage because collision is reset but they are still colliding.
                 cc.collisionEntity = null; // collision handled reset component
             }
         }

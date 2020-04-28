@@ -31,7 +31,8 @@ public class MyContactListener implements ContactListener {
 
             if (col != null) {
                 col.collisionEntity = colEnt;
-            } else if (colb != null) {
+
+            } /*else*/ if (colb != null) {
                 colb.collisionEntity = ent;
             }
         }
@@ -73,7 +74,7 @@ public class MyContactListener implements ContactListener {
     }
 
     private void entityImpact(Entity ent, Fixture fb, ContactImpulse impulse) {
-        if (ent.getComponent(PlayerComponent.class) != null) {
+        /*if (ent.getComponent(PlayerComponent.class) != null) {
             HealthComponent health = ent.getComponent(HealthComponent.class);
             if (health != null) {
                 float damage = 0;
@@ -82,19 +83,16 @@ public class MyContactListener implements ContactListener {
                     damage += imp;
                 }
                 if (damage > 2) {
-                    health.health -= damage;
+                    health.health -= damage/2;
                 }
-                System.out.println(damage);
             }
-        }
+        }*/
         if(ent.getComponent(BasicEnemyComponent.class)!= null){
             if(fb.getBody().getUserData() instanceof Entity){
                 Entity entb = (Entity) fb.getBody().getUserData();
                 TypeComponent type = entb.getComponent(TypeComponent.class);
                 if(type != null){
-                    //System.out.println(type.type);
                     if(type.type == TypeComponent.BALL){
-                        System.out.println("what happens here");
                         HealthComponent health = ent.getComponent(HealthComponent.class);
                         if (health != null) {
                             float damage = 0;
@@ -105,7 +103,6 @@ public class MyContactListener implements ContactListener {
                             if (damage > 2) {
                                 health.health -= damage*10;
                             }
-                            System.out.println("enemy took damge: " + damage*10);
                         }
                     }
                 }

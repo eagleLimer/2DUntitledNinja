@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-//todo: fix so that tiles size change when window changes.
 public class Drawabletile implements Drawable {
     private TextureRegion textureRegion;
 

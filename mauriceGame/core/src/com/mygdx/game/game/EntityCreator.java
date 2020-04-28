@@ -13,12 +13,14 @@ import com.mygdx.game.systems.Engine;
 //todo: make enum class containing different types of entities. hårdkodat är inte ok!
 //todo: make different health bar types and sizes, maybe depending on rarity and health amount.
 public class EntityCreator {
-    Engine engine;
-    World world;
+    private Engine engine;
+    private World world;
+    private BodyCreator entityBodyCreator;
 
     public EntityCreator(Engine engine, World world) {
         this.engine = engine;
         this.world = world;
+        entityBodyCreator = new BodyCreator(world);
     }
 
     public void createEntity(int entityId, float x, float y) {
@@ -55,11 +57,15 @@ public class EntityCreator {
         Entity enemy = createBasicEntity(posx, posy, 6, 9, 1-0.05f, ImagesRes.entityImage, BodyMaterial.GLASS, TypeComponent.BASIC_ENEMY);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
         BasicEnemyComponent enemyComponent = engine.createComponent(BasicEnemyComponent.class);
+        DamageComponent damageComponent = engine.createComponent(DamageComponent.class);
 
+        damageComponent.damage = 10;
         healthComponent.hidden = false;
-        healthComponent.healthReg = 1;
+        healthComponent.healthReg = 0.1f;
         healthComponent.maxHealth = 40;
         healthComponent.health = 40;
+
+        enemy.add(damageComponent);
         enemy.add(enemyComponent);
         enemy.add(healthComponent);
         engine.addEntity(enemy);
@@ -72,7 +78,7 @@ public class EntityCreator {
         healthComponent.healthReg = 1;
         healthComponent.maxHealth = 10;
         healthComponent.health = 10;
-        ball.add(healthComponent);
+        //ball.add(healthComponent);
         engine.addEntity(ball);
     }
 
@@ -84,8 +90,18 @@ public class EntityCreator {
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
         BodyComponent bodyComponent = player.getComponent(BodyComponent.class);
         bodyComponent.body.setFixedRotation(true);
+        EnergyComponent energyComponent = engine.createComponent(EnergyComponent.class);
+        ShooterComponent shooter = engine.createComponent(ShooterComponent.class);
 
-        healthComponent.healthReg = 1;
+        shooter.bulletCd = 0.5f;
+        //playerRadius+bulletRadius
+        shooter.bulletSpawn = 1.5f+BulletType.PLAYER_BULLET.radius;
+        shooter.bulletType = BulletType.PLAYER_BULLET;
+        energyComponent.maxMana = 200;
+        energyComponent.mana = 200;
+        energyComponent.manaReg = 10f;
+
+        healthComponent.healthReg = 10f;
         healthComponent.maxHealth = 100;
         healthComponent.health = 100;
         Animation animation = AnimationsRes.playerRight;
@@ -101,9 +117,12 @@ public class EntityCreator {
 
         velocity.jumpCooldown = 0.5f;
 
+        player.add(shooter);
         player.add(healthComponent);
         player.add(animationComponent);
         player.add(velocity);
+        player.add(energyComponent);
+        player.add(engine.createComponent(EnergyBarComponent.class));
         player.add(engine.createComponent(PlayerComponent.class));
         return player;
     }
@@ -121,7 +140,6 @@ public class EntityCreator {
         entityVelocity.sprintSpeed = sprintVelocity;
         entityVelocity.jumpSpeed = jumpVelocity;
         entityTexture.region = region;
-        BodyCreator entityBodyCreator = new BodyCreator(world);
         entityPosition.position.set(posx, posy, 0);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, size / 2, material,
                 BodyDef.BodyType.DynamicBody, false);
@@ -137,5 +155,35 @@ public class EntityCreator {
         basicEntity.add(engine.createComponent(StateComponent.class));
         basicEntity.add(engine.createComponent(CollisionComponent.class));
         return basicEntity;
+    }
+    public void createBullet(BulletInfo bulletInfo){
+        Entity bullet = engine.createEntity();
+        BodyComponent bulletBody = engine.createComponent(BodyComponent.class);
+        PositionComponent bulletPosition = engine.createComponent(PositionComponent.class);
+        TextureComponent bulletTexture = engine.createComponent(TextureComponent.class);
+        TypeComponent bulletType = engine.createComponent(TypeComponent.class);
+        DamageComponent bulletDamage = engine.createComponent(DamageComponent.class);
+        BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+
+        bulletType.type = bulletInfo.bulletType.type;
+        bulletBody.body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x,bulletInfo.pos.y,
+                bulletInfo.bulletType.radius*2, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false);
+        bulletBody.body.applyLinearImpulse(bulletInfo.dir,bulletBody.body.getWorldCenter(),true);
+        bulletBody.body.setUserData(bullet);
+
+        bulletPosition.position.set(bulletInfo.pos,0);
+        bulletTexture.region = bulletInfo.bulletType.region;
+        bulletDamage.damage = bulletInfo.bulletType.damage;
+        bulletComponent.bulletTimer = bulletInfo.bulletType.bulletTimer;
+
+        bullet.add(bulletComponent);
+        bullet.add(bulletType);
+        bullet.add(bulletBody);
+        bullet.add(bulletPosition);
+        bullet.add(engine.createComponent(CollisionComponent.class));
+        bullet.add(bulletTexture);
+        bullet.add(bulletDamage);
+
+        engine.addEntity(bullet);
     }
 }

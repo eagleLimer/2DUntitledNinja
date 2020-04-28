@@ -12,6 +12,7 @@ public class ImagesRes {
     public static TextureRegion rockImage;
     public static TextureRegion skyImage;
     public static TextureRegion hillsImage;
+    public static TextureRegion bulletImage;
 
     public static void loadImages() {
         Texture tmpTex = new Texture(Gdx.files.internal("epicRun.png"));
@@ -34,5 +35,8 @@ public class ImagesRes {
 
         tmpTex = new Texture(Gdx.files.internal("smoothHills.png"));
         hillsImage = new TextureRegion(tmpTex, 0, 0, 1280, 720);
+
+        tmpTex = new Texture(Gdx.files.internal("bullet.png"));
+        bulletImage = new TextureRegion(tmpTex, 0, 0, 16, 16);
     }
 }

@@ -127,17 +127,39 @@ public class Level {
 
     public void renderUi(OrthographicCamera camera, SpriteBatch batch) {
         HealthComponent healthComponent = player.getComponent(HealthComponent.class);
+        EnergyComponent energyComponent = player.getComponent(EnergyComponent.class);
+        EnergyBarComponent energyBarComponent = player.getComponent(EnergyBarComponent.class);
 
+        TextureRegion region = healthComponent.region;
         float width = healthComponent.healthWidth*2;
         float height = healthComponent.healthHeight*2;
 
         float originX = width / 2;
         float originY = height / 2;
-        batch.begin();
+        renderBar(batch, width, height, originX, originY, region, healthComponent.health, healthComponent.maxHealth, MyGdxGame.worldHeight-100);
+        region = energyBarComponent.region;
+        width = energyBarComponent.energyWidth*2;
+        height = energyBarComponent.energyHeight*2;
+
+        originX = width / 2;
+        originY = height / 2;
+        renderBar(batch, width, height, originX, originY, region, energyComponent.mana, energyComponent.maxMana, MyGdxGame.worldHeight-150);
+        /*batch.begin();
         batch.draw(healthComponent.region,
                 100, MyGdxGame.worldHeight-100,
                 originX * healthComponent.health / healthComponent.maxHealth, originY,
-                width * healthComponent.health / healthComponent.maxHealth, height,
+                healthWidth * healthComponent.health / healthComponent.maxHealth, healthHeight,
+                1, 1,
+                0);
+        batch.end();*/
+    }
+
+    private void renderBar(SpriteBatch batch, float width, float height, float originX, float originY, TextureRegion region, float currentValue, float maxValue, float yLoc) {
+        batch.begin();
+        batch.draw(region,
+                100, yLoc,
+                originX * currentValue / maxValue, originY,
+                width * currentValue / maxValue, height,
                 1, 1,
                 0);
         batch.end();

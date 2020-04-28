@@ -4,12 +4,15 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
-import com.mygdx.game.components.BodyComponent;
-import com.mygdx.game.components.PlayerComponent;
-import com.mygdx.game.components.StateComponent;
-import com.mygdx.game.components.VelocityComponent;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.components.*;
+import com.mygdx.game.game.BulletInfo;
+import com.mygdx.game.game.BulletType;
 import com.mygdx.game.game.KeyboardController;
+import com.mygdx.game.game.Tile;
 
 import javax.swing.plaf.nimbus.State;
 
@@ -65,6 +68,7 @@ public class PlayerControlSystem extends IteratingSystem {
             }
         }
         */
+
         //ugly as crap? Maybe.
         if ((state.get() == StateComponent.STATE_JUMPING && b2body.body.getLinearVelocity().y < 0.00000001) || b2body.body.getLinearVelocity().y < FALLING_MIN) {
             stateChanged = StateComponent.STATE_FALLING;
@@ -102,5 +106,6 @@ public class PlayerControlSystem extends IteratingSystem {
         if (state.get() != stateChanged) {
             state.set(stateChanged);
         }
+
     }
 }
