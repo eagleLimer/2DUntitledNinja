@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,6 +26,7 @@ import com.mygdx.game.resources.ImagesRes;
 import static com.mygdx.game.game.MyGdxGame.worldHeight;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
+//very big class, but tables are about 180 lines
 public class EditMap extends GameState {
     private static final int CAMERA_SPEED = 400;
     private static final float ZOOM_SPEED = 0.03f;
@@ -97,7 +97,7 @@ public class EditMap extends GameState {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
-        currentTileRegion = level.map.getTileSets().getTile(currentTileId).getTextureRegion();
+        currentTileRegion = level.map.getTileSets().getTile(currentTileId).getTextureRegion(); //this is here because level needs to be created before it can be done.
     }
 
     @Override
@@ -291,6 +291,7 @@ public class EditMap extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 currentTileId = -1;
+                currentTileRegion = ImagesRes.eraserImage;
             }
         });
         visualLayerButton.addListener(new ClickListener() {
