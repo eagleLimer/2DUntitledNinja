@@ -6,6 +6,9 @@ import com.mygdx.game.components.*;
 
 public class MyContactListener implements ContactListener {
     //THIS IS USEFUL IF WE WANT COLLISIONS TO IGNORE VELOCITY AND MASS
+
+    //todo: THIS NEEDS TESTING, DOES ALL ENTITIES GET REMOVED FROM LIST THAT SHOULD BE REMOVED
+    //todo: CHANGE MAPTILES TO ANOTHER TYPE THAN ENTITY, WE DONT REALLY NEED TO DO ANYTHING SPECIAL WITH EVERY MAPTILE
     @Override
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -13,8 +16,8 @@ public class MyContactListener implements ContactListener {
         if (fa.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fa.getBody().getUserData();
             entityCollision(ent, fb);
-            return;
-        } else if (fb.getBody().getUserData() instanceof Entity) {
+            //return;
+        } /*else*/ if (fb.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fb.getBody().getUserData();
             entityCollision(ent, fa);
             return;
@@ -30,17 +33,47 @@ public class MyContactListener implements ContactListener {
             CollisionComponent colb = colEnt.getComponent(CollisionComponent.class);
 
             if (col != null) {
-                col.collisionEntity = colEnt;
+                col.collidingEntities.add(colEnt);
 
-            } /*else*/ if (colb != null) {
-                colb.collisionEntity = ent;
+            } else if (colb != null) {
+                colb.collidingEntities.add(ent);
             }
         }
     }
 
     @Override
     public void endContact(Contact contact) {
+        Fixture fa = contact.getFixtureA();
+        Fixture fb = contact.getFixtureB();
+        if (fa.getBody().getUserData() instanceof Entity) {
+            Entity ent = (Entity) fa.getBody().getUserData();
+            endedCollision(ent, fb);
+            //return;
+        } /*else*/ if (fb.getBody().getUserData() instanceof Entity) {
+            Entity ent = (Entity) fb.getBody().getUserData();
+            endedCollision(ent, fa);
+            return;
+        }
+    }
 
+    private void endedCollision(Entity ent, Fixture fb) {
+        if (fb.getBody().getUserData() instanceof Entity) {
+            Entity colEnt = (Entity) fb.getBody().getUserData();
+
+            CollisionComponent col = ent.getComponent(CollisionComponent.class);
+            CollisionComponent colb = colEnt.getComponent(CollisionComponent.class);
+
+            if (col != null) {
+                if(col.collidingEntities.contains(colEnt, true)) {
+                    col.collidingEntities.removeValue(colEnt, true);
+                }
+
+            } else if (colb != null) {
+                if(colb.collidingEntities.contains(ent, true)) {
+                    colb.collidingEntities.removeValue(ent, true);
+                }
+            }
+        }
     }
 
     /*

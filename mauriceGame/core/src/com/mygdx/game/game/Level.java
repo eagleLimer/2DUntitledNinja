@@ -21,10 +21,11 @@ public class Level {
     private static final float GRAVITY = -9.8f * 2.5f;
     private static final String ENGINE_FILE_NAME = "/Engine/";
     public static final String MAP_FILE_NAME = "/Map/";
-
+    private String currentPortalName;
     private OrthogonalTiledMapRenderer renderer;
     public Map map;
     private String levelName;
+    private LevelManager levelManager;
     private World world;
     private Engine engine;
     private Entity player;
@@ -35,29 +36,30 @@ public class Level {
 
 
     //new Level constructor.
-    public Level(String fileName, int mapWidth, int mapHeight, KeyboardController controller, Viewport viewport) {
+    public Level(String fileName, int mapWidth, int mapHeight, KeyboardController controller, Viewport viewport, LevelManager levelManager) {
         levelName = fileName;
         map = new Map();
         map.newMap(mapWidth, mapHeight);
-        createLevel(controller, viewport);
+        createLevel(controller, viewport, levelManager);
     }
 
     //load level constructor
-    public Level(String fileName, KeyboardController controller, Viewport viewport) {
+    public Level(String fileName, KeyboardController controller, Viewport viewport, LevelManager levelManager) {
         levelName = fileName;
         map = new Map();
         map.loadMap(fileName + MAP_FILE_NAME);
 
-        createLevel(controller, viewport);
+        createLevel(controller, viewport, levelManager);
         engine.loadFromFile(fileName + ENGINE_FILE_NAME);
 
     }
 
-    public void createLevel(KeyboardController controller, Viewport viewport) {
+    public void createLevel(KeyboardController controller, Viewport viewport, LevelManager levelManager) {
         renderer = new OrthogonalTiledMapRenderer(map);
+        this.levelManager = levelManager;
         world = new World(new Vector2(0, GRAVITY), true);
         world.setContactListener(new MyContactListener());
-        engine = new Engine(world);
+        engine = new Engine(world, levelManager);
         engine.createSystems(controller, viewport);
         engine.addMapToEngine(map);
         creator = new EntityCreator(engine, world);
@@ -106,7 +108,11 @@ public class Level {
     }
 
     public void createEntity(float mouseX, float mouseY, int currentEntityId) {
-        creator.createEntity(currentEntityId,mouseX,mouseY);
+        if(currentEntityId == TypeComponent.LEVEL_SENSOR){
+            creator.createLevelSensor(mouseX, mouseY, currentPortalName);
+        }else {
+            creator.createEntity(currentEntityId, mouseX, mouseY);
+        }
     }
 
     public void removeEntity(float mouseX, float mouseY) {
@@ -162,5 +168,13 @@ public class Level {
                 1, 1,
                 0);
         batch.end();
+    }
+
+    public String getCurrentPortalName() {
+        return currentPortalName;
+    }
+
+    public void setCurrentPortalName(String currentPortalName) {
+        this.currentPortalName = currentPortalName;
     }
 }

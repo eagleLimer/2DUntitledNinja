@@ -13,6 +13,7 @@ public class BulletCollisionSystem extends IteratingSystem {
     ComponentMapper<DamageComponent> damageM;
     ComponentMapper<BulletComponent> bulletM;
     ComponentMapper<BodyComponent> bodyM;
+    ComponentMapper<TypeComponent> typeM;
 
     private Array<Entity> toBeRemoved;
 
@@ -24,37 +25,39 @@ public class BulletCollisionSystem extends IteratingSystem {
         damageM = ComponentMapper.getFor(DamageComponent.class);
         bulletM = ComponentMapper.getFor(BulletComponent.class);
         bodyM = ComponentMapper.getFor(BodyComponent.class);
+        typeM = ComponentMapper.getFor(TypeComponent.class);
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         bulletM.get(entity).bulletTimer -= deltaTime;
-
         CollisionComponent cc = collisionM.get(entity);
-        Entity collidedEntity = cc.collisionEntity;
-        if (collidedEntity != null) {
-            TypeComponent type = collidedEntity.getComponent(TypeComponent.class);
-            if (type != null) {
-                switch (type.type) {
-                    case TypeComponent.BASIC_ENEMY:
-                        DamageComponent damageComponent = damageM.get(entity);
-                        if(damageComponent.damageTimer <= 0) {
-                            healthM.get(collidedEntity).health -= damageM.get(entity).damage;
-                            damageComponent.damageTimer = damageComponent.damageCD;
-                        }
-                        //hm.get(collidedEntity).health -= 10;
-                        break;
-                    case TypeComponent.SCENERY:
-                        break;
-                    case TypeComponent.OTHER:
-                        //hm.get(collidedEntity).health -= 50;
-                        break;
+        for (Entity collidingEntity: cc.collidingEntities) {
+            if (collidingEntity != null) {
+                TypeComponent type = typeM.get(collidingEntity);
+                if (type != null) {
+                    System.out.println("bullet hit type: " + type.type);
+                    switch (type.type) {
+                        case TypeComponent.BASIC_ENEMY:
+                            System.out.println("bullet hit enemy");
+                            DamageComponent damageComponent = damageM.get(entity);
+                            if(damageComponent.damageTimer <= 0) {
+                                healthM.get(collidingEntity).health -= damageM.get(entity).damage;
+                                damageComponent.damageTimer = damageComponent.damageCD;
+                            }
+                            //hm.get(collidedEntity).health -= 10;
+                            break;
+                        case TypeComponent.SCENERY:
+                            break;
+                        case TypeComponent.OTHER:
+                            //hm.get(collidedEntity).health -= 50;
+                            break;
+                    }
                 }
-                cc.collisionEntity = null; // collision handled reset component
             }
-            if(bodyM.get(entity).body.getLinearVelocity().len() < bulletM.get(entity).bulletMinSpeed){
-                toBeRemoved.add(entity);
-            }
+        }
+        if(bodyM.get(entity).body.getLinearVelocity().len() < bulletM.get(entity).bulletMinSpeed && cc.collidingEntities.size >= 0) {
+            toBeRemoved.add(entity);
         }
     }
 }

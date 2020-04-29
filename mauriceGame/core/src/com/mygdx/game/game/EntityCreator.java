@@ -36,6 +36,7 @@ public class EntityCreator {
                 break;
             case TypeComponent.BALL:
                 createBall(x, y);
+                break;
         }
     }
 
@@ -54,7 +55,7 @@ public class EntityCreator {
     }
 
     private void createBasicEnemy(float posx, float posy) {
-        Entity enemy = createBasicEntity(posx, posy, 6, 9, 1-0.05f, ImagesRes.entityImage, BodyMaterial.GLASS, TypeComponent.BASIC_ENEMY);
+        Entity enemy = createBasicEntity(posx, posy, 6, 9, 1 - 0.05f, ImagesRes.entityImage, BodyMaterial.GLASS, TypeComponent.BASIC_ENEMY);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
         BasicEnemyComponent enemyComponent = engine.createComponent(BasicEnemyComponent.class);
         DamageComponent damageComponent = engine.createComponent(DamageComponent.class);
@@ -70,6 +71,7 @@ public class EntityCreator {
         enemy.add(healthComponent);
         engine.addEntity(enemy);
     }
+
     private void createBall(float posx, float posy) {
         Entity ball = createBasicEntity(posx, posy, 6, 9, 1 / 2f, ImagesRes.rockImage, BodyMaterial.BOUNCY, TypeComponent.BALL);
         HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
@@ -83,7 +85,7 @@ public class EntityCreator {
     }
 
     public Entity createPlayer(float posx, float posy) {
-        Entity player = createBasicEntity(posx, posy, 8, 19, 2-0.05f, ImagesRes.playerImage, BodyMaterial.GLASS, TypeComponent.PLAYER);
+        Entity player = createBasicEntity(posx, posy, 8, 19, 2 - 0.05f, ImagesRes.playerImage, BodyMaterial.GLASS, TypeComponent.PLAYER);
         VelocityComponent velocity = player.getComponent(VelocityComponent.class);
         velocity.jumpCooldown = 0.5f;
         AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
@@ -94,8 +96,8 @@ public class EntityCreator {
         ShooterComponent shooter = engine.createComponent(ShooterComponent.class);
 
         shooter.bulletCd = 0.5f;
-        //playerRadius+bulletRadius
-        shooter.bulletSpawn = 1f+BulletType.PLAYER_BULLET.radius;
+        //playerRadius+bulletRadius not needed anymore :)
+        shooter.bulletSpawn = 0.8f;
         shooter.bulletType = BulletType.PLAYER_BULLET;
         energyComponent.maxMana = 200;
         energyComponent.mana = 200;
@@ -139,7 +141,7 @@ public class EntityCreator {
         entityVelocity.sprintSpeed = sprintVelocity;
         entityVelocity.jumpSpeed = jumpVelocity;
         entityTexture.region = region;
-        entityPosition.position.set(posx, posy, 0);
+        entityPosition.position.set(posx, posy, 1);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, size / 2, material,
                 BodyDef.BodyType.DynamicBody, false);
         entityBody.body.setUserData(basicEntity);
@@ -153,7 +155,8 @@ public class EntityCreator {
         basicEntity.add(engine.createComponent(CollisionComponent.class));
         return basicEntity;
     }
-    public void createBullet(BulletInfo bulletInfo){
+
+    public void createBullet(BulletInfo bulletInfo) {
         Entity bullet = engine.createEntity();
         BodyComponent bulletBody = engine.createComponent(BodyComponent.class);
         PositionComponent bulletPosition = engine.createComponent(PositionComponent.class);
@@ -163,13 +166,13 @@ public class EntityCreator {
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
 
         bulletType.type = bulletInfo.bulletType.type;
-        bulletBody.body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x,bulletInfo.pos.y,
+        bulletBody.body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x, bulletInfo.pos.y,
                 bulletInfo.bulletType.radius, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false);
-        bulletBody.body.applyLinearImpulse(bulletInfo.dir,bulletBody.body.getWorldCenter(),true);
+        bulletBody.body.applyLinearImpulse(bulletInfo.dir, bulletBody.body.getWorldCenter(), true);
         bulletBody.body.setUserData(bullet);
         bulletBody.body.setAngularVelocity(300);
 
-        bulletPosition.position.set(bulletInfo.pos,0);
+        bulletPosition.position.set(bulletInfo.pos, 0);
         bulletTexture.region = bulletInfo.bulletType.region;
         bulletDamage.damage = bulletInfo.bulletType.damage;
         bulletComponent.bulletTimer = bulletInfo.bulletType.bulletTimer;
@@ -183,5 +186,29 @@ public class EntityCreator {
         bullet.add(bulletDamage);
 
         engine.addEntity(bullet);
+    }
+
+    public void createLevelSensor(float posx, float posy, String currentPortalName) {
+        Entity levelSensor = engine.createEntity();
+        BodyComponent levelBody = engine.createComponent(BodyComponent.class);
+        PositionComponent levelPosition = engine.createComponent(PositionComponent.class);
+        TextureComponent levelTexture = engine.createComponent(TextureComponent.class);
+        TypeComponent typeComponent = engine.createComponent(TypeComponent.class);
+        LevelSensorComponent levelComponent = engine.createComponent(LevelSensorComponent.class);
+
+        typeComponent.type = TypeComponent.LEVEL_SENSOR;
+        levelTexture.region = ImagesRes.levelImage;
+        levelPosition.position.set(posx, posy, 0.1f);
+        levelBody.body = entityBodyCreator.makeRectSensor(levelPosition.position.x, levelPosition.position.y, 3, 4, BodyMaterial.BULLET,
+                BodyDef.BodyType.StaticBody, false);
+        levelBody.body.setUserData(levelSensor);
+        levelComponent.nextLevelName = currentPortalName;
+
+        levelSensor.add(levelComponent);
+        levelSensor.add(typeComponent);
+        levelSensor.add(levelPosition);
+        levelSensor.add(levelTexture);
+        levelSensor.add(levelBody);
+        engine.addEntity(levelSensor);
     }
 }

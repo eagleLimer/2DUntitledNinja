@@ -23,6 +23,30 @@ public class BodyCreator {
         polygonShape.dispose();
         return boxBody;
     }
+    public Body makeRectSensor(float posx, float posy, float width, float height, BodyMaterial material, BodyDef.BodyType bodyType, boolean fixedRotation) {
+        BodyDef boxBodyDef = new BodyDef();
+        boxBodyDef.type = bodyType;
+        boxBodyDef.position.x = posx;
+        boxBodyDef.position.y = posy;
+        boxBodyDef.fixedRotation = fixedRotation;
+
+        Body boxBody = world.createBody(boxBodyDef);
+        PolygonShape polygonShape = new PolygonShape();
+        polygonShape.setAsBox(width / 2, height / 2);
+        boxBody.createFixture(makeSensorFixture(material, polygonShape));
+        polygonShape.dispose();
+        return boxBody;
+    }
+
+    private FixtureDef makeSensorFixture(BodyMaterial material, Shape shape) {
+        FixtureDef fixture = new FixtureDef();
+        fixture.shape = shape;
+        fixture.density = material.getDensity();
+        fixture.restitution = material.getRestitution();
+        fixture.friction = material.getFriction();
+        fixture.isSensor = true;
+        return fixture;
+    }
 
     public Body makeCirclePolyBody(float posx, float posy, float radius, BodyMaterial material, BodyDef.BodyType bodyType, boolean fixedRotation) {
         // create a definition

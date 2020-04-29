@@ -43,6 +43,7 @@ public class EditEntities extends GameState {
     private float mouseY;
     private int entityTimer;
     private HashMap<Integer, Texture> imageMap;
+    private TextField nextLevelField;
 
     public EditEntities(StateChangeListener stateListener, Level level, float zoom) {
         super(stateListener);
@@ -83,6 +84,7 @@ public class EditEntities extends GameState {
         imageMap.put(TypeComponent.BASIC_ENEMY, ImagesRes.entityImage.getTexture());
         imageMap.put(TypeComponent.BALL, ImagesRes.rockImage.getTexture());
         imageMap.put(TypeComponent.BOSS, ImagesRes.bossImage.getTexture());
+        imageMap.put(TypeComponent.LEVEL_SENSOR, ImagesRes.levelImage.getTexture());
     }
 
     private void createMainTable() {
@@ -97,9 +99,10 @@ public class EditEntities extends GameState {
         TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
         TextButton editMapButton = new TextButton("Edit Map", MyGdxGame.uiSkin);
         TextButton removeEntitiesButton = new TextButton("Remove Entities", MyGdxGame.uiSkin);
+        nextLevelField = new TextField("level1", MyGdxGame.uiSkin);
         final SelectBox<EntityBox> entityBox = new SelectBox<EntityBox>(MyGdxGame.uiSkin);
         EntityBox[] entityBoxes = {new EntityBox(TypeComponent.BASIC_ENEMY, "Basic enemy"), new EntityBox(TypeComponent.BOSS, "Boss"),
-                new EntityBox(TypeComponent.BALL, "Ball")};
+                new EntityBox(TypeComponent.BALL, "Ball"), new EntityBox(TypeComponent.LEVEL_SENSOR, "Level sensor")};
 
         entityBox.setItems(entityBoxes);
 
@@ -140,7 +143,7 @@ public class EditEntities extends GameState {
 
         mainTable.add(entityBox);
         mainTable.row();
-        mainTable.add();
+        mainTable.add(nextLevelField);
         mainTable.row();
         mainTable.add(removeEntitiesButton);
         mainTable.row();
@@ -195,7 +198,14 @@ public class EditEntities extends GameState {
                 level.removeEntity(mouseX/Tile.tileSize,mouseY/Tile.tileSize);
             }
             else if(entityTimer <= 0){
-                level.createEntity(mouseX/Tile.tileSize,mouseY/Tile.tileSize,currentEntityId);
+                if(currentEntityId == TypeComponent.LEVEL_SENSOR){
+                    if(nextLevelField.getText() != "") {
+                        level.setCurrentPortalName(nextLevelField.getText());
+                        level.createEntity(mouseX/Tile.tileSize,mouseY/Tile.tileSize,currentEntityId);
+                    }
+                }else{
+                    level.createEntity(mouseX/Tile.tileSize,mouseY/Tile.tileSize,currentEntityId);
+                }
                 entityTimer = ENTITY_COOLDOWN;
             }
         }

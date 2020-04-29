@@ -20,7 +20,6 @@ public class ShootingSystem extends IteratingSystem {
         this.newBullets = newBullets;
         shooterM = ComponentMapper.getFor(ShooterComponent.class);
         posM = ComponentMapper.getFor(PositionComponent.class);
-
     }
 
     @Override

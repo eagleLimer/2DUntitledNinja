@@ -51,6 +51,7 @@ public class EditMap extends GameState {
     private String currentLayerName = Map.COLLISION_LAYER_NAME;
     private Table sideTable;
     private TextureRegion currentTileRegion;
+    private LevelManager levelManager;
 
     public EditMap(final StateChangeListener stateChangeListener) {
         super(stateChangeListener);
@@ -61,6 +62,7 @@ public class EditMap extends GameState {
         viewport = new FitViewport(worldWidth, MyGdxGame.worldHeight, camera);
         menuviewport = new FitViewport(worldWidth, MyGdxGame.worldHeight, menucamera);
 
+        levelManager = new LevelManager();
         viewport.apply();
         menuviewport.apply();
         stage = new Stage(viewport, batch);
@@ -86,18 +88,19 @@ public class EditMap extends GameState {
 
     public EditMap(StateChangeListener stateChangeListener, String fileName) {
         this(stateChangeListener);
-        level = new Level(fileName, controller, viewport);
+        level = new Level(fileName, controller, viewport, levelManager);
+        currentTileRegion = level.map.getTileSets().getTile(currentTileId).getTextureRegion();
     }
 
     public EditMap(StateChangeListener stateChangeListener, String fileName, int mapWidth, int mapHeight) {
         this(stateChangeListener);
-        level = new Level(fileName,mapWidth,mapHeight,controller, viewport);
+        level = new Level(fileName,mapWidth,mapHeight,controller, viewport, levelManager);
+        currentTileRegion = level.map.getTileSets().getTile(currentTileId).getTextureRegion();
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
-        currentTileRegion = level.map.getTileSets().getTile(currentTileId).getTextureRegion(); //this is here because level needs to be created before it can be done.
     }
 
     @Override

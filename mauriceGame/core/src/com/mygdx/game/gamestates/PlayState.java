@@ -44,6 +44,7 @@ public class PlayState extends GameState {
     private int srcX = 0;
     private float playerXPos;
     private float playerYPos;
+    private LevelManager levelManager;
 
     public PlayState(StateChangeListener stateChangeListener) {
         super(stateChangeListener);
@@ -68,7 +69,8 @@ public class PlayState extends GameState {
 
         levelName = FIRST_LEVEL_NAME;
         controller = new KeyboardController();
-        level = new Level(levelName, controller, viewport);
+        levelManager = new LevelManager();
+        level = new Level(levelName, controller, viewport, levelManager);
         renderer = new OrthogonalTiledMapRenderer(level.map);
 
         inputMultiplexer = new InputMultiplexer();
@@ -124,6 +126,13 @@ public class PlayState extends GameState {
         if (controller.esc) {
             controller.esc = false;
             stateChangeListener.pushState(new PlayMenu(stateChangeListener, this));
+        }
+        if(levelManager.newLevel){
+            if(Gdx.files.local(levelManager.getNextLevelName()).exists()) {
+                level.dispose();
+                levelManager.newLevel = false;
+                level = new Level(levelManager.getNextLevelName(), controller, viewport, levelManager);
+            }
         }
     }
 

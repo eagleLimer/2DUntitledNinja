@@ -3,6 +3,7 @@ package com.mygdx.game.gameData;
 public class EngineData {
     private int entitiesLength;
     private EntityData[] entitiesDataList;
+    private LevelSensorData[] levelSensorDataList;
     private int playerStartX;
     private int playerStartY;
 
@@ -36,5 +37,13 @@ public class EngineData {
 
     public void setPlayerStartY(int playerStartY) {
         this.playerStartY = playerStartY;
+    }
+
+    public LevelSensorData[] getLevelSensorDataList() {
+        return levelSensorDataList;
+    }
+
+    public void setLevelSensorDataList(LevelSensorData[] levelSensorDataList) {
+        this.levelSensorDataList = levelSensorDataList;
     }
 }

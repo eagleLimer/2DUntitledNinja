@@ -14,6 +14,7 @@ public class ImagesRes {
     public static TextureRegion hillsImage;
     public static TextureRegion bulletImage;
     public static TextureRegion eraserImage;
+    public static TextureRegion levelImage;
 
     public static void loadImages() {
         Texture tmpTex = new Texture(Gdx.files.internal("epicRun.png"));
@@ -42,5 +43,8 @@ public class ImagesRes {
 
         tmpTex = new Texture(Gdx.files.internal("eraser.png"));
         eraserImage = new TextureRegion(tmpTex, 0,0,32,32);
+
+        tmpTex = new Texture(Gdx.files.internal("levelSensor.png"));
+        levelImage = new TextureRegion(tmpTex,0,0,96,128);
     }
 }

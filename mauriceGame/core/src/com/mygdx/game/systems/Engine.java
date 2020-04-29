@@ -20,6 +20,7 @@ import com.mygdx.game.components.*;
 import com.mygdx.game.game.*;
 import com.mygdx.game.gameData.EngineData;
 import com.mygdx.game.gameData.EntityData;
+import com.mygdx.game.gameData.LevelSensorData;
 
 import java.util.Comparator;
 
@@ -37,14 +38,18 @@ public class Engine extends PooledEngine {
     private ComponentMapper<HealthComponent> healthM = ComponentMapper.getFor(HealthComponent.class);
     private ComponentMapper<TypeComponent> typeM = ComponentMapper.getFor(TypeComponent.class);
     private ComponentMapper<PlayerComponent> playerM = ComponentMapper.getFor(PlayerComponent.class);
+    private ComponentMapper<LevelSensorComponent> levelM = ComponentMapper.getFor(LevelSensorComponent.class);
 
+
+    private LevelManager levelManager;
     private World world;
     private EntityCreator creator;
     private int playerStartX = 3;
     private int playerStartY = 3;
 
-    public Engine(World world) {
+    public Engine(World world, LevelManager levelManager) {
         super();
+        this.levelManager = levelManager;
         this.world = world;
         comparator = new ZComparator();
         newBullets = new Array<>();
@@ -137,7 +142,7 @@ public class Engine extends PooledEngine {
     }
 
     public void createSystems(KeyboardController controller, Viewport viewport) {
-        PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem();
+        PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem(levelManager);
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
         PhysicsSystem physicsSystem = new PhysicsSystem(world);
         AnimationSystem animationSystem = new AnimationSystem();
@@ -196,6 +201,10 @@ public class Engine extends PooledEngine {
         for (EntityData entityData : entityDataList) {
             creator.createEntity(entityData.getId(), entityData.getxPos(), entityData.getyPos());
         }
+        LevelSensorData[] levelSensorList = engineData.getLevelSensorDataList();
+        for(LevelSensorData levelData : levelSensorList){
+            creator.createLevelSensor(levelData.getxPos(), levelData.getyPos(),levelData.getLevelName());
+        }
     }
 
     public void saveToFile(String fileName) {
@@ -206,18 +215,32 @@ public class Engine extends PooledEngine {
         ImmutableArray<Entity> entityDataArray = getEntitiesFor(Family.all(TypeComponent.class, PositionComponent.class).get());
         //check important length of entityDataArray
         int index = 0;
+        int levelSensorIndex = 0;
         for (Entity entity : entityDataArray) {
             TypeComponent type = typeM.get(entity);
-            if(type.type != TypeComponent.SCENERY && type.type != TypeComponent.PLAYER){
+            if(type.type == TypeComponent.LEVEL_SENSOR){
+                levelSensorIndex++;
+            }
+            else if(type.type != TypeComponent.SCENERY && type.type != TypeComponent.PLAYER){
                 index++;
             }
         }
         engineData.setEntitiesLength(entityDataArray.size());
         EntityData[] entityDataList = new EntityData[index];
+        LevelSensorData[] levelDataList = new LevelSensorData[levelSensorIndex];
         index = 0;
+        levelSensorIndex = 0;
         for (Entity entity : entityDataArray) {
             TypeComponent typeComponent = typeM.get(entity);
-            if(typeComponent.type != TypeComponent.SCENERY && typeComponent.type != TypeComponent.PLAYER) {
+            if(typeComponent.type == TypeComponent.LEVEL_SENSOR){
+                Vector3 position = positionM.get(entity).position;
+                String nextLevelName = levelM.get(entity).nextLevelName;
+                levelDataList[levelSensorIndex] = new LevelSensorData();
+                levelDataList[levelSensorIndex].setxPos(position.x);
+                levelDataList[levelSensorIndex].setyPos(position.y);
+                levelDataList[levelSensorIndex].setLevelName(nextLevelName);
+                levelSensorIndex++;
+            } else if(typeComponent.type != TypeComponent.SCENERY && typeComponent.type != TypeComponent.PLAYER) {
                 Vector3 position = positionM.get(entity).position;
                 entityDataList[index] = new EntityData();
                 entityDataList[index].setId(typeComponent.type);
@@ -227,6 +250,7 @@ public class Engine extends PooledEngine {
             }
         }
         engineData.setEntitiesDataList(entityDataList);
+        engineData.setLevelSensorDataList(levelDataList);
         fileHandle.writeString(Base64Coder.encodeString(json.toJson(engineData)), false);
     }
 
