@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.components.TypeComponent;
+import com.mygdx.game.enginePackage.components.TypeComponent;
 import com.mygdx.game.game.*;
 import com.mygdx.game.resources.ImagesRes;
 
@@ -38,7 +38,7 @@ public class EditEntities extends GameState {
     private OrthographicCamera camera;
     private float zoom;
     private Table mainTable;
-    private int currentEntityId = 1;
+    private int currentEntityId = 0;
     private float mouseX;
     private float mouseY;
     private int entityTimer;
@@ -81,6 +81,7 @@ public class EditEntities extends GameState {
         viewport.apply();
 
         imageMap = new HashMap<Integer, Texture>();
+        imageMap.put(TypeComponent.PLAYER, ImagesRes.playerImage.getTexture());
         imageMap.put(TypeComponent.BASIC_ENEMY, ImagesRes.entityImage.getTexture());
         imageMap.put(TypeComponent.BALL, ImagesRes.rockImage.getTexture());
         imageMap.put(TypeComponent.BOSS, ImagesRes.bossImage.getTexture());
@@ -89,28 +90,28 @@ public class EditEntities extends GameState {
 
     private void createMainTable() {
         mainTable = new Table();
-        float tableWidth = worldWidth/3.8f;
-        mainTable.setX(worldWidth-tableWidth);
+        float tableWidth = worldWidth / 3.8f;
+        mainTable.setX(worldWidth - tableWidth);
         mainTable.setWidth(tableWidth);
-        mainTable.setY(worldHeight/10);
+        mainTable.setY(worldHeight / 10);
         mainTable.right();
 
         TextButton saveLevelButton = new TextButton("save level", MyGdxGame.uiSkin);
         TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
         TextButton editMapButton = new TextButton("Edit Map", MyGdxGame.uiSkin);
         TextButton removeEntitiesButton = new TextButton("Remove Entities", MyGdxGame.uiSkin);
-        nextLevelField = new TextField("level1", MyGdxGame.uiSkin);
+        nextLevelField = new TextField("portal level name here", MyGdxGame.uiSkin);
         final SelectBox<EntityBox> entityBox = new SelectBox<EntityBox>(MyGdxGame.uiSkin);
-        EntityBox[] entityBoxes = {new EntityBox(TypeComponent.BASIC_ENEMY, "Basic enemy"), new EntityBox(TypeComponent.BOSS, "Boss"),
+        EntityBox[] entityBoxes = {new EntityBox(TypeComponent.PLAYER, "Player"),new EntityBox(TypeComponent.BASIC_ENEMY, "Basic enemy"), new EntityBox(TypeComponent.BOSS, "Boss"),
                 new EntityBox(TypeComponent.BALL, "Ball"), new EntityBox(TypeComponent.LEVEL_SENSOR, "Level sensor")};
 
         entityBox.setItems(entityBoxes);
 
-        entityBox.addListener(new ChangeListener(){
+        entityBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 currentEntityId = entityBox.getSelected().getId();
-                System.out.println("selected box: "+entityBox.getSelected().getId());
+                System.out.println("selected box: " + entityBox.getSelected().getId());
             }
         });
         saveLevelButton.addListener(new ClickListener() {
@@ -153,9 +154,9 @@ public class EditEntities extends GameState {
         mainTable.row();
         mainTable.add(exitButton);
 
-        float buttonSize = worldHeight/12;
-        mainTable.setHeight(buttonSize*mainTable.getCells().size);
-        for (Cell cell:mainTable.getCells()) {
+        float buttonSize = worldHeight / 12;
+        mainTable.setHeight(buttonSize * mainTable.getCells().size);
+        for (Cell cell : mainTable.getCells()) {
             cell.width(mainTable.getWidth());
             cell.height(buttonSize);
         }
@@ -174,9 +175,9 @@ public class EditEntities extends GameState {
         camera.update();
         level.render(camera, batch);
         Texture currentEntity = imageMap.get(currentEntityId);
-        if(currentEntity != null){
+        if (currentEntity != null) {
             batch.begin();
-            batch.draw(currentEntity, mouseX-currentEntity.getWidth()/2,mouseY-currentEntity.getHeight()/2);
+            batch.draw(currentEntity, mouseX - currentEntity.getWidth() / 2, mouseY - currentEntity.getHeight() / 2);
             batch.end();
         }
         menuStage.act();
@@ -193,18 +194,23 @@ public class EditEntities extends GameState {
         entityTimer--;
         level.editUpdate(step);
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !mouseAtTable(Gdx.input.getX(),Gdx.input.getY(), mainTable)){
-            if(currentEntityId == -1){
-                level.removeEntity(mouseX/Tile.tileSize,mouseY/Tile.tileSize);
-            }
-            else if(entityTimer <= 0){
-                if(currentEntityId == TypeComponent.LEVEL_SENSOR){
-                    if(nextLevelField.getText() != "") {
-                        level.setCurrentPortalName(nextLevelField.getText());
-                        level.createEntity(mouseX/Tile.tileSize,mouseY/Tile.tileSize,currentEntityId);
-                    }
-                }else{
-                    level.createEntity(mouseX/Tile.tileSize,mouseY/Tile.tileSize,currentEntityId);
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !mouseAtTable(Gdx.input.getX(), Gdx.input.getY(), mainTable)) {
+            if (currentEntityId == -1) {
+                level.removeEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize);
+            } else if (entityTimer <= 0) {
+                switch (currentEntityId) {
+                    case TypeComponent.LEVEL_SENSOR:
+                        if (nextLevelField.getText() != "") {
+                            level.setCurrentPortalName(nextLevelField.getText());
+                            level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityId);
+                        }
+                        break;
+                    case TypeComponent.PLAYER:
+                        level.setPlayerStartPos((int)mouseX/Tile.tileSize, (int)mouseY/Tile.tileSize);
+                        break;
+                    default:
+                        level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityId);
+                        break;
                 }
                 entityTimer = ENTITY_COOLDOWN;
             }
@@ -246,10 +252,11 @@ public class EditEntities extends GameState {
         stage.dispose();
         menuStage.dispose();
     }
+
     private boolean mouseAtTable(float x, float y, Table table) {
-        Vector2 menuMouseVector = menuviewport.unproject(new Vector2(x,y));
+        Vector2 menuMouseVector = menuviewport.unproject(new Vector2(x, y));
         float menuX = menuMouseVector.x;
         float menuY = menuMouseVector.y;
-        return(menuX > table.getX() && menuX < table.getX()+table.getWidth() && menuY > table.getY() && menuY < table.getY()+table.getHeight());
+        return (menuX > table.getX() && menuX < table.getX() + table.getWidth() && menuY > table.getY() && menuY < table.getY() + table.getHeight());
     }
 }

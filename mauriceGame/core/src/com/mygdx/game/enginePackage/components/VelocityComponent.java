@@ -1,0 +1,11 @@
+package com.mygdx.game.enginePackage.components;
+
+import com.badlogic.ashley.core.Component;
+
+public class VelocityComponent implements Component {
+    public float sprintSpeed;
+    public float jumpSpeed;
+    public boolean canJump;
+    public float jumpCooldown;
+    public float jumpCountDown;
+}

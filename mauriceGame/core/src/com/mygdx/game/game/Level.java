@@ -3,7 +3,6 @@ package com.mygdx.game.game;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,9 +12,12 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.components.*;
+import com.mygdx.game.enginePackage.MyEngine;
+import com.mygdx.game.enginePackage.EntityCreator;
+import com.mygdx.game.enginePackage.MyContactListener;
+import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.gamestates.StateChangeListener;
-import com.mygdx.game.systems.*;
+import com.mygdx.game.enginePackage.systems.*;
 
 public class Level {
     private static final float GRAVITY = -9.8f * 2.5f;
@@ -27,7 +29,7 @@ public class Level {
     private String levelName;
     private LevelManager levelManager;
     private World world;
-    private Engine engine;
+    private MyEngine myEngine;
     private Entity player;
     private float playerXPos;
     private float playerYPos;
@@ -41,6 +43,10 @@ public class Level {
         map = new Map();
         map.newMap(mapWidth, mapHeight);
         createLevel(controller, viewport, levelManager);
+        player = creator.createPlayer(myEngine.getPlayerStartX(), myEngine.getPlayerStartY());
+        myEngine.addEntity(player);
+        BasicEnemyMovement enemyMovement = new BasicEnemyMovement(player);
+        myEngine.addSystem(enemyMovement);
     }
 
     //load level constructor
@@ -50,7 +56,12 @@ public class Level {
         map.loadMap(fileName + MAP_FILE_NAME);
 
         createLevel(controller, viewport, levelManager);
-        engine.loadFromFile(fileName + ENGINE_FILE_NAME);
+        myEngine.loadFromFile(fileName + ENGINE_FILE_NAME);
+        player = creator.createPlayer(myEngine.getPlayerStartX(), myEngine.getPlayerStartY());
+        player.flags = 10;
+        myEngine.addEntity(player);
+        BasicEnemyMovement enemyMovement = new BasicEnemyMovement(player);
+        myEngine.addSystem(enemyMovement);
 
     }
 
@@ -59,20 +70,16 @@ public class Level {
         this.levelManager = levelManager;
         world = new World(new Vector2(0, GRAVITY), true);
         world.setContactListener(new MyContactListener());
-        engine = new Engine(world, levelManager);
-        engine.createSystems(controller, viewport);
-        engine.addMapToEngine(map);
-        creator = new EntityCreator(engine, world);
-        player = creator.createPlayer(engine.getPlayerStartX(), engine.getPlayerStartY());
-        engine.addEntity(player);
-        BasicEnemyMovement enemyMovement = new BasicEnemyMovement(player);
-        engine.addSystem(enemyMovement);
+        myEngine = new MyEngine(world, levelManager);
+        myEngine.createSystems(controller, viewport);
+        myEngine.addMapToEngine(map);
+        creator = new EntityCreator(myEngine, world);
         //if u create entity before u create player, playerCollisionSystem wont work with that entity??
     }
 
     public void saveLevel() {
         map.saveToFile(levelName + MAP_FILE_NAME);
-        engine.saveToFile(levelName + ENGINE_FILE_NAME);
+        myEngine.saveToFile(levelName + ENGINE_FILE_NAME);
     }
 
     public void render(OrthographicCamera camera, SpriteBatch batch) {
@@ -80,7 +87,7 @@ public class Level {
         renderer.setView(camera);
         renderer.render();
         batch.setProjectionMatrix(camera.combined);
-        engine.render(batch);
+        myEngine.render(batch);
     }
 
 
@@ -89,7 +96,7 @@ public class Level {
     }
 
     public void update(float step, StateChangeListener stateChangeListener) {
-        engine.update(step);
+        myEngine.update(step);
         playerXPos = player.getComponent(PositionComponent.class).position.x * Tile.tileSize;
         playerYPos = player.getComponent(PositionComponent.class).position.y * Tile.tileSize;
         if (player.getComponent(HealthComponent.class).health <= 0) {
@@ -97,7 +104,7 @@ public class Level {
         }
     }
     public void editUpdate(float step) {
-        engine.removeOldEntities();
+        myEngine.removeOldEntities();
     }
 
         public float getPlayerXpos() {
@@ -121,7 +128,7 @@ public class Level {
             public boolean reportFixture(Fixture fixture) {
                 if(fixture.getBody().getUserData() instanceof Entity){
                     Entity entity = (Entity) fixture.getBody().getUserData();
-                    engine.scheduleForRemoval(entity);
+                    myEngine.scheduleForRemoval(entity);
                 }
              return false;
             }
@@ -172,6 +179,11 @@ public class Level {
 
     public String getCurrentPortalName() {
         return currentPortalName;
+    }
+    public void setPlayerStartPos(int startX, int startY){
+        myEngine.setPlayerStartPos(startX, startY);
+        player.getComponent(PositionComponent.class).position.x = startX;
+        player.getComponent(PositionComponent.class).position.y = startY;
     }
 
     public void setCurrentPortalName(String currentPortalName) {
