@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.enginePackage.EntityType;
 import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.game.KeyboardController;
 import com.mygdx.game.game.Tile;
@@ -26,7 +27,8 @@ public class PlayerPowerSystem extends IteratingSystem {
     private KeyboardController controller;
     private Viewport viewport;
     private ComponentMapper<BodyComponent> bodyM;
-    private ComponentMapper<TypeComponent> typeM;
+    private ComponentMapper<CollisionTypeComponent> typeM;
+    private ComponentMapper<EntityTypeComponent> entityM;
     private ComponentMapper<EnergyComponent> energyM;
     private ComponentMapper<PositionComponent> posM;
     private ComponentMapper<ShooterComponent> shooterM;
@@ -42,10 +44,11 @@ public class PlayerPowerSystem extends IteratingSystem {
         this.controller = controller;
         this.viewport = viewport;
         bodyM = ComponentMapper.getFor(BodyComponent.class);
-        typeM = ComponentMapper.getFor(TypeComponent.class);
+        typeM = ComponentMapper.getFor(CollisionTypeComponent.class);
         energyM = ComponentMapper.getFor(EnergyComponent.class);
         posM = ComponentMapper.getFor(PositionComponent.class);
         shooterM = ComponentMapper.getFor(ShooterComponent.class);
+        entityM = ComponentMapper.getFor(EntityTypeComponent.class);
 
         entityList = new Array<>();
         mycallBack = new QueryCallback() {
@@ -54,10 +57,13 @@ public class PlayerPowerSystem extends IteratingSystem {
                 if (fixture.getBody().getUserData() instanceof Entity) {
                     Entity entity = (Entity) fixture.getBody().getUserData();
                     BodyComponent bodyComponent = bodyM.get(entity);
-                    if (bodyComponent != null && typeM.get(entity).type == TypeComponent.BALL) {
-                        if (bodyComponent.body.getMass() < LIFT_STRENGTH) {
-                            if (!entityList.contains(entity, true)) {
-                                entityList.add(entity);
+                    EntityTypeComponent entityTypeComponent = entityM.get(entity);
+                    if (bodyComponent != null && entityTypeComponent != null) {
+                        if(entityTypeComponent.entityType == EntityType.ROCK) {
+                            if (bodyComponent.body.getMass() < LIFT_STRENGTH) {
+                                if (!entityList.contains(entity, true)) {
+                                    entityList.add(entity);
+                                }
                             }
                         }
                     }

@@ -1,11 +1,11 @@
 package com.mygdx.game.enginePackage;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.mygdx.game.enginePackage.components.TypeComponent;
+import com.mygdx.game.enginePackage.components.CollisionTypeComponent;
 import com.mygdx.game.resources.ImagesRes;
 
 public enum BulletType {
-    PLAYER_BULLET(0.25f,20,10, 0.1f, TypeComponent.BULLET, ImagesRes.bulletImage), ENEMY_BULLET(0.25f, 10, 10, 0.2f,TypeComponent.BASIC_ENEMY, ImagesRes.bulletImage);
+    PLAYER_BULLET(0.25f,20,10, 0.1f, CollisionTypeComponent.FRIENDLY, ImagesRes.bulletImage), ENEMY_BULLET(0.25f, 10, 10, 0.05f, CollisionTypeComponent.ENEMY, ImagesRes.enemyBulletImage);
     public float radius;
     public float damage;
     public int type;

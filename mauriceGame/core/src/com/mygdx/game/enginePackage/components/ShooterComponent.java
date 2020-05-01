@@ -9,6 +9,7 @@ public class ShooterComponent implements Component {
     public float bulletTick = 0;
     public BulletType bulletType;
     public boolean shoot = false;
+    public boolean alwaysShoot = false;
     public Vector2 dir = new Vector2(1,0);
     public float bulletSpawn = 0.5f;
 }

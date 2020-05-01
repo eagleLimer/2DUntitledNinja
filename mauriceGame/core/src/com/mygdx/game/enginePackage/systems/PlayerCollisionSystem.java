@@ -11,7 +11,7 @@ import com.mygdx.game.game.LevelManager;
 
 public class PlayerCollisionSystem extends IteratingSystem {
     private ComponentMapper<CollisionComponent> collisionM;
-    private ComponentMapper<TypeComponent> typeM;
+    private ComponentMapper<CollisionTypeComponent> typeM;
     private ComponentMapper<HealthComponent> healthM;
     private ComponentMapper<DamageComponent> damageM;
     private ComponentMapper<LevelSensorComponent> levelM;
@@ -25,7 +25,7 @@ public class PlayerCollisionSystem extends IteratingSystem {
         this.levelManager = levelManager;
         this.controller = controller;
         collisionM = ComponentMapper.getFor(CollisionComponent.class);
-        typeM = ComponentMapper.getFor(TypeComponent.class);
+        typeM = ComponentMapper.getFor(CollisionTypeComponent.class);
         healthM = ComponentMapper.getFor(HealthComponent.class);
         damageM = ComponentMapper.getFor(DamageComponent.class);
         levelM = ComponentMapper.getFor(LevelSensorComponent.class);
@@ -36,13 +36,11 @@ public class PlayerCollisionSystem extends IteratingSystem {
         CollisionComponent cc = collisionM.get(entity);
         for (Entity collidingEntity: cc.collidingEntities) {
             if (collidingEntity != null) {
-                TypeComponent type = typeM.get(collidingEntity);
+                CollisionTypeComponent type = typeM.get(collidingEntity);
                 if (type != null) {
-                    if (type.type == TypeComponent.BULLET) {
-                        //healthM.get(entity).health -= damageM.get(collidedEntity).damage;
-                    }
+
                     switch (type.type) {
-                        case TypeComponent.BASIC_ENEMY:
+                        case CollisionTypeComponent.ENEMY:
                             DamageComponent damageComponent = damageM.get(collidingEntity);
                             if (damageComponent.damageTimer <= 0) {
                                 healthM.get(entity).health -= damageComponent.damage;
@@ -50,14 +48,14 @@ public class PlayerCollisionSystem extends IteratingSystem {
                             }
                             //System.out.println("player hit enemy");
                             break;
-                        case TypeComponent.SCENERY:
+                        case CollisionTypeComponent.SCENERY:
                             //System.out.println("player hit scenery");
                             break;
-                        case TypeComponent.OTHER:
+                        case CollisionTypeComponent.OTHER:
                             //hm.get(collidedEntity).health -= 50;
                             System.out.println("player hit other");
                             break;
-                        case TypeComponent.LEVEL_SENSOR:
+                        case CollisionTypeComponent.LEVEL_PORTAL:
                             if(controller.up) {
                                 levelManager.loadLevel(levelM.get(collidingEntity).nextLevelName);
                             }

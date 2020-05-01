@@ -14,7 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.enginePackage.components.TypeComponent;
+import com.mygdx.game.enginePackage.EntityType;
+import com.mygdx.game.enginePackage.components.CollisionTypeComponent;
 import com.mygdx.game.game.*;
 import com.mygdx.game.resources.ImagesRes;
 
@@ -38,7 +39,8 @@ public class EditEntities extends GameState {
     private OrthographicCamera camera;
     private float zoom;
     private Table mainTable;
-    private int currentEntityId = 0;
+    boolean removeEntities = false;
+    private EntityType currentEntityType = EntityType.PLAYER;
     private float mouseX;
     private float mouseY;
     private int entityTimer;
@@ -81,11 +83,15 @@ public class EditEntities extends GameState {
         viewport.apply();
 
         imageMap = new HashMap<Integer, Texture>();
-        imageMap.put(TypeComponent.PLAYER, ImagesRes.playerImage.getTexture());
-        imageMap.put(TypeComponent.BASIC_ENEMY, ImagesRes.entityImage.getTexture());
-        imageMap.put(TypeComponent.BALL, ImagesRes.rockImage.getTexture());
-        imageMap.put(TypeComponent.BOSS, ImagesRes.bossImage.getTexture());
-        imageMap.put(TypeComponent.LEVEL_SENSOR, ImagesRes.levelImage.getTexture());
+        for (EntityType entityType:EntityType.values()) {
+            imageMap.put(entityType.getID(), entityType.getRegion().getTexture());
+        }/*
+        imageMap.put(EntityType.PLAYER.getID(), ImagesRes.playerImage.getTexture());
+        imageMap.put(EntityType.BASIC_ENEMY.getID(), ImagesRes.entityImage.getTexture());
+        imageMap.put(EntityType.ROCK.getID(), ImagesRes.rockImage.getTexture());
+        imageMap.put(EntityType.PLANT_ENEMY.getID(), ImagesRes.plantImage.getTexture());
+        imageMap.put(EntityType.BOSS.getID(), ImagesRes.bossImage.getTexture());
+        imageMap.put(EntityType.LEVEL_SENSOR.getID(), ImagesRes.levelImage.getTexture());*/
     }
 
     private void createMainTable() {
@@ -102,16 +108,32 @@ public class EditEntities extends GameState {
         TextButton removeEntitiesButton = new TextButton("Remove Entities", MyGdxGame.uiSkin);
         nextLevelField = new TextField("portal level name here", MyGdxGame.uiSkin);
         final SelectBox<EntityBox> entityBox = new SelectBox<EntityBox>(MyGdxGame.uiSkin);
-        EntityBox[] entityBoxes = {new EntityBox(TypeComponent.PLAYER, "Player"),new EntityBox(TypeComponent.BASIC_ENEMY, "Basic enemy"), new EntityBox(TypeComponent.BOSS, "Boss"),
-                new EntityBox(TypeComponent.BALL, "Ball"), new EntityBox(TypeComponent.LEVEL_SENSOR, "Level sensor")};
+        EntityBox[] entityBoxes = new EntityBox[EntityType.values().length];
+        int index = 0;
+        for (EntityType entityType: EntityType.values()) {
+            entityBoxes[index] = new EntityBox(entityType.getID(), entityType.getName());
+            index++;
+        }
+        /* entityBoxes = {new EntityBox(EntityType.PLAYER.getID(), EntityType.PLAYER.getName()),new EntityBox(CollisionTypeComponent.BASIC_ENEMY, "Basic enemy"), new EntityBox(CollisionTypeComponent.BOSS, "Boss"),
+                new EntityBox(CollisionTypeComponent.BALL, "Ball"), new EntityBox(CollisionTypeComponent.LEVEL_SENSOR, "Level sensor")};*/
 
         entityBox.setItems(entityBoxes);
 
+        /*entityBox.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                currentEntityType = EntityType.getByID(entityBox.getSelected().getId());
+                System.out.println("selected box: " + entityBox.getSelected().getId());
+                removeEntities = false;
+                System.out.println(removeEntities);
+                return true;
+            }
+        });*/
         entityBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                currentEntityId = entityBox.getSelected().getId();
-                System.out.println("selected box: " + entityBox.getSelected().getId());
+                currentEntityType = EntityType.getByID(entityBox.getSelected().getId());
+                removeEntities = false;
             }
         });
         saveLevelButton.addListener(new ClickListener() {
@@ -138,7 +160,7 @@ public class EditEntities extends GameState {
         removeEntitiesButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                currentEntityId = -1;
+                removeEntities = true;
             }
         });
 
@@ -174,7 +196,7 @@ public class EditEntities extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         level.render(camera, batch);
-        Texture currentEntity = imageMap.get(currentEntityId);
+        Texture currentEntity = currentEntityType.getRegion().getTexture();
         if (currentEntity != null) {
             batch.begin();
             batch.draw(currentEntity, mouseX - currentEntity.getWidth() / 2, mouseY - currentEntity.getHeight() / 2);
@@ -195,21 +217,21 @@ public class EditEntities extends GameState {
         level.editUpdate(step);
 
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !mouseAtTable(Gdx.input.getX(), Gdx.input.getY(), mainTable)) {
-            if (currentEntityId == -1) {
+            if (removeEntities) {
                 level.removeEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize);
             } else if (entityTimer <= 0) {
-                switch (currentEntityId) {
-                    case TypeComponent.LEVEL_SENSOR:
-                        if (nextLevelField.getText() != "") {
+                switch (currentEntityType) {
+                    case LEVEL_SENSOR:
+                        if (!nextLevelField.getText().equals("")) {
                             level.setCurrentPortalName(nextLevelField.getText());
-                            level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityId);
+                            level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityType);
                         }
                         break;
-                    case TypeComponent.PLAYER:
+                    case PLAYER:
                         level.setPlayerStartPos((int)mouseX/Tile.tileSize, (int)mouseY/Tile.tileSize);
                         break;
                     default:
-                        level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityId);
+                        level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityType);
                         break;
                 }
                 entityTimer = ENTITY_COOLDOWN;

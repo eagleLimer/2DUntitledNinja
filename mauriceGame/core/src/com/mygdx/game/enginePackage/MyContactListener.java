@@ -69,7 +69,9 @@ public class MyContactListener implements ContactListener {
      */
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-
+        //todo: move postsolve to presolve and deal damage based on velocity and mass of colliding object.
+        // maybe check if entity has impactComponent, if true then set damage to velocity*Mass*multiplier.
+        // after that collision will be handled in beginContact? or in separate new system.
     }
 
     //THIS IS USEFUL IF WE WANT COLLISION DAMAGE TO DEPEND ON VELOCITY AND MASS.
@@ -83,7 +85,7 @@ public class MyContactListener implements ContactListener {
         if (fa.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fa.getBody().getUserData();
             entityImpact(ent, fb, impulse);
-            return;
+            //return;
         }
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fb.getBody().getUserData();
@@ -106,12 +108,13 @@ public class MyContactListener implements ContactListener {
                 }
             }
         }*/
-        if(ent.getComponent(BasicEnemyComponent.class)!= null){
+        if (ent.getComponent(CollisionTypeComponent.class)== null)return;
+        if(ent.getComponent(CollisionTypeComponent.class).type == CollisionTypeComponent.ENEMY){
             if(fb.getBody().getUserData() instanceof Entity){
                 Entity entb = (Entity) fb.getBody().getUserData();
-                TypeComponent type = entb.getComponent(TypeComponent.class);
+                EntityTypeComponent type = entb.getComponent(EntityTypeComponent.class);
                 if(type != null){
-                    if(type.type == TypeComponent.BALL){
+                    if(type.entityType == EntityType.ROCK){
                         HealthComponent health = ent.getComponent(HealthComponent.class);
                         if (health != null) {
                             float damage = 0;
@@ -119,8 +122,9 @@ public class MyContactListener implements ContactListener {
                             ) {
                                 damage += imp;
                             }
-                            if (damage > 2) {
-                                health.health -= damage*10;
+                            if (damage > 4) {
+                                health.health -= damage*5;
+                                System.out.println("IMPACT" + damage*5);
                             }
                         }
                     }
