@@ -7,12 +7,15 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import static com.mygdx.game.resources.ImagesRes.ENTITY_PATH;
+
 public class AnimationsRes {
     public static Animation playerRight;
     public static Animation playerLeft;
     public static Animation playerNormal;
     public static Animation playerFalling;
     public static Animation playerJumping;
+    public static Animation plantAni;
 
 
     public static void loadAnimations() {
@@ -20,31 +23,36 @@ public class AnimationsRes {
     }
 
     private static void loadPlayerAnimations() {
-        Texture walkSheet = new Texture(Gdx.files.internal("epicRun.png"));
+        Texture walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"epicRun.png"));
         int frame_cols = 8;
         int frame_rows = 1;
         float frameTime = 0.025f;
         playerRight = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
         playerLeft = createFlippedAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
-        walkSheet = new Texture(Gdx.files.internal("faling.png"));
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"faling.png"));
         frame_cols = 1;
         frame_rows = 1;
         frameTime = 1f;
         playerFalling = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
-        walkSheet = new Texture(Gdx.files.internal("normal.png"));
-        frame_cols = 1;
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"normalAni.png"));
+        frame_cols = 5;
         frame_rows = 1;
-        frameTime = 1f;
+        frameTime = 0.05f;
         playerNormal = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
-        walkSheet = new Texture(Gdx.files.internal("jumping.png"));
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"jumping.png"));
         frame_cols = 1;
         frame_rows = 1;
         frameTime = 1f;
         playerJumping = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"plantAni.png"));
+        frame_cols = 2;
+        frame_rows = 1;
+        frameTime = 0.2f;
+        plantAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
     }
 

@@ -24,7 +24,7 @@ import java.util.Comparator;
 
 import static com.badlogic.gdx.net.HttpRequestBuilder.json;
 
-public class MyEngine extends PooledEngine {
+public class MyEngine extends Engine {
     private Array<Entity> renderQueue;
     private ImmutableArray<Entity> entityArray;
     private Array<BulletInfo> newBullets;
@@ -34,7 +34,8 @@ public class MyEngine extends PooledEngine {
     private ComponentMapper<TextureComponent> textureM = ComponentMapper.getFor(TextureComponent.class);
     private ComponentMapper<PositionComponent> positionM = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<HealthComponent> healthM = ComponentMapper.getFor(HealthComponent.class);
-    private ComponentMapper<TypeComponent> typeM = ComponentMapper.getFor(TypeComponent.class);
+    private ComponentMapper<CollisionTypeComponent> typeM = ComponentMapper.getFor(CollisionTypeComponent.class);
+    private ComponentMapper<EntityTypeComponent> entityM = ComponentMapper.getFor(EntityTypeComponent.class);
     private ComponentMapper<PlayerComponent> playerM = ComponentMapper.getFor(PlayerComponent.class);
     private ComponentMapper<LevelSensorComponent> levelM = ComponentMapper.getFor(LevelSensorComponent.class);
 
@@ -51,20 +52,21 @@ public class MyEngine extends PooledEngine {
         comparator = new ZComparator();
         newBullets = new Array<>();
         toBeRemoved = new Array<>();
-        creator = new EntityCreator(this,world);
+        creator = new EntityCreator(this, world);
     }
 
     @Override
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
         super.update(deltaTime);
-        for (BulletInfo bulletInfo:newBullets) {
+        for (BulletInfo bulletInfo : newBullets) {
             creator.createBullet(bulletInfo);
         }
         newBullets.clear();
         removeOldEntities();
     }
-    public void removeOldEntities(){
-        for (Entity entity: toBeRemoved) {
+
+    public void removeOldEntities() {
+        for (Entity entity : toBeRemoved) {
             if (entity != null) {
                 this.removeEntity(entity);
             }
@@ -138,14 +140,16 @@ public class MyEngine extends PooledEngine {
         renderQueue.clear();
     }
 
-    public void createSystems(KeyboardController controller, Viewport viewport) {
+    public void createSystems(KeyboardController controller, Viewport viewport, Entity player) {
         PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem(levelManager, controller);
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
         PhysicsSystem physicsSystem = new PhysicsSystem(world);
         AnimationSystem animationSystem = new AnimationSystem();
         MyEntityListener entityListener = new MyEntityListener(world);
-        PlayerPowerSystem powerSystem = new PlayerPowerSystem(world,controller,viewport);
+        PlayerPowerSystem powerSystem = new PlayerPowerSystem(world, controller, viewport);
 
+        this.addSystem(new BasicEnemyMovement(player));
+        this.addSystem(new BasicEnemyShooterSystem(newBullets, player));
         this.addSystem(new DamageSystem());
         this.addEntityListener(entityListener);
         this.addSystem(new ShootingSystem(newBullets));
@@ -161,9 +165,9 @@ public class MyEngine extends PooledEngine {
 
     public void addMapToEngine(Map map) {
         BodyCreator bodyCreator = new BodyCreator(world);
-        BodyComponent bodyComponent = this.createComponent(BodyComponent.class);
-        PositionComponent position = this.createComponent(PositionComponent.class);
-        TypeComponent type = this.createComponent(TypeComponent.class);
+        BodyComponent bodyComponent = new BodyComponent();
+        PositionComponent position = new PositionComponent();
+        CollisionTypeComponent type = new CollisionTypeComponent();
 
         for (int col = 0; col < map.getMapHeight(); col++) {
             for (int row = 0; row < map.getMapWidth(); row++) {
@@ -173,8 +177,8 @@ public class MyEngine extends PooledEngine {
                     /*TextureComponent texture = createComponent(TextureComponent.class);
                     texture.region = tile.getTextureRegion();
                     mapTile.add(texture);*/
-                    Entity mapTile = createEntity();
-                    type.type = TypeComponent.SCENERY;
+                    Entity mapTile = new Entity();
+                    type.type = CollisionTypeComponent.SCENERY;
                     position.position.set(row, col, 0);
                     bodyComponent.body = bodyCreator.makeRectBody(position.position.x + 0.5f, position.position.y + 0.5f, 1, 1, BodyMaterial.METAL,
                             BodyDef.BodyType.StaticBody, true);
@@ -196,11 +200,15 @@ public class MyEngine extends PooledEngine {
         playerStartY = engineData.getPlayerStartY();
         EntityData[] entityDataList = engineData.getEntitiesDataList();
         for (EntityData entityData : entityDataList) {
-            creator.createEntity(entityData.getId(), entityData.getxPos(), entityData.getyPos());
+            if (entityData == null) {
+                System.out.println("failed to create entity! :(");
+            } else {
+                creator.createEntity(EntityType.getByID(entityData.getId()), entityData.getxPos(), entityData.getyPos());
+            }
         }
         LevelSensorData[] levelSensorList = engineData.getLevelSensorDataList();
-        for(LevelSensorData levelData : levelSensorList){
-            creator.createLevelSensor(levelData.getxPos(), levelData.getyPos(),levelData.getLevelName());
+        for (LevelSensorData levelData : levelSensorList) {
+            creator.createLevelSensor(levelData.getxPos(), levelData.getyPos(), levelData.getLevelName());
         }
     }
 
@@ -209,16 +217,14 @@ public class MyEngine extends PooledEngine {
         EngineData engineData = new EngineData();
         engineData.setPlayerStartX(playerStartX);
         engineData.setPlayerStartY(playerStartY);
-        ImmutableArray<Entity> entityDataArray = getEntitiesFor(Family.all(TypeComponent.class, PositionComponent.class).get());
+        ImmutableArray<Entity> entityDataArray = getEntitiesFor(Family.all(CollisionTypeComponent.class, PositionComponent.class).get());
         //check important length of entityDataArray
         int index = 0;
         int levelSensorIndex = 0;
         for (Entity entity : entityDataArray) {
-            TypeComponent type = typeM.get(entity);
-            if(type.type == TypeComponent.LEVEL_SENSOR){
+            if (levelM.get(entity) != null) {
                 levelSensorIndex++;
-            }
-            else if(type.type != TypeComponent.SCENERY && type.type != TypeComponent.PLAYER){
+            } else if (typeM.get(entity).type != CollisionTypeComponent.SCENERY && playerM.get(entity) == null) {
                 index++;
             }
         }
@@ -228,8 +234,7 @@ public class MyEngine extends PooledEngine {
         index = 0;
         levelSensorIndex = 0;
         for (Entity entity : entityDataArray) {
-            TypeComponent typeComponent = typeM.get(entity);
-            if(typeComponent.type == TypeComponent.LEVEL_SENSOR){
+            if (levelM.get(entity) != null) {
                 Vector3 position = positionM.get(entity).position;
                 String nextLevelName = levelM.get(entity).nextLevelName;
                 levelDataList[levelSensorIndex] = new LevelSensorData();
@@ -237,10 +242,10 @@ public class MyEngine extends PooledEngine {
                 levelDataList[levelSensorIndex].setyPos(position.y);
                 levelDataList[levelSensorIndex].setLevelName(nextLevelName);
                 levelSensorIndex++;
-            } else if(typeComponent.type != TypeComponent.SCENERY && typeComponent.type != TypeComponent.PLAYER) {
+            } else if (typeM.get(entity).type != CollisionTypeComponent.SCENERY && playerM.get(entity) == null) {
                 Vector3 position = positionM.get(entity).position;
                 entityDataList[index] = new EntityData();
-                entityDataList[index].setId(typeComponent.type);
+                entityDataList[index].setId(entityM.get(entity).entityType.getID());
                 entityDataList[index].setxPos(position.x);
                 entityDataList[index].setyPos(position.y);
                 index++;
@@ -254,9 +259,11 @@ public class MyEngine extends PooledEngine {
     public float getPlayerStartX() {
         return playerStartX;
     }
+
     public float getPlayerStartY() {
         return playerStartY;
     }
+
     public void setPlayerStartPos(int startX, int startY) {
         playerStartX = startX;
         playerStartY = startY;

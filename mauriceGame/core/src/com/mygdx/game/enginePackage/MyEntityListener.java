@@ -21,6 +21,6 @@ public class MyEntityListener implements EntityListener {
         if(entity.getComponent(BodyComponent.class) !=null) {
             world.destroyBody(entity.getComponent(BodyComponent.class).body);
         }
-        //entity.removeAll();
+        entity.removeAll();
     }
 }

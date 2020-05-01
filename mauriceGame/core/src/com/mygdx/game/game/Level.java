@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.enginePackage.EntityType;
 import com.mygdx.game.enginePackage.MyEngine;
 import com.mygdx.game.enginePackage.EntityCreator;
 import com.mygdx.game.enginePackage.MyContactListener;
@@ -34,7 +35,6 @@ public class Level {
     private float playerXPos;
     private float playerYPos;
     private EntityCreator creator;
-    private ComponentMapper<HealthComponent> healthM = ComponentMapper.getFor(HealthComponent.class);
 
 
     //new Level constructor.
@@ -42,11 +42,7 @@ public class Level {
         levelName = fileName;
         map = new Map();
         map.newMap(mapWidth, mapHeight);
-        createLevel(controller, viewport, levelManager);
-        player = creator.createPlayer(myEngine.getPlayerStartX(), myEngine.getPlayerStartY());
-        myEngine.addEntity(player);
-        BasicEnemyMovement enemyMovement = new BasicEnemyMovement(player);
-        myEngine.addSystem(enemyMovement);
+        createLevel(controller, viewport, levelManager, true);
     }
 
     //load level constructor
@@ -54,26 +50,23 @@ public class Level {
         levelName = fileName;
         map = new Map();
         map.loadMap(fileName + MAP_FILE_NAME);
-
-        createLevel(controller, viewport, levelManager);
-        myEngine.loadFromFile(fileName + ENGINE_FILE_NAME);
-        player = creator.createPlayer(myEngine.getPlayerStartX(), myEngine.getPlayerStartY());
-        player.flags = 10;
-        myEngine.addEntity(player);
-        BasicEnemyMovement enemyMovement = new BasicEnemyMovement(player);
-        myEngine.addSystem(enemyMovement);
-
+        createLevel(controller, viewport, levelManager, false);
     }
 
-    public void createLevel(KeyboardController controller, Viewport viewport, LevelManager levelManager) {
+    public void createLevel(KeyboardController controller, Viewport viewport, LevelManager levelManager, boolean newLevel) {
         renderer = new OrthogonalTiledMapRenderer(map);
         this.levelManager = levelManager;
         world = new World(new Vector2(0, GRAVITY), true);
         world.setContactListener(new MyContactListener());
         myEngine = new MyEngine(world, levelManager);
-        myEngine.createSystems(controller, viewport);
-        myEngine.addMapToEngine(map);
+        if(!newLevel){
+            myEngine.loadFromFile(levelName + ENGINE_FILE_NAME);
+        }
         creator = new EntityCreator(myEngine, world);
+        player = creator.createPlayer(myEngine.getPlayerStartX(), myEngine.getPlayerStartY());
+        myEngine.addEntity(player);
+        myEngine.createSystems(controller, viewport, player);
+        myEngine.addMapToEngine(map);
         //if u create entity before u create player, playerCollisionSystem wont work with that entity??
     }
 
@@ -114,11 +107,11 @@ public class Level {
         return player.getComponent(PositionComponent.class).position.y * Tile.tileSize;
     }
 
-    public void createEntity(float mouseX, float mouseY, int currentEntityId) {
-        if(currentEntityId == TypeComponent.LEVEL_SENSOR){
+    public void createEntity(float mouseX, float mouseY, EntityType currentEntityType) {
+        if(currentEntityType == EntityType.LEVEL_SENSOR){
             creator.createLevelSensor(mouseX, mouseY, currentPortalName);
         }else {
-            creator.createEntity(currentEntityId, mouseX, mouseY);
+            creator.createEntity(currentEntityType, mouseX, mouseY);
         }
     }
 
