@@ -12,7 +12,9 @@ public class HealthComponent implements Component {
     public float healthWidth = 60;
     public float healthHeight = 10;
     public float healthReg;
+    public boolean alwaysHidden = false;
     public boolean hidden = false;
+
     public TextureRegion region = createTexture((int) healthWidth, (int) healthHeight, Color.RED);
 
     private TextureRegion createTexture(int width, int height, Color color) {

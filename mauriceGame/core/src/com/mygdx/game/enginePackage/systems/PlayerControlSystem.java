@@ -17,7 +17,7 @@ public class PlayerControlSystem extends IteratingSystem {
     private static final float GROUND_Y_CAP = 0.6f;
     private static final float AIRBORNE_CONTROL = 0.1f;
     private static final float STAND_STILL_CAP = 0.4f;
-    private static final float FALLING_MIN = -0.3f;
+    private static final float FALLING_MIN = -1f;//-0.3
 
     private int stateChanged = 0;
     private ComponentMapper<PlayerComponent> pm;
@@ -25,7 +25,6 @@ public class PlayerControlSystem extends IteratingSystem {
     private ComponentMapper<StateComponent> sm;
     private ComponentMapper<VelocityComponent> vm;
     private KeyboardController controller;
-
 
     @SuppressWarnings("unchecked")
     public PlayerControlSystem(KeyboardController controller) {
@@ -96,6 +95,7 @@ public class PlayerControlSystem extends IteratingSystem {
             velocity.jumpCountDown = velocity.jumpCooldown;
         }
         if (state.get() != stateChanged) {
+
             state.set(stateChanged);
         }
 

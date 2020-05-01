@@ -46,23 +46,45 @@ public class EntityCreator {
     }
 
     private void createPlant(float posx, float posy){
-        Entity plant = createBasicEntity(posx, posy, 3, 9, 64/ Tile.tileSize,
-                ImagesRes.plantImage, BodyMaterial.METAL, CollisionTypeComponent.ENEMY, EntityType.PLANT_ENEMY);
+        Entity plant = new Entity();
         HealthComponent healthComponent = new HealthComponent();
         DamageComponent damageComponent = new DamageComponent();
         ShooterComponent shooter = new ShooterComponent();
+        BodyComponent entityBody = new BodyComponent();
+        PositionComponent entityPosition = new PositionComponent();
+        TextureComponent entityTexture = new TextureComponent();
+        CollisionTypeComponent collisionTypeComponent = new CollisionTypeComponent();
+        EntityTypeComponent entityTypeComponent = new EntityTypeComponent();
+        AnimationComponent animationComponent = new AnimationComponent();
 
+        Animation animation = AnimationsRes.plantAni;
+        animationComponent.animationMap.put(StateComponent.STATE_NORMAL, animation);
+        collisionTypeComponent.type = CollisionTypeComponent.ENEMY;
+        entityTexture.region = ImagesRes.plantImage;
+        entityPosition.position.set(posx, posy, 1);
+        entityBody.body = entityBodyCreator.makeRectBody(entityPosition.position.x, entityPosition.position.y, 64/Tile.tileSize, 32/Tile.tileSize, BodyMaterial.METAL,
+                BodyDef.BodyType.KinematicBody, false);
+        entityBody.body.setUserData(plant);
+        entityTypeComponent.entityType = EntityType.PLANT_ENEMY;
         healthComponent.hidden = false;
-        healthComponent.maxHealth = 400;
-        healthComponent.health = 400;
+        healthComponent.maxHealth = 100;
+        healthComponent.health = 100;
         healthComponent.healthHeight = 20;
         healthComponent.healthWidth = 150;
         healthComponent.healthReg = 10;
         damageComponent.damage = 30;
         shooter.bulletType = BulletType.ENEMY_BULLET;
-        shooter.bulletCd = 0.6f;
+        shooter.bulletCd = 1f;
         shooter.alwaysShoot = true;
 
+        plant.add(animationComponent);
+        plant.add(entityTypeComponent);
+        plant.add(collisionTypeComponent);
+        plant.add(entityPosition);
+        plant.add(entityTexture);
+        plant.add(entityBody);
+        plant.add(new StateComponent());
+        plant.add(new CollisionComponent());
         plant.add(new PlantShooterComponent());
         plant.add(shooter);
         plant.add(damageComponent);
@@ -77,6 +99,7 @@ public class EntityCreator {
         BasicEnemyComponent movementComponent = new BasicEnemyComponent();
         DamageComponent damageComponent = new DamageComponent();
         ShooterComponent shooter = new ShooterComponent();
+
 
         healthComponent.hidden = false;
         healthComponent.maxHealth = 400;
@@ -96,7 +119,7 @@ public class EntityCreator {
     }
 
     private void createBasicEnemy(float posx, float posy) {
-        Entity enemy = createBasicEntity(posx, posy, 6, 9, 1 - 0.05f, ImagesRes.entityImage,
+        Entity enemy = createBasicEntity(posx, posy, 5, 9, 1 - 0.05f, ImagesRes.entityImage,
                 BodyMaterial.GLASS, CollisionTypeComponent.ENEMY, EntityType.BASIC_ENEMY);
         HealthComponent healthComponent = new HealthComponent();
         BasicEnemyComponent movementComponent = new BasicEnemyComponent();
@@ -105,8 +128,10 @@ public class EntityCreator {
         damageComponent.damage = 10;
         healthComponent.hidden = false;
         healthComponent.healthReg = 2f;
-        healthComponent.maxHealth = 40;
-        healthComponent.health = 40;
+        healthComponent.maxHealth = 30;
+        healthComponent.health = 30;
+        healthComponent.healthWidth = 30;
+        healthComponent.healthHeight = 7;
 
         enemy.add(damageComponent);
         enemy.add(movementComponent);
@@ -230,6 +255,7 @@ public class EntityCreator {
         bulletHealth.maxHealth = bulletInfo.bulletType.bulletTimer;
         bulletHealth.health = bulletInfo.bulletType.bulletTimer-0.1f;
         bulletHealth.hidden = true;
+        bulletHealth.alwaysHidden = true;
         bulletHealth.healthReg = -1f;
 
         bullet.add(bulletHealth);

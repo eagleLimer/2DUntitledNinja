@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import static com.mygdx.game.resources.ImagesRes.ENTITY_PATH;
@@ -30,10 +29,10 @@ public class AnimationsRes {
         playerRight = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
         playerLeft = createFlippedAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
-        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"faling.png"));
-        frame_cols = 1;
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"fallingAni.png"));
+        frame_cols = 5;
         frame_rows = 1;
-        frameTime = 1f;
+        frameTime = 0.2f;
         playerFalling = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
         walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"normalAni.png"));
@@ -43,9 +42,9 @@ public class AnimationsRes {
         playerNormal = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
         walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"jumping.png"));
-        frame_cols = 1;
+        frame_cols = 5;
         frame_rows = 1;
-        frameTime = 1f;
+        frameTime = 0.2f;
         playerJumping = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
         walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"plantAni.png"));

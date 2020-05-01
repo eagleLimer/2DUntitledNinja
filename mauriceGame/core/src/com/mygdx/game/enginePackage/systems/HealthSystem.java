@@ -19,6 +19,11 @@ public class HealthSystem extends IteratingSystem {
         //todo: add kill if health <= 0
         if(healthComponent.health < healthComponent.maxHealth){
             healthComponent.health = healthComponent.health + healthComponent.healthReg*deltaTime;
+            if(!healthComponent.alwaysHidden) {
+                healthComponent.hidden = false;
+            }
+        }else{
+            healthComponent.hidden = true;
         }
     }
 }

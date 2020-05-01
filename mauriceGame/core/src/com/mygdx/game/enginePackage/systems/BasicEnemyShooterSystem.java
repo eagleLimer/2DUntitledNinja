@@ -34,7 +34,7 @@ public class BasicEnemyShooterSystem extends IteratingSystem {
         if(shooter.bulletTick <= 0 && (shooter.shoot || shooter.alwaysShoot)){
             Vector3 playerPos = posM.get(player).position;
             Vector3 shooterPos = posM.get(entity).position;
-            shooter.dir = new Vector2(playerPos.x - shooterPos.x, playerPos.y - shooterPos.y).nor();
+            shooter.dir = new Vector2(playerPos.x - shooterPos.x, playerPos.y+2- shooterPos.y).nor();
             Vector2 pos = new Vector2(shooterPos.x+shooter.dir.x *shooter.bulletSpawn,shooterPos.y+shooter.dir.y*shooter.bulletSpawn);
             newBullets.add(new BulletInfo(pos,shooter.dir.scl(shooter.bulletType.bulletSpeed), shooter.bulletType));
             shooter.bulletTick = shooter.bulletCd;

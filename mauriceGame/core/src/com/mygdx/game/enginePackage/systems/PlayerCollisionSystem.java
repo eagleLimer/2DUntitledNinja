@@ -8,6 +8,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.game.KeyboardController;
 import com.mygdx.game.game.LevelManager;
+import com.mygdx.game.game.Tile;
 
 public class PlayerCollisionSystem extends IteratingSystem {
     private ComponentMapper<CollisionComponent> collisionM;
@@ -15,6 +16,9 @@ public class PlayerCollisionSystem extends IteratingSystem {
     private ComponentMapper<HealthComponent> healthM;
     private ComponentMapper<DamageComponent> damageM;
     private ComponentMapper<LevelSensorComponent> levelM;
+    private ComponentMapper<PositionComponent> posM;
+    private ComponentMapper<StateComponent> stateM;
+
     private LevelManager levelManager;
     private KeyboardController controller;
 
@@ -29,6 +33,9 @@ public class PlayerCollisionSystem extends IteratingSystem {
         healthM = ComponentMapper.getFor(HealthComponent.class);
         damageM = ComponentMapper.getFor(DamageComponent.class);
         levelM = ComponentMapper.getFor(LevelSensorComponent.class);
+        posM = ComponentMapper.getFor(PositionComponent.class);
+        stateM = ComponentMapper.getFor(StateComponent.class);
+
     }
 
     @Override
@@ -38,7 +45,6 @@ public class PlayerCollisionSystem extends IteratingSystem {
             if (collidingEntity != null) {
                 CollisionTypeComponent type = typeM.get(collidingEntity);
                 if (type != null) {
-
                     switch (type.type) {
                         case CollisionTypeComponent.ENEMY:
                             DamageComponent damageComponent = damageM.get(collidingEntity);
@@ -49,6 +55,16 @@ public class PlayerCollisionSystem extends IteratingSystem {
                             //System.out.println("player hit enemy");
                             break;
                         case CollisionTypeComponent.SCENERY:
+                            System.out.println(posM.get(collidingEntity).position.y + " player " + posM.get(entity).position.y);
+                            //System.out.println("on ground is "+ ((bodyM.get(collidingEntity)) < bodyM.get(entity).body.getPosition().y));
+                            /*if((posM.get(collidingEntity).body.getWorldCenter().y+ 1f/2) < bodyM.get(entity).body.getWorldCenter().y){
+                                StateComponent stateComponent = stateM.get(entity);
+                                System.out.println("on ground");
+                                if (stateComponent.get() == StateComponent.STATE_FALLING){
+                                    stateComponent.set(StateComponent.STATE_NORMAL);
+                                    System.out.println("landed and normal!");
+                                }
+                            }*/
                             //System.out.println("player hit scenery");
                             break;
                         case CollisionTypeComponent.OTHER:

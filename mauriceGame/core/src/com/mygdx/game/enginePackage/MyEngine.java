@@ -165,19 +165,18 @@ public class MyEngine extends Engine {
 
     public void addMapToEngine(Map map) {
         BodyCreator bodyCreator = new BodyCreator(world);
-        BodyComponent bodyComponent = new BodyComponent();
-        PositionComponent position = new PositionComponent();
-        CollisionTypeComponent type = new CollisionTypeComponent();
 
         for (int col = 0; col < map.getMapHeight(); col++) {
             for (int row = 0; row < map.getMapWidth(); row++) {
                 TiledMapTile tile = map.getCell(row * Tile.tileSize, col * Tile.tileSize, Map.COLLISION_LAYER_NAME).getTile();
-
                 if (tile != null) {
                     /*TextureComponent texture = createComponent(TextureComponent.class);
                     texture.region = tile.getTextureRegion();
                     mapTile.add(texture);*/
                     Entity mapTile = new Entity();
+                    PositionComponent position = new PositionComponent();
+                    BodyComponent bodyComponent = new BodyComponent();
+                    CollisionTypeComponent type = new CollisionTypeComponent();
                     type.type = CollisionTypeComponent.SCENERY;
                     position.position.set(row, col, 0);
                     bodyComponent.body = bodyCreator.makeRectBody(position.position.x + 0.5f, position.position.y + 0.5f, 1, 1, BodyMaterial.METAL,

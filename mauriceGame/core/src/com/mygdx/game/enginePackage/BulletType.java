@@ -5,7 +5,7 @@ import com.mygdx.game.enginePackage.components.CollisionTypeComponent;
 import com.mygdx.game.resources.ImagesRes;
 
 public enum BulletType {
-    PLAYER_BULLET(0.25f,20,10, 0.1f, CollisionTypeComponent.FRIENDLY, ImagesRes.bulletImage), ENEMY_BULLET(0.25f, 10, 10, 0.05f, CollisionTypeComponent.ENEMY, ImagesRes.enemyBulletImage);
+    PLAYER_BULLET(0.25f,20,10, 0.1f, CollisionTypeComponent.FRIENDLY, ImagesRes.bulletImage), ENEMY_BULLET(0.25f, 20, 10, 0.05f, CollisionTypeComponent.ENEMY, ImagesRes.enemyBulletImage);
     public float radius;
     public float damage;
     public int type;
