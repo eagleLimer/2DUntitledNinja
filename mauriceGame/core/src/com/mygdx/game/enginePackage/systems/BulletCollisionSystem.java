@@ -18,7 +18,7 @@ public class BulletCollisionSystem extends IteratingSystem {
     private Array<Entity> toBeRemoved;
 
     public BulletCollisionSystem(Array<Entity> toBeRemoved) {
-        super(Family.all(BulletComponent.class).get());
+        super(Family.all(BulletComponent.class, ActivatedComponent.class).get());
         this.toBeRemoved = toBeRemoved;
         collisionM = ComponentMapper.getFor(CollisionComponent.class);
         healthM = ComponentMapper.getFor(HealthComponent.class);

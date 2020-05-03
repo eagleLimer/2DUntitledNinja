@@ -7,6 +7,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.enginePackage.components.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.BasicShooterComponent;
 import com.mygdx.game.enginePackage.components.PositionComponent;
 import com.mygdx.game.enginePackage.components.ShooterComponent;
@@ -17,7 +18,7 @@ public class ShootingSystem extends IteratingSystem {
     private ComponentMapper<PositionComponent> posM;
     private Array<BulletInfo> newBullets;
     public ShootingSystem(Array<BulletInfo> newBullets) {
-        super(Family.all(ShooterComponent.class, BasicShooterComponent.class).get());
+        super(Family.all(ShooterComponent.class, BasicShooterComponent.class, ActivatedComponent.class).get());
         this.newBullets = newBullets;
         shooterM = ComponentMapper.getFor(ShooterComponent.class);
         posM = ComponentMapper.getFor(PositionComponent.class);

@@ -59,7 +59,7 @@ public class PlayerPowerSystem extends IteratingSystem {
                     BodyComponent bodyComponent = bodyM.get(entity);
                     EntityTypeComponent entityTypeComponent = entityM.get(entity);
                     if (bodyComponent != null && entityTypeComponent != null) {
-                        if(entityTypeComponent.entityType == EntityType.ROCK) {
+                        if (entityTypeComponent.entityType == EntityType.ROCK) {
                             if (bodyComponent.body.getMass() < LIFT_STRENGTH) {
                                 if (!entityList.contains(entity, true)) {
                                     entityList.add(entity);
@@ -81,12 +81,11 @@ public class PlayerPowerSystem extends IteratingSystem {
         EnergyComponent energy = energyM.get(entity);
         if (controller.elementPull && energy.mana > 1) {
             world.QueryAABB(mycallBack, mouseX - IMPULSE_AOE, mouseY - IMPULSE_AOE, mouseX + IMPULSE_AOE, mouseY + IMPULSE_AOE);
-        } else if(controller.explode && energy.mana > 1) {
+        } else if (controller.explode && energy.mana > 1) {
             //todo: add bang bang iväg från spelaren.
-        } else if(controller.implode && energy.mana > 1){
+        } else if (controller.implode && energy.mana > 1) {
             //todo: Add dra skit till spelaren.
-        }
-        else{
+        } else {
             entityList.clear();
         }
         for (Entity ball : entityList) {
@@ -107,10 +106,10 @@ public class PlayerPowerSystem extends IteratingSystem {
                 }*/
             }
         }
-        if(controller.shoot){
+        if (controller.shoot) {
             ShooterComponent shooter = shooterM.get(entity);
             Vector3 playerPos = posM.get(entity).position;
-            shooter.dir = new Vector2(mouseX-playerPos.x, mouseY - playerPos.y);
+            shooter.dir = new Vector2(mouseX - playerPos.x, mouseY - playerPos.y);
             shooter.shoot = true;
         }
 

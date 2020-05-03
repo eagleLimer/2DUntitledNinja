@@ -17,7 +17,7 @@ public class PlayerControlSystem extends IteratingSystem {
     private static final float GROUND_Y_CAP = 0.6f;
     private static final float AIRBORNE_CONTROL = 0.1f;
     private static final float STAND_STILL_CAP = 0.4f;
-    private static final float FALLING_MIN = -1f;//-0.3
+    private static final float FALLING_MIN = -0.3f;//-0.3
 
     private int stateChanged = 0;
     private ComponentMapper<PlayerComponent> pm;
@@ -43,32 +43,22 @@ public class PlayerControlSystem extends IteratingSystem {
         StateComponent state = sm.get(entity);
         VelocityComponent velocity = vm.get(entity);
         stateChanged = state.get();
-        //OLD MOVEMENT SYSTEM
 
-        /*
-        if(b2body.body.getLinearVelocity().y < FALLING_CAP){
-            state.set(StateComponent.STATE_FALLING);
-        }
-
-        if(Math.abs(b2body.body.getLinearVelocity().y)<GROUND_Y_CAP){
-            if(state.get() == StateComponent.STATE_FALLING){
-                state.set(StateComponent.STATE_NORMAL);
-            }
-            if(Math.abs(b2body.body.getLinearVelocity().x) > STAND_STILL_CAP && state.get() == StateComponent.STATE_NORMAL){
-                state.set(StateComponent.STATE_MOVING);
-            }
-        }
-        */
-
+        /*if(state.grounded){
+            stateChanged = StateComponent.STATE_NORMAL;
+        }*/
         //ugly as crap? Maybe.
         if ((state.get() == StateComponent.STATE_JUMPING && b2body.body.getLinearVelocity().y < 0.00000001) || b2body.body.getLinearVelocity().y < FALLING_MIN) {
             stateChanged = StateComponent.STATE_FALLING;
-
+            //state.grounded = false;
         } else if (state.get() != StateComponent.STATE_JUMPING) {
-            stateChanged = StateComponent.STATE_NORMAL;
-        }
+        stateChanged = StateComponent.STATE_NORMAL;
+        //state.grounded = false;
+    }
+
 
         boolean airborne = stateChanged == StateComponent.STATE_FALLING || stateChanged == StateComponent.STATE_JUMPING;
+        //airborne = !state.grounded;
         float accMultiplier = airborne ? AIRBORNE_CONTROL : 1;
         if (controller.left) {
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
@@ -79,7 +69,6 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
             if (!airborne) {
                 stateChanged = StateComponent.STATE_RIGHT;
-
             }
         } else {
             b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, DEACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
@@ -92,10 +81,10 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, velocity.jumpSpeed);
             //b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
             stateChanged = StateComponent.STATE_JUMPING;
+            state.grounded = false;
             velocity.jumpCountDown = velocity.jumpCooldown;
         }
         if (state.get() != stateChanged) {
-
             state.set(stateChanged);
         }
 

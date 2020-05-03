@@ -17,7 +17,7 @@ public class BasicEnemyMovement extends IteratingSystem {
     private Entity player;
 
     public BasicEnemyMovement(Entity player) {
-        super(Family.all(BasicEnemyComponent.class).get());
+        super(Family.all(BasicEnemyComponent.class, ActivatedComponent.class).get());
         bodm = ComponentMapper.getFor(BodyComponent.class);
         sm = ComponentMapper.getFor(StateComponent.class);
         vm = ComponentMapper.getFor(VelocityComponent.class);

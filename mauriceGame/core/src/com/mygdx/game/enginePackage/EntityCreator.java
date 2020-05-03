@@ -74,9 +74,10 @@ public class EntityCreator {
         healthComponent.healthReg = 10;
         damageComponent.damage = 30;
         shooter.bulletType = BulletType.ENEMY_BULLET;
-        shooter.bulletCd = 1f;
+        shooter.bulletCd = 1.5f;
         shooter.alwaysShoot = true;
 
+        plant.add(new ActivatedComponent());
         plant.add(animationComponent);
         plant.add(entityTypeComponent);
         plant.add(collisionTypeComponent);
@@ -112,6 +113,8 @@ public class EntityCreator {
         shooter.bulletCd = 0.3f;
         shooter.alwaysShoot = true;
         //boss.add(movementComponent);
+        boss.add(new ActivatedComponent());
+
         boss.add(shooter);
         boss.add(damageComponent);
         boss.add(healthComponent);
@@ -133,6 +136,7 @@ public class EntityCreator {
         healthComponent.healthWidth = 30;
         healthComponent.healthHeight = 7;
 
+        enemy.add(new ActivatedComponent());
         enemy.add(damageComponent);
         enemy.add(movementComponent);
         enemy.add(healthComponent);
@@ -149,6 +153,7 @@ public class EntityCreator {
         healthComponent.maxHealth = 10;
         healthComponent.health = 10;
         //ball.add(healthComponent);
+        ball.add(new ActivatedComponent());
         myEngine.addEntity(ball);
     }
 
@@ -189,6 +194,7 @@ public class EntityCreator {
 
         velocity.jumpCooldown = 0.5f;
 
+        player.add(new ActivatedComponent());
         player.add(shooter);
         player.add(healthComponent);
         player.add(animationComponent);
@@ -258,6 +264,7 @@ public class EntityCreator {
         bulletHealth.alwaysHidden = true;
         bulletHealth.healthReg = -1f;
 
+        bullet.add(new ActivatedComponent());
         bullet.add(bulletHealth);
         bullet.add(bulletComponent);
         bullet.add(bulletType);
@@ -286,6 +293,7 @@ public class EntityCreator {
         levelBody.body.setUserData(levelSensor);
         levelComponent.nextLevelName = currentPortalName;
 
+        levelSensor.add(new ActivatedComponent());
         levelSensor.add(levelComponent);
         levelSensor.add(collisionTypeComponent);
         levelSensor.add(levelPosition);

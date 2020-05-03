@@ -4,12 +4,13 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.mygdx.game.enginePackage.components.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.HealthComponent;
 
 public class HealthSystem extends IteratingSystem {
     ComponentMapper<HealthComponent> healthM;
     public HealthSystem() {
-        super(Family.all(HealthComponent.class).get());
+        super(Family.all(HealthComponent.class, ActivatedComponent.class).get());
         healthM = ComponentMapper.getFor(HealthComponent.class);
     }
 

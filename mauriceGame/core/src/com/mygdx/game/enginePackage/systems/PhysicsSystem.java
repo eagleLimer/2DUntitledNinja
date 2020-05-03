@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.enginePackage.components.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.BodyComponent;
 import com.mygdx.game.enginePackage.components.PositionComponent;
 
@@ -27,7 +28,7 @@ public class PhysicsSystem extends IteratingSystem {
 
     @SuppressWarnings("unchecked")
     public PhysicsSystem(World world) {
-        super(Family.all(BodyComponent.class, PositionComponent.class).get());
+        super(Family.all(BodyComponent.class, PositionComponent.class, ActivatedComponent.class).get());
         this.world = world;
         this.bodiesQueue = new Array<Entity>();
     }

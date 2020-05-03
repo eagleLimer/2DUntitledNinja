@@ -9,6 +9,7 @@ public class StateComponent implements Component {
     public static final int STATE_RIGHT = 3;
     public static final int STATE_LEFT = 4;
     public static final int STATE_HIT = 5;
+    public boolean grounded = true;
 
     private int state = 0;
     public float time = 0.0f;

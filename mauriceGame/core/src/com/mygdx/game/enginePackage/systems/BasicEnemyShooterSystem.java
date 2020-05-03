@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.enginePackage.BulletInfo;
 import com.mygdx.game.enginePackage.EntityType;
+import com.mygdx.game.enginePackage.components.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.PlantShooterComponent;
 import com.mygdx.game.enginePackage.components.PositionComponent;
 import com.mygdx.game.enginePackage.components.ShooterComponent;
@@ -20,7 +21,7 @@ public class BasicEnemyShooterSystem extends IteratingSystem {
     private Entity player;
 
     public BasicEnemyShooterSystem(Array<BulletInfo> newBullets, Entity player) {
-        super(Family.all(ShooterComponent.class, PlantShooterComponent.class).get());
+        super(Family.all(ShooterComponent.class, PlantShooterComponent.class, ActivatedComponent.class).get());
         this.newBullets = newBullets;
         this.player = player;
         shooterM = ComponentMapper.getFor(ShooterComponent.class);

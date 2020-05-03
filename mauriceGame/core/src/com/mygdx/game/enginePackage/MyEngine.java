@@ -77,7 +77,7 @@ public class MyEngine extends Engine {
     public void render(SpriteBatch batch) {
         renderHealthBars(batch); // this way healthBars doesn't cover anything.
         renderQueue = new Array<>();
-        entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class).get());
+        entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class, ActivatedComponent.class).get());
         for (Entity entity : entityArray) {
             renderQueue.add(entity);
         }
@@ -148,6 +148,8 @@ public class MyEngine extends Engine {
         MyEntityListener entityListener = new MyEntityListener(world);
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world, controller, viewport);
 
+        this.addSystem(new ActivationSystem(player));
+        this.addSystem(new DeactivationSystem(player));
         this.addSystem(new BasicEnemyMovement(player));
         this.addSystem(new BasicEnemyShooterSystem(newBullets, player));
         this.addSystem(new DamageSystem());
@@ -183,6 +185,7 @@ public class MyEngine extends Engine {
                             BodyDef.BodyType.StaticBody, true);
                     bodyComponent.body.setUserData(mapTile);
 
+                    mapTile.add(new ActivatedComponent());
                     mapTile.add(type);
                     mapTile.add(position);
                     mapTile.add(bodyComponent);

@@ -55,21 +55,19 @@ public class PlayerCollisionSystem extends IteratingSystem {
                             //System.out.println("player hit enemy");
                             break;
                         case CollisionTypeComponent.SCENERY:
-                            System.out.println(posM.get(collidingEntity).position.y + " player " + posM.get(entity).position.y);
-                            //System.out.println("on ground is "+ ((bodyM.get(collidingEntity)) < bodyM.get(entity).body.getPosition().y));
-                            /*if((posM.get(collidingEntity).body.getWorldCenter().y+ 1f/2) < bodyM.get(entity).body.getWorldCenter().y){
+                            /*System.out.println(posM.get(collidingEntity).position.y + " player " + posM.get(entity).position.y);
+                            if((posM.get(collidingEntity).position.y+ 1f/2) < posM.get(entity).position.y-0.6f){
                                 StateComponent stateComponent = stateM.get(entity);
-                                System.out.println("on ground");
-                                if (stateComponent.get() == StateComponent.STATE_FALLING){
+                                if (stateComponent.get() == StateComponent.STATE_FALLING || stateComponent.get() == StateComponent.STATE_JUMPING){
                                     stateComponent.set(StateComponent.STATE_NORMAL);
+                                    stateComponent.grounded = true;
                                     System.out.println("landed and normal!");
                                 }
                             }*/
                             //System.out.println("player hit scenery");
                             break;
                         case CollisionTypeComponent.OTHER:
-                            //hm.get(collidedEntity).health -= 50;
-                            System.out.println("player hit other");
+                            //System.out.println("player hit other");
                             break;
                         case CollisionTypeComponent.LEVEL_PORTAL:
                             if(controller.up) {

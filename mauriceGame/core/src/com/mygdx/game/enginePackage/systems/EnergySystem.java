@@ -4,12 +4,13 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.mygdx.game.enginePackage.components.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.EnergyComponent;
 
 public class EnergySystem extends IteratingSystem {
     private ComponentMapper<EnergyComponent> energyM;
     public EnergySystem() {
-        super(Family.all(EnergyComponent.class).get());
+        super(Family.all(EnergyComponent.class, ActivatedComponent.class).get());
         energyM = ComponentMapper.getFor(EnergyComponent.class);
     }
 

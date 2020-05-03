@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.mygdx.game.enginePackage.components.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.AnimationComponent;
 import com.mygdx.game.enginePackage.components.StateComponent;
 import com.mygdx.game.enginePackage.components.TextureComponent;
@@ -16,7 +17,7 @@ public class AnimationSystem extends IteratingSystem {
     ComponentMapper<StateComponent> sm;
 
     public AnimationSystem() {
-        super(Family.all(TextureComponent.class, AnimationComponent.class, StateComponent.class).get());
+        super(Family.all(TextureComponent.class, AnimationComponent.class, StateComponent.class, ActivatedComponent.class).get());
 
         tm = ComponentMapper.getFor(TextureComponent.class);
         am = ComponentMapper.getFor(AnimationComponent.class);
