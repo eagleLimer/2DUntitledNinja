@@ -10,6 +10,7 @@ import com.mygdx.game.game.Tile;
 import com.mygdx.game.resources.AnimationsRes;
 import com.mygdx.game.resources.ImagesRes;
 
+import static com.mygdx.game.enginePackage.BodyCreator.*;
 import static com.mygdx.game.enginePackage.EntityType.PLAYER;
 
 //todo: make enum class containing different types of entities. hårdkodat är inte det bästa :/
@@ -63,7 +64,7 @@ public class EntityCreator {
         entityTexture.region = ImagesRes.plantImage;
         entityPosition.position.set(posx, posy, 1);
         entityBody.body = entityBodyCreator.makeRectBody(entityPosition.position.x, entityPosition.position.y, 64/Tile.tileSize, 32/Tile.tileSize, BodyMaterial.METAL,
-                BodyDef.BodyType.KinematicBody, false);
+                BodyDef.BodyType.KinematicBody, false, BodyCreator.CATEGORY_ENEMY);
         entityBody.body.setUserData(plant);
         entityTypeComponent.entityType = EntityType.PLANT_ENEMY;
         healthComponent.hidden = false;
@@ -95,7 +96,7 @@ public class EntityCreator {
 
     private void createBoss(float posx, float posy) {
         Entity boss = createBasicEntity(posx, posy, 3, 9, 256 / 32, ImagesRes.bossImage,
-                BodyMaterial.GLASS, CollisionTypeComponent.ENEMY, EntityType.BOSS);
+                BodyMaterial.GLASS, CollisionTypeComponent.ENEMY, EntityType.BOSS, CATEGORY_ENEMY);
         HealthComponent healthComponent = new HealthComponent();
         BasicEnemyComponent movementComponent = new BasicEnemyComponent();
         DamageComponent damageComponent = new DamageComponent();
@@ -123,7 +124,7 @@ public class EntityCreator {
 
     private void createBasicEnemy(float posx, float posy) {
         Entity enemy = createBasicEntity(posx, posy, 5, 9, 1 - 0.05f, ImagesRes.entityImage,
-                BodyMaterial.GLASS, CollisionTypeComponent.ENEMY, EntityType.BASIC_ENEMY);
+                BodyMaterial.GLASS, CollisionTypeComponent.ENEMY, EntityType.BASIC_ENEMY, CATEGORY_ENEMY);
         HealthComponent healthComponent = new HealthComponent();
         BasicEnemyComponent movementComponent = new BasicEnemyComponent();
         DamageComponent damageComponent = new DamageComponent();
@@ -145,7 +146,7 @@ public class EntityCreator {
 
     private void createBall(float posx, float posy) {
         Entity ball = createBasicEntity(posx, posy, 6, 9, 1 / 2f, ImagesRes.rockImage,
-                BodyMaterial.BOUNCY, CollisionTypeComponent.OTHER, EntityType.ROCK);
+                BodyMaterial.BOUNCY, CollisionTypeComponent.OTHER, EntityType.ROCK, CATEGORY_FRIENDLY);
         HealthComponent healthComponent = new HealthComponent();
 
         healthComponent.hidden = true;
@@ -159,7 +160,7 @@ public class EntityCreator {
 
     public Entity createPlayer(float posx, float posy) {
         Entity player = createBasicEntity(posx, posy, 8, 19, 2 - 0.05f, ImagesRes.playerImage,
-                BodyMaterial.GLASS, CollisionTypeComponent.FRIENDLY, PLAYER);
+                BodyMaterial.GLASS, CollisionTypeComponent.FRIENDLY, PLAYER, CATEGORY_PLAYER);
         VelocityComponent velocity = player.getComponent(VelocityComponent.class);
         velocity.jumpCooldown = 0.5f;
         AnimationComponent animationComponent = new AnimationComponent();
@@ -207,7 +208,7 @@ public class EntityCreator {
     }
 
     private Entity createBasicEntity(float posx, float posy, float sprintVelocity, float jumpVelocity, float size,
-                                     TextureRegion region, BodyMaterial material, int type, EntityType entityType) {
+                                     TextureRegion region, BodyMaterial material, int type, EntityType entityType, short typeBits) {
         Entity basicEntity = new Entity();
         BodyComponent entityBody = new BodyComponent();
         PositionComponent entityPosition = new PositionComponent();
@@ -222,7 +223,7 @@ public class EntityCreator {
         entityTexture.region = region;
         entityPosition.position.set(posx, posy, 1);
         entityBody.body = entityBodyCreator.makeCirclePolyBody(entityPosition.position.x, entityPosition.position.y, size / 2, material,
-                BodyDef.BodyType.DynamicBody, false);
+                BodyDef.BodyType.DynamicBody, false, typeBits);
         entityBody.body.setUserData(basicEntity);
         entityTypeComponent.entityType = entityType;
 
@@ -247,9 +248,19 @@ public class EntityCreator {
         BulletComponent bulletComponent = new BulletComponent();
         HealthComponent bulletHealth = new HealthComponent();
 
+        short bitType = CATEGORY_ENEMY;
+
         bulletType.type = bulletInfo.bulletType.type;
+        switch (bulletInfo.bulletType){
+            case PLAYER_BULLET:
+                bitType = CATEGORY_PLAYER;
+                break;
+            case ENEMY_BULLET:
+                bitType = CATEGORY_ENEMY;
+                break;
+        }
         bulletBody.body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x, bulletInfo.pos.y,
-                bulletInfo.bulletType.radius, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false);
+                bulletInfo.bulletType.radius, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false, bitType);
         bulletBody.body.applyLinearImpulse(bulletInfo.dir, bulletBody.body.getWorldCenter(), true);
         bulletBody.body.setUserData(bullet);
         bulletBody.body.setAngularVelocity(300);

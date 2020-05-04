@@ -182,7 +182,7 @@ public class MyEngine extends Engine {
                     type.type = CollisionTypeComponent.SCENERY;
                     position.position.set(row, col, 0);
                     bodyComponent.body = bodyCreator.makeRectBody(position.position.x + 0.5f, position.position.y + 0.5f, 1, 1, BodyMaterial.METAL,
-                            BodyDef.BodyType.StaticBody, true);
+                            BodyDef.BodyType.StaticBody, true, BodyCreator.CATEGORY_SCENERY);
                     bodyComponent.body.setUserData(mapTile);
 
                     mapTile.add(new ActivatedComponent());
