@@ -18,6 +18,7 @@ public class ImagesRes {
     public static TextureRegion levelImage;
     public static TextureRegion enemyBulletImage;
     public static TextureRegion plantImage;
+    public static TextureRegion ghostImage;
 
     public static void loadImages() {
         Texture tmpTex = new Texture(Gdx.files.internal(ENTITY_PATH+"normal.png"));
@@ -55,5 +56,8 @@ public class ImagesRes {
 
         tmpTex = new Texture(Gdx.files.internal(ENTITY_PATH+"plant.png"));
         plantImage = new TextureRegion(tmpTex,0,0,64,64);
+
+        tmpTex = new Texture(Gdx.files.internal(ENTITY_PATH+"Red Bullet.png"));
+        ghostImage = new TextureRegion(tmpTex,0,0,64,64);
     }
 }

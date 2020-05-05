@@ -1,7 +1,6 @@
 package com.mygdx.game.game;
 
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,10 +17,11 @@ import com.mygdx.game.enginePackage.EntityCreator;
 import com.mygdx.game.enginePackage.MyContactListener;
 import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.gamestates.StateChangeListener;
-import com.mygdx.game.enginePackage.systems.*;
+
+import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
 
 public class Level {
-    private static final float GRAVITY = -9.8f * 2.5f;
+    public static final float GRAVITY = -9.8f * 2.5f;
     private static final String ENGINE_FILE_NAME = "/Engine/";
     public static final String MAP_FILE_NAME = "/Map/";
     private String currentPortalName;
@@ -90,8 +90,8 @@ public class Level {
 
     public void update(float step, StateChangeListener stateChangeListener) {
         myEngine.update(step);
-        playerXPos = player.getComponent(PositionComponent.class).position.x * Tile.tileSize;
-        playerYPos = player.getComponent(PositionComponent.class).position.y * Tile.tileSize;
+        playerXPos = player.getComponent(PositionComponent.class).position.x * RENDERUNITS_PER_METER;
+        playerYPos = player.getComponent(PositionComponent.class).position.y * RENDERUNITS_PER_METER;
         if (player.getComponent(HealthComponent.class).health <= 0) {
             stateChangeListener.popState();
         }
@@ -101,10 +101,10 @@ public class Level {
     }
 
         public float getPlayerXpos() {
-        return player.getComponent(PositionComponent.class).position.x * Tile.tileSize;
+        return player.getComponent(PositionComponent.class).position.x * RENDERUNITS_PER_METER;
     }
     public float getPlayerYpos() {
-        return player.getComponent(PositionComponent.class).position.y * Tile.tileSize;
+        return player.getComponent(PositionComponent.class).position.y * RENDERUNITS_PER_METER;
     }
 
     public void createEntity(float mouseX, float mouseY, EntityType currentEntityType) {
@@ -132,12 +132,13 @@ public class Level {
 
     public void renderUi(OrthographicCamera camera, SpriteBatch batch) {
         HealthComponent healthComponent = player.getComponent(HealthComponent.class);
+        HealthBarComponent healthBarComponent = player.getComponent(HealthBarComponent.class);
         EnergyComponent energyComponent = player.getComponent(EnergyComponent.class);
         EnergyBarComponent energyBarComponent = player.getComponent(EnergyBarComponent.class);
 
-        TextureRegion region = healthComponent.region;
-        float width = healthComponent.healthWidth*2;
-        float height = healthComponent.healthHeight*2;
+        TextureRegion region = healthBarComponent.region;
+        float width = healthBarComponent.healthWidth*2;
+        float height = healthBarComponent.healthHeight*2;
 
         float originX = width / 2;
         float originY = height / 2;

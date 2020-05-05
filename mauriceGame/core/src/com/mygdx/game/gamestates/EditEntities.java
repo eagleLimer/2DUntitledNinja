@@ -21,8 +21,7 @@ import com.mygdx.game.resources.ImagesRes;
 
 import java.util.HashMap;
 
-import static com.mygdx.game.game.MyGdxGame.worldHeight;
-import static com.mygdx.game.game.MyGdxGame.worldWidth;
+import static com.mygdx.game.game.MyGdxGame.*;
 
 public class EditEntities extends GameState {
     private static final int CAMERA_SPEED = 400;
@@ -216,22 +215,22 @@ public class EditEntities extends GameState {
         entityTimer--;
         level.editUpdate(step);
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !mouseAtTable(Gdx.input.getX(), Gdx.input.getY(), mainTable)) {
+        if (controller.shoot && !mouseAtTable(Gdx.input.getX(), Gdx.input.getY(), mainTable)) {
             if (removeEntities) {
-                level.removeEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize);
+                level.removeEntity(mouseX / RENDERUNITS_PER_METER, mouseY / RENDERUNITS_PER_METER);
             } else if (entityTimer <= 0) {
                 switch (currentEntityType) {
                     case LEVEL_SENSOR:
                         if (!nextLevelField.getText().equals("")) {
                             level.setCurrentPortalName(nextLevelField.getText());
-                            level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityType);
+                            level.createEntity(mouseX / RENDERUNITS_PER_METER, mouseY / RENDERUNITS_PER_METER, currentEntityType);
                         }
                         break;
                     case PLAYER:
-                        level.setPlayerStartPos((int)mouseX/Tile.tileSize, (int)mouseY/Tile.tileSize);
+                        level.setPlayerStartPos((int)(mouseX/RENDERUNITS_PER_METER), (int)(mouseY/RENDERUNITS_PER_METER));
                         break;
                     default:
-                        level.createEntity(mouseX / Tile.tileSize, mouseY / Tile.tileSize, currentEntityType);
+                        level.createEntity(mouseX / RENDERUNITS_PER_METER, mouseY / RENDERUNITS_PER_METER, currentEntityType);
                         break;
                 }
                 entityTimer = ENTITY_COOLDOWN;

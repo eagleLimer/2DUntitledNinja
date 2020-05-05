@@ -23,8 +23,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.game.*;
 import com.mygdx.game.resources.ImagesRes;
 
-import static com.mygdx.game.game.MyGdxGame.worldHeight;
-import static com.mygdx.game.game.MyGdxGame.worldWidth;
+import static com.mygdx.game.game.MyGdxGame.*;
 
 //very big class, but tables are about 180 lines
 public class EditMap extends GameState {
@@ -109,7 +108,7 @@ public class EditMap extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         level.render(camera, batch);
-        coordinates = "X: " + String.valueOf(mouseX/32) + "  Y: " + String.valueOf(mouseY/32);
+        coordinates = "X: " + String.valueOf(mouseX/RENDERUNITS_PER_METER) + "  Y: " + String.valueOf(mouseY/RENDERUNITS_PER_METER);
         menuBatch.begin();
         font.draw(menuBatch, coordinates, 100, 100);
         font.draw(menuBatch, currentLayerName, worldWidth-100, worldHeight-100);
@@ -119,8 +118,8 @@ public class EditMap extends GameState {
         batch.setColor(c.r, c.g, c.b, 0.5f);
         for (int i = 0; i < mouseSize; i++) {
             for (int j = 0; j < mouseSize; j++) {
-                batch.draw(currentTileRegion,(mouseX-(mouseSize-1)* Tile.tileSize/2 + i*Tile.tileSize)/32*32,
-                        (mouseY-(mouseSize-1)* Tile.tileSize/2 + j*Tile.tileSize)/32*32);
+                batch.draw(currentTileRegion,(int)((mouseX-(mouseSize-1)* RENDERUNITS_PER_METER/2 + i*RENDERUNITS_PER_METER)/RENDERUNITS_PER_METER)*RENDERUNITS_PER_METER,
+                        (int)((mouseY-(mouseSize-1)* RENDERUNITS_PER_METER/2 + j*RENDERUNITS_PER_METER)/RENDERUNITS_PER_METER)*RENDERUNITS_PER_METER);
 
             }
         }
@@ -147,8 +146,8 @@ public class EditMap extends GameState {
 
                 for (int i = 0; i < mouseSize; i++) {
                     for (int j = 0; j < mouseSize; j++) {
-                        level.map.changeTile(mouseX-(mouseSize-1)* Tile.tileSize/2 + i*Tile.tileSize,
-                                mouseY-(mouseSize-1)* Tile.tileSize/2 + j*Tile.tileSize,currentTileId,currentLayerName);
+                        level.map.changeTile((int)(mouseX-(mouseSize-1)* RENDERUNITS_PER_METER/2 + i*RENDERUNITS_PER_METER),
+                                (int)(mouseY-(mouseSize-1)* RENDERUNITS_PER_METER/2 + j*RENDERUNITS_PER_METER),currentTileId,currentLayerName);
                     }
                 }
                 level.map.changeTile(mouseX, mouseY, currentTileId, currentLayerName);

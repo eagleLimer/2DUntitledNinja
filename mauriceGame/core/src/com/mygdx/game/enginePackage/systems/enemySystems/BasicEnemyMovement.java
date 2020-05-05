@@ -1,4 +1,4 @@
-package com.mygdx.game.enginePackage.systems;
+package com.mygdx.game.enginePackage.systems.enemySystems;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -7,12 +7,15 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.enemyComponents.AggressiveComponent;
+import com.mygdx.game.enginePackage.components.enemyComponents.BasicEnemyComponent;
 
 public class BasicEnemyMovement extends IteratingSystem {
     private static final float ACCELERATION = 0.2f;
     private ComponentMapper<BodyComponent> bodyM;
     private ComponentMapper<VelocityComponent> velocityM;
     private ComponentMapper<PositionComponent> positionM;
+    private ComponentMapper<AggressiveComponent> aggroM;
     private Entity player;
 
     //todo: add aggressive range
@@ -21,12 +24,13 @@ public class BasicEnemyMovement extends IteratingSystem {
         bodyM = ComponentMapper.getFor(BodyComponent.class);
         velocityM = ComponentMapper.getFor(VelocityComponent.class);
         positionM = ComponentMapper.getFor(PositionComponent.class);
+        aggroM = ComponentMapper.getFor(AggressiveComponent.class);
         this.player = player;
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if (positionM.get(player) != null) {
+        if (positionM.get(player) != null && aggroM.get(entity).aggressive) {
             Vector3 playerPos = positionM.get(player).position;
             Vector3 enemyPos = positionM.get(entity).position;
             BodyComponent body = bodyM.get(entity);
@@ -37,6 +41,12 @@ public class BasicEnemyMovement extends IteratingSystem {
             } else {
                 body.body.setLinearVelocity(MathUtils.lerp(body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION), body.body.getLinearVelocity().y);
             }
+            velocity.jumpCountDown -= deltaTime;
+            if(playerPos.y > enemyPos.y && velocity.jumpCountDown < 0){
+                body.body.setLinearVelocity(body.body.getLinearVelocity().x, velocity.jumpSpeed);
+                velocity.jumpCountDown = velocity.jumpCooldown;
+            }
+
         }
     }
 }

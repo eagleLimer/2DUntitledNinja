@@ -124,7 +124,6 @@ public class MyContactListener implements ContactListener {
                             }
                             if (damage > 4) {
                                 health.health -= damage*5;
-                                System.out.println("IMPACT" + damage*5);
                             }
                         }
                     }

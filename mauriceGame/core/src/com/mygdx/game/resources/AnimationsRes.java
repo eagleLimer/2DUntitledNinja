@@ -15,6 +15,7 @@ public class AnimationsRes {
     public static Animation playerFalling;
     public static Animation playerJumping;
     public static Animation plantAni;
+    public static Animation dabAni;
 
 
     public static void loadAnimations() {
@@ -35,7 +36,7 @@ public class AnimationsRes {
         frameTime = 0.2f;
         playerFalling = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
-        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"normalAni.png"));
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"normalAni3.png"));
         frame_cols = 5;
         frame_rows = 1;
         frameTime = 0.05f;
@@ -52,6 +53,12 @@ public class AnimationsRes {
         frame_rows = 1;
         frameTime = 0.2f;
         plantAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
+
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"dabAni.png"));
+        frame_cols = 2;
+        frame_rows = 1;
+        frameTime = 0.5f;
+        dabAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
     }
 

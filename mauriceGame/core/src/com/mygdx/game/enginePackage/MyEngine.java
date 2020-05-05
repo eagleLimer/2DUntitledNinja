@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -15,6 +16,10 @@ import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.enginePackage.systems.*;
+import com.mygdx.game.enginePackage.systems.enemySystems.AggressiveSystem;
+import com.mygdx.game.enginePackage.systems.enemySystems.BasicEnemyMovement;
+import com.mygdx.game.enginePackage.systems.enemySystems.BasicEnemyShooterSystem;
+import com.mygdx.game.enginePackage.systems.enemySystems.GhostMovementSystem;
 import com.mygdx.game.game.*;
 import com.mygdx.game.gameData.EngineData;
 import com.mygdx.game.gameData.EntityData;
@@ -23,6 +28,7 @@ import com.mygdx.game.gameData.LevelSensorData;
 import java.util.Comparator;
 
 import static com.badlogic.gdx.net.HttpRequestBuilder.json;
+import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
 
 public class MyEngine extends Engine {
     private Array<Entity> renderQueue;
@@ -38,6 +44,7 @@ public class MyEngine extends Engine {
     private ComponentMapper<EntityTypeComponent> entityM = ComponentMapper.getFor(EntityTypeComponent.class);
     private ComponentMapper<PlayerComponent> playerM = ComponentMapper.getFor(PlayerComponent.class);
     private ComponentMapper<LevelSensorComponent> levelM = ComponentMapper.getFor(LevelSensorComponent.class);
+    private ComponentMapper<HealthBarComponent> healthBarM = ComponentMapper.getFor(HealthBarComponent.class);
 
 
     private LevelManager levelManager;
@@ -67,7 +74,7 @@ public class MyEngine extends Engine {
 
     public void removeOldEntities() {
         for (Entity entity : toBeRemoved) {
-            if (entity != null) {
+            if (entity != null|| playerM.get(entity)==null) {
                 this.removeEntity(entity);
             }
         }
@@ -94,7 +101,7 @@ public class MyEngine extends Engine {
             float originY = height / 2;
 
             batch.draw(region,
-                    position.x * Tile.tileSize - originX, position.y * Tile.tileSize - originY,
+                    position.x * RENDERUNITS_PER_METER - originX, position.y * RENDERUNITS_PER_METER - originY,
                     originX, originY,
                     width, height,
                     1, 1,
@@ -106,35 +113,29 @@ public class MyEngine extends Engine {
 
     private void renderHealthBars(SpriteBatch batch) {
         renderQueue = new Array<>();
-        entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class, HealthComponent.class).get());
-        for (Entity entity : entityArray) {
-            if (healthM.get(entity).health <= 0) {
-                if (playerM.get(entity) == null) {
-                    toBeRemoved.add(entity);
-                }
-            } else {
-                if (!healthM.get(entity).hidden) renderQueue.add(entity);
-            }
-        }
+        entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class, HealthBarComponent.class).get());
         renderQueue.sort(comparator);
         batch.begin();
-        for (Entity entity : renderQueue) {
-            Vector3 position = positionM.get(entity).position;
-            TextureRegion region = textureM.get(entity).region;
-            HealthComponent healthComponent = healthM.get(entity);
+        for (Entity entity : entityArray) {
+            HealthBarComponent barComponent = healthBarM.get(entity);
+            if(!barComponent.hidden) {
+                HealthComponent healthComponent = healthM.get(entity);
+                Vector3 position = positionM.get(entity).position;
+                TextureRegion region = textureM.get(entity).region;
 
-            float width = healthComponent.healthWidth;
-            float height = healthComponent.healthHeight;
+                float width = barComponent.healthWidth;
+                float height = barComponent.healthHeight;
 
-            float originX = width / 2;
-            float originY = height / 2;
+                float originX = width / 2;
+                float originY = height / 2;
 
-            batch.draw(healthComponent.region,
-                    position.x * Tile.tileSize - originX, position.y * Tile.tileSize + (region.getRegionHeight() / 2) + height,
-                    originX * healthComponent.health / healthComponent.maxHealth, originY,
-                    healthComponent.healthWidth * healthComponent.health / healthComponent.maxHealth, healthComponent.healthHeight,
-                    1, 1,
-                    0);
+                batch.draw(barComponent.region,
+                        position.x * RENDERUNITS_PER_METER - originX, position.y * RENDERUNITS_PER_METER + (region.getRegionHeight() / 2) + height,
+                        originX * healthComponent.health / healthComponent.maxHealth, originY,
+                        barComponent.healthWidth * healthComponent.health / healthComponent.maxHealth, barComponent.healthHeight,
+                        1, 1,
+                        0);
+            }
         }
         batch.end();
         renderQueue.clear();
@@ -148,6 +149,8 @@ public class MyEngine extends Engine {
         MyEntityListener entityListener = new MyEntityListener(world);
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world, controller, viewport);
 
+        this.addSystem(new GhostMovementSystem(player));
+        this.addSystem(new AggressiveSystem(player));
         this.addSystem(new ActivationSystem(player));
         this.addSystem(new DeactivationSystem(player));
         this.addSystem(new BasicEnemyMovement(player));
@@ -156,7 +159,7 @@ public class MyEngine extends Engine {
         this.addEntityListener(entityListener);
         this.addSystem(new ShootingSystem(newBullets));
         this.addSystem(new BulletCollisionSystem(toBeRemoved));
-        this.addSystem(new HealthSystem());
+        this.addSystem(new HealthSystem(toBeRemoved));
         this.addSystem(new EnergySystem());
         this.addSystem(powerSystem);
         this.addSystem(collisionSystem);
@@ -176,19 +179,14 @@ public class MyEngine extends Engine {
                     texture.region = tile.getTextureRegion();
                     mapTile.add(texture);*/
                     Entity mapTile = new Entity();
-                    PositionComponent position = new PositionComponent();
-                    BodyComponent bodyComponent = new BodyComponent();
-                    CollisionTypeComponent type = new CollisionTypeComponent();
-                    type.type = CollisionTypeComponent.SCENERY;
-                    position.position.set(row, col, 0);
-                    bodyComponent.body = bodyCreator.makeRectBody(position.position.x + 0.5f, position.position.y + 0.5f, 1, 1, BodyMaterial.METAL,
+                    Body body = bodyCreator.makeRectBody(row + 0.5f, col + 0.5f, 1, 1, BodyMaterial.METAL,
                             BodyDef.BodyType.StaticBody, true, BodyCreator.CATEGORY_SCENERY);
-                    bodyComponent.body.setUserData(mapTile);
+                    body.setUserData(mapTile);
 
                     mapTile.add(new ActivatedComponent());
-                    mapTile.add(type);
-                    mapTile.add(position);
-                    mapTile.add(bodyComponent);
+                    mapTile.add(new CollisionTypeComponent(CollisionTypeComponent.SCENERY));
+                    mapTile.add(new PositionComponent(new Vector3(row+ 0.5f,col+0.5f,0)));
+                    mapTile.add(new BodyComponent(body));
                     this.addEntity(mapTile);
                 }
             }

@@ -6,17 +6,22 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class EnergyBarComponent implements Component {
-    public float energyWidth = 60;
+public class HealthBarComponent implements Component {
+    public float healthWidth = 60;
+    public float healthHeight = 10;
+    public boolean alwaysHidden = false;
+    public boolean hidden = false;
 
-    public float energyHeight = 10;
-
-    public TextureRegion region;
-    public EnergyBarComponent(float energyWidth, float energyHeight) {
-        this.energyWidth = energyWidth;
-        this.energyHeight = energyHeight;
-        region = createTexture((int) energyWidth, (int) energyHeight, Color.ORANGE);
+    public HealthBarComponent(float healthWidth, float healthHeight, boolean alwaysHidden, boolean hidden) {
+        this.healthWidth = healthWidth;
+        this.healthHeight = healthHeight;
+        this.alwaysHidden = alwaysHidden;
+        this.hidden = hidden;
     }
+    public HealthBarComponent(){
+    }
+
+    public TextureRegion region = createTexture((int) healthWidth, (int) healthHeight, Color.RED);
 
     private TextureRegion createTexture(int width, int height, Color color) {
         Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);

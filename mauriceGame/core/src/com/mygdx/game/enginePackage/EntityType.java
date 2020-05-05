@@ -6,7 +6,8 @@ import com.mygdx.game.resources.ImagesRes;
 
 public enum EntityType {
     PLAYER(0, "PLAYER", ImagesRes.playerImage), BASIC_ENEMY(1, "BASIC ENEMY", ImagesRes.entityImage), BOSS(2, "BOSS", ImagesRes.bossImage),
-    ROCK(3, "ROCK", ImagesRes.rockImage), PLANT_ENEMY(4, "PLANT", ImagesRes.plantImage), LEVEL_SENSOR(6, "LEVEL SENSOR", ImagesRes.levelImage);
+    ROCK(3, "ROCK", ImagesRes.rockImage), PLANT_ENEMY(4, "PLANT", ImagesRes.plantImage), LEVEL_SENSOR(6, "LEVEL SENSOR", ImagesRes.levelImage),
+    GHOST(5,"GHOST", ImagesRes.ghostImage);
     private int ID;
     private String name;
     private TextureRegion region;
@@ -27,6 +28,8 @@ public enum EntityType {
                 return ROCK;
             case 4:
                 return PLANT_ENEMY;
+            case 5:
+                return GHOST;
             case 6:
                 return LEVEL_SENSOR;
             default:

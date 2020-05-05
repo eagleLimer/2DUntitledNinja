@@ -4,16 +4,13 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.enginePackage.components.*;
-import com.sun.jdi.TypeComponent;
 
-import static com.mygdx.game.game.MyGdxGame.PIXELS_PER_METER;
+import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
 public class DeactivationSystem extends IteratingSystem {
-    public static final float ACTIVATION_DISTANCE = (worldWidth)/PIXELS_PER_METER;
+    public static final float ACTIVATION_DISTANCE = (worldWidth)/ RENDERUNITS_PER_METER;
     public static final float SCENERY_MULTIPLIER = 1.2f;
     private Entity player;
     private ComponentMapper<PositionComponent> posM;

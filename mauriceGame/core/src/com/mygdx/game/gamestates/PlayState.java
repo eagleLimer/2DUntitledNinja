@@ -16,13 +16,13 @@ import com.mygdx.game.resources.ImagesRes;
 
 
 public class PlayState extends GameState {
-    public static final String FIRST_LEVEL_NAME = "levelFiles/level2";
+    public static final String FIRST_LEVEL_NAME = "levelFiles/level1";
     private static final int MOUNTAINS_HEIGHT_1 = 200;
     private static final int MOUNTAINS_HEIGHT_2 = 50;
     private static final int HILLS_HEIGHT = -200;
-    private static final float MOUNTAINS_MOVEMENT_1 = 2;
-    private static final float MOUNTAINS_MOVEMENT_2 = 1.6f;
-    private static final float HILLS_MOVEMENT = 1.2f;
+    private static final float MOUNTAINS_MOVEMENT_1 = 0.3f;
+    private static final float MOUNTAINS_MOVEMENT_2 = 0.4f;
+    private static final float HILLS_MOVEMENT = 0.8f;
 
     private final Texture backgroundHills;
     private final SpriteBatch batch;
@@ -106,7 +106,7 @@ public class PlayState extends GameState {
         drawBackground();
 
         backgroundBatch.setProjectionMatrix(backgroundCamera.combined);
-        camera.position.set(playerXPos, playerYPos/*+MyGdxGame.worldHeight/5*/, 0);
+        camera.position.set(playerXPos, playerYPos+MyGdxGame.worldHeight/10, 0);
         level.render(camera, batch);
         level.renderUi(backgroundCamera,backgroundBatch);
     }
@@ -114,9 +114,9 @@ public class PlayState extends GameState {
     private void drawBackground() {
         backgroundBatch.begin();
         backgroundBatch.draw(backgroundSky, 0, backgroundViewport.getWorldHeight() - ImagesRes.skyImage.getRegionHeight(), srcX++/*(int)(player.getComponent(PositionComponent.class).position.x*Tile.tileSize)/4*/, 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.skyImage.getRegionHeight());
-        backgroundBatch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_1, (int) (playerXPos / MOUNTAINS_MOVEMENT_1), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.backgroundImage.getRegionHeight());
-        backgroundBatch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_2, (int) (playerXPos / MOUNTAINS_MOVEMENT_2), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.backgroundImage.getRegionHeight());
-        backgroundBatch.draw(backgroundHills, 0, HILLS_HEIGHT, (int) (playerXPos / HILLS_MOVEMENT), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.hillsImage.getRegionHeight());
+        backgroundBatch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_1, (int) (playerXPos * MOUNTAINS_MOVEMENT_1), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.backgroundImage.getRegionHeight());
+        backgroundBatch.draw(backgroundTexture, 0, MOUNTAINS_HEIGHT_2, (int) (playerXPos * MOUNTAINS_MOVEMENT_2), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.backgroundImage.getRegionHeight());
+        backgroundBatch.draw(backgroundHills, 0, HILLS_HEIGHT, (int) (playerXPos * HILLS_MOVEMENT), 0, (int) backgroundViewport.getWorldWidth(), ImagesRes.hillsImage.getRegionHeight());
         backgroundBatch.end();
     }
 

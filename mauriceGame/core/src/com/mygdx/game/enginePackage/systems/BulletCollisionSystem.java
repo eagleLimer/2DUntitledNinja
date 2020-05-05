@@ -6,14 +6,16 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.enemyComponents.AggressiveComponent;
 
 public class BulletCollisionSystem extends IteratingSystem {
-    ComponentMapper<CollisionComponent> collisionM;
-    ComponentMapper<HealthComponent> healthM;
-    ComponentMapper<DamageComponent> damageM;
-    ComponentMapper<BulletComponent> bulletM;
-    ComponentMapper<BodyComponent> bodyM;
-    ComponentMapper<CollisionTypeComponent> typeM;
+    private final ComponentMapper<AggressiveComponent> aggroM;
+    private final ComponentMapper<CollisionComponent> collisionM;
+    private final ComponentMapper<HealthComponent> healthM;
+    private final ComponentMapper<DamageComponent> damageM;
+    private final ComponentMapper<BulletComponent> bulletM;
+    private final ComponentMapper<BodyComponent> bodyM;
+    private final ComponentMapper<CollisionTypeComponent> typeM;
 
     private Array<Entity> toBeRemoved;
 
@@ -26,6 +28,7 @@ public class BulletCollisionSystem extends IteratingSystem {
         bulletM = ComponentMapper.getFor(BulletComponent.class);
         bodyM = ComponentMapper.getFor(BodyComponent.class);
         typeM = ComponentMapper.getFor(CollisionTypeComponent.class);
+        aggroM = ComponentMapper.getFor(AggressiveComponent.class);
     }
 
     @Override
@@ -43,6 +46,10 @@ public class BulletCollisionSystem extends IteratingSystem {
                                 if (damageComponent.damageTimer <= 0) {
                                     healthM.get(collidingEntity).health -= damageM.get(entity).damage;
                                     damageComponent.damageTimer = damageComponent.damageCD;
+                                    AggressiveComponent aggressiveComponent = aggroM.get(collidingEntity);
+                                    if(aggressiveComponent !=null){
+                                        aggressiveComponent.aggressive = true;
+                                    }
                                 }
                                 //hm.get(collidedEntity).health -= 10;
                                 break;

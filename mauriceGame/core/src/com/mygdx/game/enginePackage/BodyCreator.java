@@ -28,7 +28,7 @@ public class BodyCreator {
         polygonShape.dispose();
         return boxBody;
     }
-    public Body makeRectSensor(float posx, float posy, float width, float height, BodyMaterial material, BodyDef.BodyType bodyType, boolean fixedRotation) {
+    public Body makeRectSensor(float posx, float posy, float width, float height, BodyMaterial material, BodyDef.BodyType bodyType, boolean fixedRotation, short bitType) {
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = bodyType;
         boxBodyDef.position.x = posx;
@@ -38,18 +38,19 @@ public class BodyCreator {
         Body boxBody = world.createBody(boxBodyDef);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(width / 2, height / 2);
-        boxBody.createFixture(makeSensorFixture(material, polygonShape));
+        boxBody.createFixture(makeSensorFixture(material, polygonShape, bitType));
         polygonShape.dispose();
         return boxBody;
     }
 
-    private FixtureDef makeSensorFixture(BodyMaterial material, Shape shape) {
+    private FixtureDef makeSensorFixture(BodyMaterial material, Shape shape, short bitType) {
         FixtureDef fixture = new FixtureDef();
         fixture.shape = shape;
         fixture.density = material.getDensity();
         fixture.restitution = material.getRestitution();
         fixture.friction = material.getFriction();
         fixture.isSensor = true;
+        fixture.filter.categoryBits = bitType;
         return fixture;
     }
 

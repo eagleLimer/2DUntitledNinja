@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,22 +19,26 @@ import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.game.KeyboardController;
 import com.mygdx.game.game.Tile;
 
+import static com.mygdx.game.game.Level.GRAVITY;
+
 public class PlayerPowerSystem extends IteratingSystem {
     //todo: should move this also lol
     private static final float IMPULSE_STRENGTH = 0.2f;
+    private static final float MAX_MULTIPLIER = 5f;
+    private static final float SLOW_DOWN_ZONE = 1f;
     private static final float LIFT_STRENGTH = 1;
     private static final float IMPULSE_AOE = 1;
     private World world;
     private KeyboardController controller;
     private Viewport viewport;
     private ComponentMapper<BodyComponent> bodyM;
-    private ComponentMapper<CollisionTypeComponent> typeM;
     private ComponentMapper<EntityTypeComponent> entityM;
     private ComponentMapper<EnergyComponent> energyM;
     private ComponentMapper<PositionComponent> posM;
     private ComponentMapper<ShooterComponent> shooterM;
     private float mouseX;
     private float mouseY;
+    private boolean checkShoot = false;
     private QueryCallback mycallBack;
     private Array<Entity> entityList;
 
@@ -44,12 +49,10 @@ public class PlayerPowerSystem extends IteratingSystem {
         this.controller = controller;
         this.viewport = viewport;
         bodyM = ComponentMapper.getFor(BodyComponent.class);
-        typeM = ComponentMapper.getFor(CollisionTypeComponent.class);
         energyM = ComponentMapper.getFor(EnergyComponent.class);
         posM = ComponentMapper.getFor(PositionComponent.class);
         shooterM = ComponentMapper.getFor(ShooterComponent.class);
         entityM = ComponentMapper.getFor(EntityTypeComponent.class);
-
         entityList = new Array<>();
         mycallBack = new QueryCallback() {
             @Override
@@ -92,12 +95,21 @@ public class PlayerPowerSystem extends IteratingSystem {
             if (bodyM.get(ball) != null) {
                 //todo: change to linearvelocity, gradually change the velocity depending on angle to point. gradually depending on the mass of the body being moved.
                 Body body = bodyM.get(ball).body;
-                float xDiff = mouseX - body.getWorldCenter().x;
-                float yDiff = mouseY - body.getWorldCenter().y;
-                Vector2 dir = new Vector2(mouseX - body.getWorldCenter().x, mouseY - body.getWorldCenter().y).nor();
+                Vector2 dir = new Vector2(mouseX - body.getWorldCenter().x, mouseY - body.getWorldCenter().y);
+                if (dir.len() < SLOW_DOWN_ZONE) {
+                    body.setLinearVelocity(MathUtils.lerp(body.getLinearVelocity().x, 0, 0.2f), MathUtils.lerp(body.getLinearVelocity().y, 0, 0.2f));
 
-                body.applyLinearImpulse(dir.scl(IMPULSE_STRENGTH), body.getWorldCenter(), true);
-                energy.mana -= bodyM.get(ball).body.getMass();
+                } else {
+                    if (dir.len() > MAX_MULTIPLIER) {
+                        dir.nor().scl(MAX_MULTIPLIER * IMPULSE_STRENGTH);
+                    } else {
+                        dir.scl(IMPULSE_STRENGTH);
+                    }
+                    body.applyLinearImpulse(dir.scl(IMPULSE_STRENGTH), body.getWorldCenter(), true);
+                }
+                body.applyForce(new Vector2(0,-GRAVITY/2.5f), body.getWorldCenter(), true);
+
+                //energy.mana -= bodyM.get(ball).body.getMass();
                 /*if (Math.abs(body.getLinearVelocity().x) > MAX_SPEED) {
                     body.setLinearVelocity(body.getLinearVelocity().x * 0.9f, body.getLinearVelocity().y);
                 }
@@ -106,12 +118,22 @@ public class PlayerPowerSystem extends IteratingSystem {
                 }*/
             }
         }
-        if (controller.shoot) {
-            ShooterComponent shooter = shooterM.get(entity);
-            Vector3 playerPos = posM.get(entity).position;
-            shooter.dir = new Vector2(mouseX - playerPos.x, mouseY - playerPos.y);
-            shooter.shoot = true;
+        if(checkShoot){
+            if (controller.shoot) {
+                ShooterComponent shooter = shooterM.get(entity);
+                Vector3 playerPos = posM.get(entity).position;
+                shooter.dir = new Vector2(mouseX - playerPos.x, mouseY - playerPos.y);
+                shooter.shoot = true;
+            }
         }
+        if(!controller.shoot){
+            checkShoot = true;
+        }else {
+            checkShoot = false;
+        }
+
+
+
 
 
     }

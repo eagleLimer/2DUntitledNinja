@@ -5,10 +5,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.game.KeyboardController;
 import com.mygdx.game.game.LevelManager;
-import com.mygdx.game.game.Tile;
 
 public class PlayerCollisionSystem extends IteratingSystem {
     private ComponentMapper<CollisionComponent> collisionM;
@@ -18,6 +18,7 @@ public class PlayerCollisionSystem extends IteratingSystem {
     private ComponentMapper<LevelSensorComponent> levelM;
     private ComponentMapper<PositionComponent> posM;
     private ComponentMapper<StateComponent> stateM;
+    private ComponentMapper<BodyComponent> bodyM;
 
     private LevelManager levelManager;
     private KeyboardController controller;
@@ -35,6 +36,7 @@ public class PlayerCollisionSystem extends IteratingSystem {
         levelM = ComponentMapper.getFor(LevelSensorComponent.class);
         posM = ComponentMapper.getFor(PositionComponent.class);
         stateM = ComponentMapper.getFor(StateComponent.class);
+        bodyM = ComponentMapper.getFor(BodyComponent.class);
 
     }
 
@@ -51,19 +53,23 @@ public class PlayerCollisionSystem extends IteratingSystem {
                             if (damageComponent.damageTimer <= 0) {
                                 healthM.get(entity).health -= damageComponent.damage;
                                 damageComponent.damageTimer = damageComponent.damageCD;
+                                BodyComponent playerBod = bodyM.get(entity);
+                                BodyComponent enemyBod = bodyM.get(collidingEntity);
+
+                                playerBod.body.applyLinearImpulse(new Vector2(playerBod.body.getWorldCenter().sub(enemyBod.body.getWorldCenter())).nor().scl(damageComponent.damage*2.5f),playerBod.body.getWorldCenter(),true);
                             }
                             //System.out.println("player hit enemy");
                             break;
                         case CollisionTypeComponent.SCENERY:
-                            /*System.out.println(posM.get(collidingEntity).position.y + " player " + posM.get(entity).position.y);
-                            if((posM.get(collidingEntity).position.y+ 1f/2) < posM.get(entity).position.y-0.6f){
+                            //System.out.println(posM.get(collidingEntity).position.y + " player " + posM.get(entity).position.y);
+                            if((posM.get(collidingEntity).position.y+ 1f/2) < posM.get(entity).position.y-0.3f){
                                 StateComponent stateComponent = stateM.get(entity);
                                 if (stateComponent.get() == StateComponent.STATE_FALLING || stateComponent.get() == StateComponent.STATE_JUMPING){
-                                    stateComponent.set(StateComponent.STATE_NORMAL);
+                                    //stateComponent.set(StateComponent.STATE_NORMAL);
                                     stateComponent.grounded = true;
-                                    System.out.println("landed and normal!");
+                                    //System.out.println("landed and normal!");
                                 }
-                            }*/
+                            }
                             //System.out.println("player hit scenery");
                             break;
                         case CollisionTypeComponent.OTHER:
@@ -75,7 +81,6 @@ public class PlayerCollisionSystem extends IteratingSystem {
                             }
                             break;
                     }
-                    //todo: fix: damage isn't dealt every time enemy can deal damage because collision is reset but they are still colliding.
                 }
             }
         }
