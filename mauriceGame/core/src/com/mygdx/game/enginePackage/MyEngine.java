@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -15,6 +16,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.NameComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.HealthBarComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.PlayerComponent;
 import com.mygdx.game.enginePackage.systems.*;
 import com.mygdx.game.enginePackage.systems.enemySystems.AggressiveSystem;
 import com.mygdx.game.enginePackage.systems.enemySystems.BasicEnemyMovement;
@@ -31,6 +36,7 @@ import static com.badlogic.gdx.net.HttpRequestBuilder.json;
 import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
 
 public class MyEngine extends Engine {
+    private static final float CHAR_SIZE = 10;
     private Array<Entity> renderQueue;
     private ImmutableArray<Entity> entityArray;
     private Array<BulletInfo> newBullets;
@@ -45,7 +51,8 @@ public class MyEngine extends Engine {
     private ComponentMapper<PlayerComponent> playerM = ComponentMapper.getFor(PlayerComponent.class);
     private ComponentMapper<LevelSensorComponent> levelM = ComponentMapper.getFor(LevelSensorComponent.class);
     private ComponentMapper<HealthBarComponent> healthBarM = ComponentMapper.getFor(HealthBarComponent.class);
-
+    private ComponentMapper<AnimationComponent> animationM = ComponentMapper.getFor(AnimationComponent.class);
+    private ComponentMapper<NameComponent> nameM = ComponentMapper.getFor(NameComponent.class);
 
     private LevelManager levelManager;
     private World world;
@@ -74,15 +81,36 @@ public class MyEngine extends Engine {
 
     public void removeOldEntities() {
         for (Entity entity : toBeRemoved) {
-            if (entity != null|| playerM.get(entity)==null) {
+            if (entity != null && playerM.get(entity)==null) {
+                if(animationM.get(entity)!= null && animationM.get(entity).animationMap.get(StateComponent.STATE_DEAD) != null) {
+                    PositionComponent positionComponent = positionM.get(entity);
+                    if(positionComponent != null) {
+                        creator.createDeathAni(positionComponent.position, animationM.get(entity).animationMap.get(StateComponent.STATE_DEAD));
+                    }
+                }
+                if(typeM.get(entity)!=null){
+                if(typeM.get(entity).type == CollisionTypeComponent.ENEMY){
+                    PositionComponent positionComponent = positionM.get(entity);
+                    creator.createCoin(positionComponent.position.x, positionComponent.position.y);
+                }
+                }
                 this.removeEntity(entity);
             }
         }
         toBeRemoved.clear();
     }
 
+    public void editRemoveEntities(){
+        for (Entity entity:toBeRemoved) {
+            if (entity != null && playerM.get(entity)==null) {
+                this.removeEntity(entity);
+            }
+        }
+    }
+
     public void render(SpriteBatch batch) {
         renderHealthBars(batch); // this way healthBars doesn't cover anything.
+        renderNames(batch);
         renderQueue = new Array<>();
         entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class, ActivatedComponent.class).get());
         for (Entity entity : entityArray) {
@@ -114,7 +142,10 @@ public class MyEngine extends Engine {
     private void renderHealthBars(SpriteBatch batch) {
         renderQueue = new Array<>();
         entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class, HealthBarComponent.class).get());
-        renderQueue.sort(comparator);
+        /*for (Entity entity:entityArray) {
+            renderQueue.add(entity);
+        }
+        renderQueue.sort(comparator);*/
         batch.begin();
         for (Entity entity : entityArray) {
             HealthBarComponent barComponent = healthBarM.get(entity);
@@ -140,6 +171,22 @@ public class MyEngine extends Engine {
         batch.end();
         renderQueue.clear();
     }
+    private void renderNames(SpriteBatch batch){
+        BitmapFont font = new BitmapFont();
+        entityArray = getEntitiesFor(Family.all(PositionComponent.class, TextureComponent.class, NameComponent.class).get());
+        batch.begin();
+        for (Entity entity:entityArray) {
+            NameComponent nameComponent = nameM.get(entity);
+            if(!nameComponent.hidden) {
+                Vector3 position = positionM.get(entity).position;
+                TextureRegion region = textureM.get(entity).region;
+                font.setColor(nameComponent.color);
+                float nameWidth = nameComponent.name.length()*CHAR_SIZE;
+                font.draw(batch, nameComponent.name, position.x * RENDERUNITS_PER_METER - nameWidth/2, position.y * RENDERUNITS_PER_METER + (region.getRegionHeight()/2)*1.8f);
+            }
+        }
+        batch.end();
+    }
 
     public void createSystems(KeyboardController controller, Viewport viewport, Entity player) {
         PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem(levelManager, controller);
@@ -149,6 +196,7 @@ public class MyEngine extends Engine {
         MyEntityListener entityListener = new MyEntityListener(world);
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world, controller, viewport);
 
+        this.addSystem(new ItemSystem(world, viewport, toBeRemoved));
         this.addSystem(new GhostMovementSystem(player));
         this.addSystem(new AggressiveSystem(player));
         this.addSystem(new ActivationSystem(player));
@@ -160,6 +208,7 @@ public class MyEngine extends Engine {
         this.addSystem(new ShootingSystem(newBullets));
         this.addSystem(new BulletCollisionSystem(toBeRemoved));
         this.addSystem(new HealthSystem(toBeRemoved));
+        this.addSystem(new DeathTimerSystem(toBeRemoved));
         this.addSystem(new EnergySystem());
         this.addSystem(powerSystem);
         this.addSystem(collisionSystem);
@@ -269,7 +318,6 @@ public class MyEngine extends Engine {
         playerStartY = startY;
 
     }
-
     public void scheduleForRemoval(Entity entity) {
         toBeRemoved.add(entity);
     }

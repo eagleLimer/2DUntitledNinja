@@ -9,6 +9,7 @@ public class BodyCreator {
     public static final short CATEGORY_ENEMY = 0x0002;
     public static final short CATEGORY_SCENERY = 0x0004;
     public static final short CATEGORY_FRIENDLY = 0x0008;
+    public static final short CATEGORY_ITEM = 0x00016;
 
     public BodyCreator(World world) {
         this.world = world;
@@ -41,6 +42,20 @@ public class BodyCreator {
         boxBody.createFixture(makeSensorFixture(material, polygonShape, bitType));
         polygonShape.dispose();
         return boxBody;
+    }
+    public Body makeCircleSensor(float posx, float posy, float radius, BodyMaterial material, BodyDef.BodyType bodyType, boolean fixedRotation, short bitType) {
+        BodyDef boxBodyDef = new BodyDef();
+        boxBodyDef.type = bodyType;
+        boxBodyDef.position.x = posx;
+        boxBodyDef.position.y = posy;
+        boxBodyDef.fixedRotation = fixedRotation;
+
+        Body circleBody = world.createBody(boxBodyDef);
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(radius);
+        circleBody.createFixture(makeSensorFixture(material, circleShape, bitType));
+        circleShape.dispose();
+        return circleBody;
     }
 
     private FixtureDef makeSensorFixture(BodyMaterial material, Shape shape, short bitType) {
@@ -91,6 +106,11 @@ public class BodyCreator {
                 break;
             case CATEGORY_SCENERY:
                 fixture.filter.categoryBits = CATEGORY_SCENERY;
+                break;
+            case CATEGORY_ITEM:
+                fixture.filter.categoryBits = CATEGORY_ITEM;
+                fixture.filter.maskBits = CATEGORY_SCENERY;
+                break;
         }
 
         return fixture;

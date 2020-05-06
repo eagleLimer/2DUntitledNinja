@@ -7,7 +7,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.enginePackage.components.*;
-import com.mygdx.game.enginePackage.components.enemyComponents.AggressiveComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.AggressiveComponent;
 import com.mygdx.game.enginePackage.components.enemyComponents.BasicEnemyComponent;
 
 public class BasicEnemyMovement extends IteratingSystem {
@@ -42,7 +42,7 @@ public class BasicEnemyMovement extends IteratingSystem {
                 body.body.setLinearVelocity(MathUtils.lerp(body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION), body.body.getLinearVelocity().y);
             }
             velocity.jumpCountDown -= deltaTime;
-            if(playerPos.y > enemyPos.y && velocity.jumpCountDown < 0){
+            if(playerPos.y- enemyPos.y >40 && velocity.jumpCountDown < 0){
                 body.body.setLinearVelocity(body.body.getLinearVelocity().x, velocity.jumpSpeed);
                 velocity.jumpCountDown = velocity.jumpCooldown;
             }

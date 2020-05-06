@@ -1,4 +1,4 @@
-package com.mygdx.game.enginePackage.components;
+package com.mygdx.game.enginePackage.components.combatComponents;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.Color;

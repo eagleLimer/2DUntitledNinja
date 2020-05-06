@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.playerComponents.PlayerComponent;
 import com.mygdx.game.game.KeyboardController;
 
 public class PlayerControlSystem extends IteratingSystem {

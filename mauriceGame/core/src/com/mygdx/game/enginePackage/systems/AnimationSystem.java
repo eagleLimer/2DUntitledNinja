@@ -18,16 +18,13 @@ public class AnimationSystem extends IteratingSystem {
 
     public AnimationSystem() {
         super(Family.all(TextureComponent.class, AnimationComponent.class, StateComponent.class, ActivatedComponent.class).get());
-
         tm = ComponentMapper.getFor(TextureComponent.class);
         am = ComponentMapper.getFor(AnimationComponent.class);
         sm = ComponentMapper.getFor(StateComponent.class);
-
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-
         AnimationComponent animationComponent = am.get(entity);
         StateComponent stateComponent = sm.get(entity);
         if (animationComponent.animationMap.containsKey(stateComponent.get())) {

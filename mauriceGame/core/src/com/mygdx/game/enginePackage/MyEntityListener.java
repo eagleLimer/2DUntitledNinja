@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.enginePackage.components.BodyComponent;
+import com.mygdx.game.enginePackage.components.TextureComponent;
 
 public class MyEntityListener implements EntityListener {
     private World world;

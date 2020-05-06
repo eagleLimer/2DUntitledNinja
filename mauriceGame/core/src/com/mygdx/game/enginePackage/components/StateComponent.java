@@ -9,6 +9,7 @@ public class StateComponent implements Component {
     public static final int STATE_RIGHT = 3;
     public static final int STATE_LEFT = 4;
     public static final int STATE_HIT = 5;
+    public static final int STATE_DEAD = 6;
     public boolean grounded = true;
 
     private int state = 0;
@@ -38,6 +39,8 @@ public class StateComponent implements Component {
                 return "STATE LEFT";
             case STATE_HIT:
                 return "STATE HIT";
+            case STATE_DEAD:
+                return "STATE DEAD";
         }
         return "unknown state";
     }

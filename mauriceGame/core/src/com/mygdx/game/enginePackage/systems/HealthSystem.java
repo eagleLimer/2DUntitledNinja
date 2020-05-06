@@ -6,8 +6,8 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.enginePackage.components.ActivatedComponent;
-import com.mygdx.game.enginePackage.components.HealthBarComponent;
-import com.mygdx.game.enginePackage.components.HealthComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.HealthBarComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
 
 public class HealthSystem extends IteratingSystem {
     private ComponentMapper<HealthComponent> healthM;
@@ -27,6 +27,7 @@ public class HealthSystem extends IteratingSystem {
             toBeRemoved.add(entity);
         }
         //todo: kill if enemy outside mapBounds, also add mapBounds
+        //todo: fix this mess, dont want everyone with health to need healthbar, also dont want to check a lot
         HealthBarComponent barComponent = healthBarM.get(entity);
         if(healthComponent.health < healthComponent.maxHealth) {
             healthComponent.health = healthComponent.health + healthComponent.healthReg * deltaTime;

@@ -3,12 +3,10 @@ package com.mygdx.game.enginePackage;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
 
 public class MyContactListener implements ContactListener {
     //THIS IS USEFUL IF WE WANT COLLISIONS TO IGNORE VELOCITY AND MASS
-
-    //todo: THIS NEEDS TESTING, DOES ALL ENTITIES GET REMOVED FROM LIST THAT SHOULD BE REMOVED
-    //todo: CHANGE MAPTILES TO ANOTHER TYPE THAN ENTITY, WE DONT REALLY NEED TO DO ANYTHING SPECIAL WITH EVERY MAPTILE
 
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -72,8 +70,47 @@ public class MyContactListener implements ContactListener {
         //todo: move postsolve to presolve and deal damage based on velocity and mass of colliding object.
         // maybe check if entity has impactComponent, if true then set damage to velocity*Mass*multiplier.
         // after that collision will be handled in beginContact? or in separate new system.
+        Fixture fa = contact.getFixtureA();
+        Fixture fb = contact.getFixtureB();
+        //b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
+
+        //fa.getBody().applyLinearImpulse(impulse.getCount(),impulse.getCount(),fa.getBody().getWorldCenter().x, fa.getBody().getWorldCenter().y,true);
+        if (fa.getBody().getUserData() instanceof Entity) {
+            Entity ent = (Entity) fa.getBody().getUserData();
+            entityCrash(ent, fb);
+            //return;
+        }
+        if (fb.getBody().getUserData() instanceof Entity) {
+            Entity ent = (Entity) fb.getBody().getUserData();
+            entityCrash(ent, fa);
+            return;
+        }
+
     }
 
+    private void entityCrash(Entity ent, Fixture fb) {
+
+        if (ent.getComponent(CollisionTypeComponent.class)== null)return;
+        if(ent.getComponent(CollisionTypeComponent.class).type == CollisionTypeComponent.ENEMY){
+            if(fb.getBody().getUserData() instanceof Entity){
+                Entity entb = (Entity) fb.getBody().getUserData();
+                EntityTypeComponent type = entb.getComponent(EntityTypeComponent.class);
+                if(type != null){
+                    if(type.entityType == EntityType.ROCK){
+                        HealthComponent health = ent.getComponent(HealthComponent.class);
+                        if (health != null) {
+                            BodyComponent bodyComponent = entb.getComponent(BodyComponent.class);
+                            float damage = bodyComponent.body.getLinearVelocity().len();
+                            if(damage  > 10) {
+                                health.health -= damage/2;
+                                System.out.println(damage);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     //THIS IS USEFUL IF WE WANT COLLISION DAMAGE TO DEPEND ON VELOCITY AND MASS.
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
@@ -124,6 +161,7 @@ public class MyContactListener implements ContactListener {
                             }
                             if (damage > 4) {
                                 health.health -= damage*5;
+                                System.out.println(damage);
                             }
                         }
                     }

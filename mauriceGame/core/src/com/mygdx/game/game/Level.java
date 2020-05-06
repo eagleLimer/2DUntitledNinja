@@ -16,6 +16,10 @@ import com.mygdx.game.enginePackage.MyEngine;
 import com.mygdx.game.enginePackage.EntityCreator;
 import com.mygdx.game.enginePackage.MyContactListener;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.combatComponents.HealthBarComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.EnergyBarComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.EnergyComponent;
 import com.mygdx.game.gamestates.StateChangeListener;
 
 import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
@@ -84,10 +88,6 @@ public class Level {
     }
 
 
-    public void dispose() {
-        world.dispose();
-    }
-
     public void update(float step, StateChangeListener stateChangeListener) {
         myEngine.update(step);
         playerXPos = player.getComponent(PositionComponent.class).position.x * RENDERUNITS_PER_METER;
@@ -96,17 +96,17 @@ public class Level {
             stateChangeListener.popState();
         }
     }
-    public void editUpdate(float step) {
-        myEngine.removeOldEntities();
-    }
 
+    public void editUpdate(float step) {
+        myEngine.editRemoveEntities();
+    }
         public float getPlayerXpos() {
         return player.getComponent(PositionComponent.class).position.x * RENDERUNITS_PER_METER;
     }
+
     public float getPlayerYpos() {
         return player.getComponent(PositionComponent.class).position.y * RENDERUNITS_PER_METER;
     }
-
     public void createEntity(float mouseX, float mouseY, EntityType currentEntityType) {
         if(currentEntityType == EntityType.LEVEL_SENSOR){
             creator.createLevelSensor(mouseX, mouseY, currentPortalName);
@@ -136,12 +136,14 @@ public class Level {
         EnergyComponent energyComponent = player.getComponent(EnergyComponent.class);
         EnergyBarComponent energyBarComponent = player.getComponent(EnergyBarComponent.class);
 
+
         TextureRegion region = healthBarComponent.region;
         float width = healthBarComponent.healthWidth*2;
         float height = healthBarComponent.healthHeight*2;
 
         float originX = width / 2;
         float originY = height / 2;
+
         renderBar(batch, width, height, originX, originY, region, healthComponent.health, healthComponent.maxHealth, MyGdxGame.worldHeight-100);
         region = energyBarComponent.region;
         width = energyBarComponent.energyWidth*2;
@@ -174,13 +176,19 @@ public class Level {
     public String getCurrentPortalName() {
         return currentPortalName;
     }
+
     public void setPlayerStartPos(int startX, int startY){
         myEngine.setPlayerStartPos(startX, startY);
         player.getComponent(PositionComponent.class).position.x = startX;
         player.getComponent(PositionComponent.class).position.y = startY;
     }
-
     public void setCurrentPortalName(String currentPortalName) {
         this.currentPortalName = currentPortalName;
+    }
+
+    public void dispose() {
+        world.dispose();
+        map.dispose();
+        renderer.dispose();
     }
 }

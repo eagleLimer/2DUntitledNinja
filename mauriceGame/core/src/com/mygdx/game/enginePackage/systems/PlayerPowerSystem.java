@@ -16,15 +16,17 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.enginePackage.EntityType;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.combatComponents.ShooterComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.EnergyComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.PlayerComponent;
 import com.mygdx.game.game.KeyboardController;
 import com.mygdx.game.game.Tile;
-
-import static com.mygdx.game.game.Level.GRAVITY;
 
 public class PlayerPowerSystem extends IteratingSystem {
     //todo: should move this also lol
     private static final float IMPULSE_STRENGTH = 0.2f;
-    private static final float MAX_MULTIPLIER = 5f;
+    private static final float MAX_MULTIPLIER = 10f;
+    private static final float MIN_MULTIPLIER = 2f;
     private static final float SLOW_DOWN_ZONE = 1f;
     private static final float LIFT_STRENGTH = 1;
     private static final float IMPULSE_AOE = 1;
@@ -42,7 +44,8 @@ public class PlayerPowerSystem extends IteratingSystem {
     private QueryCallback mycallBack;
     private Array<Entity> entityList;
 
-    // todo: Disable balls before impact with enemy to make it more balanced. (alternative add cooldown to when enemy can be hit by same ball again).
+    // todo: Disable balls before impact with enemy to make it more balanced.
+    //  balanced this another way so not a problem anymore, might be a good feature though.
     public PlayerPowerSystem(World world, KeyboardController controller, final Viewport viewport) {
         super(Family.all(PlayerComponent.class).get());
         this.world = world;
@@ -84,19 +87,47 @@ public class PlayerPowerSystem extends IteratingSystem {
         EnergyComponent energy = energyM.get(entity);
         if (controller.elementPull && energy.mana > 1) {
             world.QueryAABB(mycallBack, mouseX - IMPULSE_AOE, mouseY - IMPULSE_AOE, mouseX + IMPULSE_AOE, mouseY + IMPULSE_AOE);
-        } else if (controller.explode && energy.mana > 1) {
-            //todo: add bang bang iväg från spelaren.
-        } else if (controller.implode && energy.mana > 1) {
-            //todo: Add dra skit till spelaren.
         } else {
             entityList.clear();
+        }
+        if (controller.explode && energy.mana > 1) {
+            for (Entity ball : entityList) {
+                if (bodyM.get(ball) != null) {
+                    Vector3 dirTmp = posM.get(ball).position.sub(posM.get(entity).position);
+                    Vector2 dir = new Vector2(dirTmp.x,dirTmp.y);
+                    Body body = bodyM.get(ball).body;
+                    body.applyLinearImpulse(dir.nor().scl(IMPULSE_STRENGTH*15), body.getWorldCenter(), true);
+                }
+            }
+            entityList.clear();
+            //todo: add bang bang iväg från spelaren.
+        } if (controller.implode && energy.mana > 1) {
+            for (Entity ball : entityList) {
+                if (bodyM.get(ball) != null) {
+                    Vector3 dirTmp = posM.get(entity).position.sub(posM.get(ball).position);
+                    Vector2 dir = new Vector2(dirTmp.x,dirTmp.y);
+                    Body body = bodyM.get(ball).body;
+                    body.applyLinearImpulse(dir.nor().scl(IMPULSE_STRENGTH*15), body.getWorldCenter(), true);
+                }
+            }
+            entityList.clear();
+            //todo: Add dra skit till spelaren.
         }
         for (Entity ball : entityList) {
             if (bodyM.get(ball) != null) {
                 //todo: change to linearvelocity, gradually change the velocity depending on angle to point. gradually depending on the mass of the body being moved.
                 Body body = bodyM.get(ball).body;
                 Vector2 dir = new Vector2(mouseX - body.getWorldCenter().x, mouseY - body.getWorldCenter().y);
-                if (dir.len() < SLOW_DOWN_ZONE) {
+                if(dir.len() < MIN_MULTIPLIER){
+                    dir.nor().scl(MIN_MULTIPLIER);
+                }else if(dir.len() > MAX_MULTIPLIER){
+                    dir.nor().scl(MAX_MULTIPLIER);
+                }
+                body.setLinearVelocity(dir.scl(3));
+                body.setLinearVelocity(MathUtils.lerp(body.getLinearVelocity().x, dir.x, 0.50f), MathUtils.lerp(body.getLinearVelocity().y, dir.y, 0.50f));
+
+                //OLD IMPULSE SYSTEM
+                /*if (dir.len() < SLOW_DOWN_ZONE) {
                     body.setLinearVelocity(MathUtils.lerp(body.getLinearVelocity().x, 0, 0.2f), MathUtils.lerp(body.getLinearVelocity().y, 0, 0.2f));
 
                 } else {
@@ -107,15 +138,11 @@ public class PlayerPowerSystem extends IteratingSystem {
                     }
                     body.applyLinearImpulse(dir.scl(IMPULSE_STRENGTH), body.getWorldCenter(), true);
                 }
-                body.applyForce(new Vector2(0,-GRAVITY/2.5f), body.getWorldCenter(), true);
+                body.applyForce(new Vector2(0,-GRAVITY/2.5f), body.getWorldCenter(), true);*/
+
+
 
                 //energy.mana -= bodyM.get(ball).body.getMass();
-                /*if (Math.abs(body.getLinearVelocity().x) > MAX_SPEED) {
-                    body.setLinearVelocity(body.getLinearVelocity().x * 0.9f, body.getLinearVelocity().y);
-                }
-                if (Math.abs(body.getLinearVelocity().y) > MAX_SPEED) {
-                    body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y * 0.9f);
-                }*/
             }
         }
         if(checkShoot){

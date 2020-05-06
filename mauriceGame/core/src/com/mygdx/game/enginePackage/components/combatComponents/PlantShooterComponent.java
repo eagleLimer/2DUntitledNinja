@@ -1,4 +1,4 @@
-package com.mygdx.game.enginePackage.components.enemyComponents;
+package com.mygdx.game.enginePackage.components.combatComponents;
 
 import com.badlogic.ashley.core.Component;
 

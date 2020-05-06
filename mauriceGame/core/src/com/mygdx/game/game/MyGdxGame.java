@@ -59,7 +59,6 @@ public class MyGdxGame extends ApplicationAdapter {
                 });
             }
         }).start();
-
     }
 
     @Override

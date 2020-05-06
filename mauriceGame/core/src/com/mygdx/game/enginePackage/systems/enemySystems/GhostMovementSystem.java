@@ -4,14 +4,13 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.enginePackage.components.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.BodyComponent;
 import com.mygdx.game.enginePackage.components.PositionComponent;
 import com.mygdx.game.enginePackage.components.VelocityComponent;
-import com.mygdx.game.enginePackage.components.enemyComponents.AggressiveComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.AggressiveComponent;
 import com.mygdx.game.enginePackage.components.enemyComponents.GhostMovementComponent;
 
 public class GhostMovementSystem extends IteratingSystem {

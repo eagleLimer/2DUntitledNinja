@@ -16,7 +16,7 @@ import com.mygdx.game.resources.ImagesRes;
 
 
 public class PlayState extends GameState {
-    public static final String FIRST_LEVEL_NAME = "levelFiles/level1";
+    public static final String FIRST_LEVEL_NAME = "levelFiles/levelHub";
     private static final int MOUNTAINS_HEIGHT_1 = 200;
     private static final int MOUNTAINS_HEIGHT_2 = 50;
     private static final int HILLS_HEIGHT = -200;

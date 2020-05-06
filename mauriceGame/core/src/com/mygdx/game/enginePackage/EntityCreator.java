@@ -3,15 +3,17 @@ package com.mygdx.game.enginePackage;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.enginePackage.components.*;
-import com.mygdx.game.enginePackage.components.enemyComponents.AggressiveComponent;
-import com.mygdx.game.enginePackage.components.enemyComponents.BasicEnemyComponent;
-import com.mygdx.game.enginePackage.components.enemyComponents.GhostMovementComponent;
-import com.mygdx.game.enginePackage.components.enemyComponents.PlantShooterComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.*;
+import com.mygdx.game.enginePackage.components.enemyComponents.*;
+import com.mygdx.game.enginePackage.components.playerComponents.EnergyBarComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.EnergyComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.PlayerComponent;
 import com.mygdx.game.resources.AnimationsRes;
 import com.mygdx.game.resources.ImagesRes;
 
@@ -20,7 +22,6 @@ import static com.mygdx.game.enginePackage.EntityType.GHOST;
 import static com.mygdx.game.enginePackage.EntityType.PLAYER;
 import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
 
-//todo: make enum class containing different types of entities. hårdkodat är inte det bästa :/
 //todo: make different health bar types and sizes, maybe depending on rarity and health amount.
 public class EntityCreator {
     private MyEngine myEngine;
@@ -61,6 +62,8 @@ public class EntityCreator {
 
         Animation animation = AnimationsRes.plantAni;
         animationComponent.animationMap.put(StateComponent.STATE_NORMAL, animation);
+        animation = AnimationsRes.playerDeath;
+        animationComponent.animationMap.put(StateComponent.STATE_DEAD,animation);
         Body body = entityBodyCreator.makeRectBody(posx, posy, 64/RENDERUNITS_PER_METER, 32/RENDERUNITS_PER_METER, BodyMaterial.METAL,
                 BodyDef.BodyType.KinematicBody, false, BodyCreator.CATEGORY_ENEMY);
         body.setUserData(plant);
@@ -102,7 +105,7 @@ public class EntityCreator {
         ghost.add(new StateComponent());
         ghost.add(new CollisionComponent());
         ghost.add(new PlantShooterComponent());
-        ghost.add(new ShooterComponent(1.5f,BulletType.ENEMY_BULLET,true));
+        ghost.add(new ShooterComponent(1.5f,BulletType.GHOST_BULLET,true));
         ghost.add(new DamageComponent(20));
         ghost.add(new HealthComponent(100,100,10));
         myEngine.addEntity(ghost);
@@ -147,7 +150,7 @@ public class EntityCreator {
 
         //ball.add(new HealthComponent(10,10,1));
         //ball.add(new HealthBarComponent());
-        ball.add(new ActivatedComponent());
+        ball.add(new DeactivatedComponent());
         myEngine.addEntity(ball);
     }
 
@@ -167,6 +170,9 @@ public class EntityCreator {
         animation = AnimationsRes.playerJumping;
         animationComponent.animationMap.put(StateComponent.STATE_JUMPING, animation);
 
+        //player.add(new NameComponent("PLAYER"));
+        player.add(new InventoryComponent());
+        player.add(new CollectorComponent(3,1));
         player.add(animationComponent);
         player.add(new ActivatedComponent());
         player.add(new HealthBarComponent(60,10,false,true));
@@ -207,22 +213,27 @@ public class EntityCreator {
             case PLAYER_BULLET:
                 bitType = CATEGORY_PLAYER;
                 break;
-            case ENEMY_BULLET:
+            case ENEMY_BULLET: case GHOST_BULLET:
                 bitType = CATEGORY_ENEMY;
                 break;
         }
-        Body body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x, bulletInfo.pos.y,
-                bulletInfo.bulletType.radius, BodyMaterial.BULLET, BodyDef.BodyType.DynamicBody, false, bitType);
-        /*Body body = entityBodyCreator.makeRectSensor(bulletInfo.pos.x, bulletInfo.pos.y, bulletInfo.bulletType.radius*2, bulletInfo.bulletType.radius*2, BodyMaterial.BULLET,
-                BodyDef.BodyType.KinematicBody, false, bitType);*/
-        body.applyLinearImpulse(bulletInfo.dir, body.getWorldCenter(), true);
-        //body.setLinearVelocity(bulletInfo.dir.scl(100));
+        Body body;
+        if(bulletInfo.bulletType.piercing){
+            body = entityBodyCreator.makeRectSensor(bulletInfo.pos.x, bulletInfo.pos.y, bulletInfo.bulletType.radius*2, bulletInfo.bulletType.radius*2, BodyMaterial.BULLET,
+                    bulletInfo.bulletType.bodyType, false, bitType);
+            body.setLinearVelocity(bulletInfo.dir.scl(100));
+        }else {
+            body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x, bulletInfo.pos.y,
+                    bulletInfo.bulletType.radius, BodyMaterial.BULLET, bulletInfo.bulletType.bodyType, false, bitType);
+            body.applyLinearImpulse(bulletInfo.dir, body.getWorldCenter(), true);
+        }
+
         body.setUserData(bullet);
         body.setAngularVelocity(300);
-
         bullet.add(new HealthBarComponent(60,10,true,true));
         bullet.add(new ActivatedComponent());
-        bullet.add(new HealthComponent(bulletInfo.bulletType.bulletTimer,bulletInfo.bulletType.bulletTimer, -1));
+        bullet.add(new HealthComponent(bulletInfo.bulletType.bulletTimer,bulletInfo.bulletType.bulletTimer, 0));
+        bullet.add(new DeathTimerComponent(bulletInfo.bulletType.bulletTimer));
         bullet.add(new BulletComponent());
         bullet.add(new CollisionTypeComponent(bulletInfo.bulletType.type));
         bullet.add(new BodyComponent(body));
@@ -242,11 +253,44 @@ public class EntityCreator {
         body.setUserData(levelSensor);
 
         levelSensor.add(new ActivatedComponent());
+        levelSensor.add(new NameComponent(currentPortalName));
         levelSensor.add(new LevelSensorComponent(currentPortalName));
         levelSensor.add(new CollisionTypeComponent(CollisionTypeComponent.LEVEL_PORTAL));
         levelSensor.add(new PositionComponent(new Vector3(posx,posy, 0)));
         levelSensor.add(new TextureComponent(ImagesRes.levelImage));
         levelSensor.add(new BodyComponent(body));
         myEngine.addEntity(levelSensor);
+    }
+
+    public void createCoin(float posx, float posy){
+        Entity coin = new Entity();
+
+        Body body = entityBodyCreator.makeCirclePolyBody(posx, posy, (16/2f)/RENDERUNITS_PER_METER, BodyMaterial.BULLET,
+                BodyDef.BodyType.DynamicBody, false, CATEGORY_ITEM);
+        body.setUserData(coin);
+        coin.add(new ItemComponent(new Item(ItemType.COIN)));
+        coin.add(new BodyComponent(body));
+        coin.add(new CollisionTypeComponent(CollisionTypeComponent.OTHER));
+        coin.add(new ActivatedComponent());
+        coin.add(new PositionComponent(new Vector3(posx,posy,0)));
+        coin.add(new DeathTimerComponent(30));
+        coin.add(new TextureComponent(ImagesRes.coinImage));
+        myEngine.addEntity(coin);
+    }
+
+    public void createDeathAni(Vector3 position, Animation animation) {
+        Entity deathAniEntity = new Entity();
+        AnimationComponent deathAnimation = new AnimationComponent();
+        deathAnimation.animationMap.put(StateComponent.STATE_NORMAL, animation);
+        StateComponent stateComponent = new StateComponent();
+        stateComponent.set(StateComponent.STATE_NORMAL);
+        deathAniEntity.add(new ActivatedComponent());
+        deathAniEntity.add(new DeathTimerComponent(animation.getAnimationDuration()));
+        deathAniEntity.add(new PositionComponent(position));
+        deathAniEntity.add(stateComponent);
+        deathAniEntity.add(deathAnimation);
+        deathAniEntity.add(new TextureComponent((TextureRegion) animation.getKeyFrame(0)));
+        deathAniEntity.add(new CollisionTypeComponent(CollisionTypeComponent.OTHER));
+        myEngine.addEntity(deathAniEntity);
     }
 }

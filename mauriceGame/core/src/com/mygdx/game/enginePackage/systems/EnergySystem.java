@@ -5,7 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.mygdx.game.enginePackage.components.ActivatedComponent;
-import com.mygdx.game.enginePackage.components.EnergyComponent;
+import com.mygdx.game.enginePackage.components.playerComponents.EnergyComponent;
 
 public class EnergySystem extends IteratingSystem {
     private ComponentMapper<EnergyComponent> energyM;

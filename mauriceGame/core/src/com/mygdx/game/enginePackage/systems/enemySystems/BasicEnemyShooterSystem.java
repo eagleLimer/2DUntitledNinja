@@ -9,8 +9,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.enginePackage.BulletInfo;
 import com.mygdx.game.enginePackage.components.*;
-import com.mygdx.game.enginePackage.components.enemyComponents.AggressiveComponent;
-import com.mygdx.game.enginePackage.components.enemyComponents.PlantShooterComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.ShooterComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.AggressiveComponent;
+import com.mygdx.game.enginePackage.components.combatComponents.PlantShooterComponent;
 
 public class BasicEnemyShooterSystem extends IteratingSystem {
     private ComponentMapper<ShooterComponent> shooterM;
