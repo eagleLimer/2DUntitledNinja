@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.game.*;
 import com.mygdx.game.resources.ImagesRes;
 
+import static com.mygdx.game.enginePackage.Constants.RENDERUNITS_PER_METER;
 import static com.mygdx.game.game.MyGdxGame.*;
 
 //very big class, but tables are about 180 lines

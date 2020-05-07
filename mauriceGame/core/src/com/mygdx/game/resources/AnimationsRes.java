@@ -17,6 +17,7 @@ public class AnimationsRes {
     public static Animation playerDeath;
     public static Animation plantAni;
     public static Animation dabAni;
+    public static Animation coinPickupAni;
 
 
     public static void loadAnimations() {
@@ -66,6 +67,12 @@ public class AnimationsRes {
         frame_rows = 1;
         frameTime = 0.5f;
         dabAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
+
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"coinPickup.png"));
+        frame_cols = 7;
+        frame_rows = 1;
+        frameTime = 0.1f;
+        coinPickupAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
     }
 

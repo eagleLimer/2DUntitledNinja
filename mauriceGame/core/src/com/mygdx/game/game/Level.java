@@ -2,7 +2,9 @@ package com.mygdx.game.game;
 
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -22,7 +24,7 @@ import com.mygdx.game.enginePackage.components.playerComponents.EnergyBarCompone
 import com.mygdx.game.enginePackage.components.playerComponents.EnergyComponent;
 import com.mygdx.game.gamestates.StateChangeListener;
 
-import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
+import static com.mygdx.game.enginePackage.Constants.RENDERUNITS_PER_METER;
 
 public class Level {
     public static final float GRAVITY = -9.8f * 2.5f;
@@ -131,11 +133,16 @@ public class Level {
     }
 
     public void renderUi(OrthographicCamera camera, SpriteBatch batch) {
+        InventoryComponent inventoryComponent = player.getComponent(InventoryComponent.class);
+        batch.begin();
+        BitmapFont font = new BitmapFont();
+        font.setColor(Color.GRAY);
+        font.draw(batch,"COINS: " +Integer.toString(inventoryComponent.coins),100, 100);
+        batch.end();
         HealthComponent healthComponent = player.getComponent(HealthComponent.class);
         HealthBarComponent healthBarComponent = player.getComponent(HealthBarComponent.class);
         EnergyComponent energyComponent = player.getComponent(EnergyComponent.class);
         EnergyBarComponent energyBarComponent = player.getComponent(EnergyBarComponent.class);
-
 
         TextureRegion region = healthBarComponent.region;
         float width = healthBarComponent.healthWidth*2;

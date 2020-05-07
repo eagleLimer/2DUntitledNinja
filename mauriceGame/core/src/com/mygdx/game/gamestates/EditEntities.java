@@ -18,6 +18,7 @@ import com.mygdx.game.enginePackage.EntityType;
 import com.mygdx.game.enginePackage.components.CollisionTypeComponent;
 import com.mygdx.game.game.*;
 import com.mygdx.game.resources.ImagesRes;
+import static com.mygdx.game.enginePackage.Constants.RENDERUNITS_PER_METER;
 
 import java.util.HashMap;
 
@@ -105,7 +106,7 @@ public class EditEntities extends GameState {
         TextButton exitButton = new TextButton("Back", MyGdxGame.uiSkin);
         TextButton editMapButton = new TextButton("Edit Map", MyGdxGame.uiSkin);
         TextButton removeEntitiesButton = new TextButton("Remove Entities", MyGdxGame.uiSkin);
-        nextLevelField = new TextField("portal level name here", MyGdxGame.uiSkin);
+        nextLevelField = new TextField("levelWhat?", MyGdxGame.uiSkin);
         final SelectBox<EntityBox> entityBox = new SelectBox<EntityBox>(MyGdxGame.uiSkin);
         EntityBox[] entityBoxes = new EntityBox[EntityType.values().length];
         int index = 0;

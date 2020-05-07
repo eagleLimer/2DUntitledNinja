@@ -6,9 +6,9 @@ import com.mygdx.game.enginePackage.components.CollisionTypeComponent;
 import com.mygdx.game.resources.ImagesRes;
 
 public enum BulletType {
-    PLAYER_BULLET(0.25f,20,10, 0.1f,0.02f, CollisionTypeComponent.FRIENDLY, ImagesRes.bulletImage,false, BodyDef.BodyType.DynamicBody),
+    PLAYER_BULLET(0.25f,10,0.6f, 0.3f,0.02f, CollisionTypeComponent.FRIENDLY, ImagesRes.bulletImage,true, BodyDef.BodyType.KinematicBody),
     ENEMY_BULLET(0.25f, 20, 10, 0.05f, 0.2f, CollisionTypeComponent.ENEMY, ImagesRes.enemyBulletImage,false, BodyDef.BodyType.DynamicBody),
-    GHOST_BULLET(0.25f,20,10,0.1f,0.2f,CollisionTypeComponent.ENEMY,ImagesRes.enemyBulletImage,true, BodyDef.BodyType.KinematicBody);
+    GHOST_BULLET(0.25f,10,10,0.1f,0.2f,CollisionTypeComponent.ENEMY,ImagesRes.enemyBulletImage,true, BodyDef.BodyType.KinematicBody);
     public float radius;
     public float damage;
     public int type;

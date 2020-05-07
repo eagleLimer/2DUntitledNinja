@@ -75,8 +75,8 @@ public class Map extends TiledMap {
         backgroundLayer.setVisible(true);
 
         this.getLayers().add(backgroundLayer);*/
-        this.getLayers().add(collisionLayer);
         this.getLayers().add(visualLayer);
+        this.getLayers().add(collisionLayer);
     }
 
     private TiledMapTileLayer createNewLayer(int mapWidth, int mapHeight) {
@@ -134,8 +134,8 @@ public class Map extends TiledMap {
         backgroundLayer.setName("layer2");
         backgroundLayer.setVisible(true);
         this.getLayers().add(backgroundLayer);*/
-        this.getLayers().add(collisionLayer);
         this.getLayers().add(visualLayer);
+        this.getLayers().add(collisionLayer);
     }
 
     private TiledMapTileLayer loadLayer(FileHandle fileHandle) {

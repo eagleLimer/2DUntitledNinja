@@ -15,7 +15,6 @@ public class MyGdxGame extends ApplicationAdapter {
     public static final float STEP = 1 / 60f;
     public static final int worldWidth = 1600;
     public static final int worldHeight = 900;
-    public static final float RENDERUNITS_PER_METER = 32;
     //1600 , 900
     public static Skin uiSkin;
 

@@ -3,13 +3,12 @@ package com.mygdx.game.enginePackage;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.enginePackage.BodyMaterial;
 
+import static com.mygdx.game.enginePackage.Constants.*;
+
 public class BodyCreator {
     private World world;
-    public static final short CATEGORY_PLAYER = 0x0001;
-    public static final short CATEGORY_ENEMY = 0x0002;
-    public static final short CATEGORY_SCENERY = 0x0004;
-    public static final short CATEGORY_FRIENDLY = 0x0008;
-    public static final short CATEGORY_ITEM = 0x00016;
+
+
 
     public BodyCreator(World world) {
         this.world = world;
@@ -95,22 +94,33 @@ public class BodyCreator {
         switch (bitType){
             case CATEGORY_PLAYER:
                 fixture.filter.categoryBits = CATEGORY_PLAYER;
-                fixture.filter.maskBits = CATEGORY_ENEMY | CATEGORY_SCENERY;
+                fixture.filter.maskBits = CATEGORY_ENEMY | CATEGORY_SCENERY | CATEGORY_ITEM;
+                fixture.filter.groupIndex = -3;
                 break;
             case CATEGORY_ENEMY:
                 fixture.filter.categoryBits = CATEGORY_ENEMY;
+                fixture.filter.maskBits = CATEGORY_FRIENDLY | CATEGORY_ENEMY | CATEGORY_SCENERY | CATEGORY_PLAYER;
+                fixture.filter.groupIndex = 2;
                 break;
             case CATEGORY_FRIENDLY:
                 fixture.filter.categoryBits = CATEGORY_FRIENDLY;
                 fixture.filter.maskBits = CATEGORY_FRIENDLY | CATEGORY_ENEMY | CATEGORY_SCENERY;
+                fixture.filter.groupIndex = 1;
                 break;
             case CATEGORY_SCENERY:
                 fixture.filter.categoryBits = CATEGORY_SCENERY;
+                fixture.filter.maskBits = CATEGORY_ITEM | CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_FRIENDLY;
+                fixture.filter.groupIndex = -1;
                 break;
             case CATEGORY_ITEM:
                 fixture.filter.categoryBits = CATEGORY_ITEM;
-                fixture.filter.maskBits = CATEGORY_SCENERY;
+                fixture.filter.maskBits = CATEGORY_SCENERY | CATEGORY_ITEM | CATEGORY_PLAYER | CATEGORY_COLLECTOR;
+                fixture.filter.groupIndex = 4;
                 break;
+            case CATEGORY_COLLECTOR:
+                fixture.filter.categoryBits = CATEGORY_COLLECTOR;
+                fixture.filter.maskBits = CATEGORY_ITEM;
+                fixture.filter.groupIndex = -5;
         }
 
         return fixture;

@@ -68,6 +68,7 @@ public class PlayerPowerSystem extends IteratingSystem {
                         if (entityTypeComponent.entityType == EntityType.ROCK) {
                             if (bodyComponent.body.getMass() < LIFT_STRENGTH) {
                                 if (!entityList.contains(entity, true)) {
+                                    bodyComponent.body.setGravityScale(0);
                                     entityList.add(entity);
                                 }
                             }
@@ -139,8 +140,6 @@ public class PlayerPowerSystem extends IteratingSystem {
                     body.applyLinearImpulse(dir.scl(IMPULSE_STRENGTH), body.getWorldCenter(), true);
                 }
                 body.applyForce(new Vector2(0,-GRAVITY/2.5f), body.getWorldCenter(), true);*/
-
-
 
                 //energy.mana -= bodyM.get(ball).body.getMass();
             }

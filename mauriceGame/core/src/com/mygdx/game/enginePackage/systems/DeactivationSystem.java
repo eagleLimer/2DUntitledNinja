@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.mygdx.game.enginePackage.components.*;
 
-import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
+import static com.mygdx.game.enginePackage.Constants.RENDERUNITS_PER_METER;
 import static com.mygdx.game.game.MyGdxGame.worldWidth;
 
 public class DeactivationSystem extends IteratingSystem {

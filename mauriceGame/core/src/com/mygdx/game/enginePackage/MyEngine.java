@@ -19,6 +19,7 @@ import com.mygdx.game.enginePackage.components.*;
 import com.mygdx.game.enginePackage.components.NameComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthBarComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
+import com.mygdx.game.enginePackage.components.enemyComponents.EnemyRarityComponent;
 import com.mygdx.game.enginePackage.components.playerComponents.PlayerComponent;
 import com.mygdx.game.enginePackage.systems.*;
 import com.mygdx.game.enginePackage.systems.enemySystems.AggressiveSystem;
@@ -33,7 +34,8 @@ import com.mygdx.game.gameData.LevelSensorData;
 import java.util.Comparator;
 
 import static com.badlogic.gdx.net.HttpRequestBuilder.json;
-import static com.mygdx.game.game.MyGdxGame.RENDERUNITS_PER_METER;
+import static com.mygdx.game.enginePackage.Constants.CATEGORY_SCENERY;
+import static com.mygdx.game.enginePackage.Constants.RENDERUNITS_PER_METER;
 
 public class MyEngine extends Engine {
     private static final float CHAR_SIZE = 10;
@@ -53,6 +55,7 @@ public class MyEngine extends Engine {
     private ComponentMapper<HealthBarComponent> healthBarM = ComponentMapper.getFor(HealthBarComponent.class);
     private ComponentMapper<AnimationComponent> animationM = ComponentMapper.getFor(AnimationComponent.class);
     private ComponentMapper<NameComponent> nameM = ComponentMapper.getFor(NameComponent.class);
+    private ComponentMapper<EnemyRarityComponent> rarityM = ComponentMapper.getFor(EnemyRarityComponent.class);
 
     private LevelManager levelManager;
     private World world;
@@ -89,10 +92,17 @@ public class MyEngine extends Engine {
                     }
                 }
                 if(typeM.get(entity)!=null){
-                if(typeM.get(entity).type == CollisionTypeComponent.ENEMY){
-                    PositionComponent positionComponent = positionM.get(entity);
-                    creator.createCoin(positionComponent.position.x, positionComponent.position.y);
-                }
+                    if(typeM.get(entity).type == CollisionTypeComponent.ENEMY){
+                        PositionComponent positionComponent = positionM.get(entity);
+                        EnemyRarityComponent rarityComponent = rarityM.get(entity);
+                        if(rarityComponent != null) {
+                            for (int i = 0; i < rarityComponent.rarityLevel; i++) {
+                                for (int j = 0; j < rarityComponent.rarityLevel; j++) {
+                                    creator.createCoin(positionComponent.position.x - 1 + i / 3f, positionComponent.position.y + j / 3f);
+                                }
+                            }
+                        }
+                    }
                 }
                 this.removeEntity(entity);
             }
@@ -189,14 +199,14 @@ public class MyEngine extends Engine {
     }
 
     public void createSystems(KeyboardController controller, Viewport viewport, Entity player) {
-        PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem(levelManager, controller);
+        PlayerCollisionSystem collisionSystem = new PlayerCollisionSystem(levelManager, controller, toBeRemoved);
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(controller);
         PhysicsSystem physicsSystem = new PhysicsSystem(world);
         AnimationSystem animationSystem = new AnimationSystem();
         MyEntityListener entityListener = new MyEntityListener(world);
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world, controller, viewport);
 
-        this.addSystem(new ItemSystem(world, viewport, toBeRemoved));
+        this.addSystem(new CollectorSystem());
         this.addSystem(new GhostMovementSystem(player));
         this.addSystem(new AggressiveSystem(player));
         this.addSystem(new ActivationSystem(player));
@@ -229,7 +239,7 @@ public class MyEngine extends Engine {
                     mapTile.add(texture);*/
                     Entity mapTile = new Entity();
                     Body body = bodyCreator.makeRectBody(row + 0.5f, col + 0.5f, 1, 1, BodyMaterial.METAL,
-                            BodyDef.BodyType.StaticBody, true, BodyCreator.CATEGORY_SCENERY);
+                            BodyDef.BodyType.StaticBody, true, CATEGORY_SCENERY);
                     body.setUserData(mapTile);
 
                     mapTile.add(new ActivatedComponent());
@@ -257,6 +267,7 @@ public class MyEngine extends Engine {
         }
         LevelSensorData[] levelSensorList = engineData.getLevelSensorDataList();
         for (LevelSensorData levelData : levelSensorList) {
+            System.out.println("created sensor");
             creator.createLevelSensor(levelData.getxPos(), levelData.getyPos(), levelData.getLevelName());
         }
     }
@@ -266,13 +277,14 @@ public class MyEngine extends Engine {
         EngineData engineData = new EngineData();
         engineData.setPlayerStartX(playerStartX);
         engineData.setPlayerStartY(playerStartY);
-        ImmutableArray<Entity> entityDataArray = getEntitiesFor(Family.all(CollisionTypeComponent.class, PositionComponent.class).get());
+        ImmutableArray<Entity> entityDataArray = getEntitiesFor(Family.all(CollisionTypeComponent.class, PositionComponent.class, EntityTypeComponent.class).get());
         //check important length of entityDataArray
         int index = 0;
         int levelSensorIndex = 0;
         for (Entity entity : entityDataArray) {
             if (levelM.get(entity) != null) {
                 levelSensorIndex++;
+                System.out.println("saved portal");
             } else if (typeM.get(entity).type != CollisionTypeComponent.SCENERY && playerM.get(entity) == null) {
                 index++;
             }

@@ -14,7 +14,6 @@ public class MyContactListener implements ContactListener {
         if (fa.getBody().getUserData() instanceof Entity && fb.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fa.getBody().getUserData();
             Entity ent2 = (Entity) fb.getBody().getUserData();
-
             entityCollision2(ent, ent2);
             return;
         }
