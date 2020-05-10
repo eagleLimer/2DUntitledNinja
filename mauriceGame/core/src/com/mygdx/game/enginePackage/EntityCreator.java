@@ -233,9 +233,12 @@ public class EntityCreator {
 
         short bitType = CATEGORY_ENEMY;
 
+        AnimationComponent animationComponent = new AnimationComponent();
+        Animation animation = AnimationsRes.playerBulletDeathAni;
+        animationComponent.animationMap.put(StateComponent.STATE_DEAD, animation);
         switch (bulletInfo.bulletType){
             case PLAYER_BULLET:
-                bitType = CATEGORY_FRIENDLY;
+                bitType = CATEGORY_PLAYER;
                 break;
             case ENEMY_BULLET: case GHOST_BULLET:
                 bitType = CATEGORY_ENEMY;
@@ -250,10 +253,14 @@ public class EntityCreator {
             body = entityBodyCreator.makeCirclePolyBody(bulletInfo.pos.x, bulletInfo.pos.y,
                     bulletInfo.bulletType.radius, BodyMaterial.BULLET, bulletInfo.bulletType.bodyType, false, bitType);
             body.applyLinearImpulse(bulletInfo.dir, body.getWorldCenter(), true);
+            body.setBullet(true);
         }
 
+        body.setGravityScale(0.5f);
         body.setUserData(bullet);
         body.setAngularVelocity(300);
+        bullet.add(animationComponent);
+        bullet.add(new StateComponent());
         bullet.add(new HealthBarComponent(60,10,true,true));
         bullet.add(new ActivatedComponent());
         bullet.add(new HealthComponent(bulletInfo.bulletType.bulletTimer,bulletInfo.bulletType.bulletTimer, 0));
@@ -295,6 +302,7 @@ public class EntityCreator {
         Body body = entityBodyCreator.makeCirclePolyBody(posx, posy, (16/2f)/RENDERUNITS_PER_METER, BodyMaterial.BULLET,
                 BodyDef.BodyType.DynamicBody, false, CATEGORY_ITEM);
         body.setUserData(coin);
+        body.setGravityScale(0.5f);
         coin.add(animationComponent);
         coin.add(new CollisionComponent());
         coin.add(new StateComponent());
@@ -320,7 +328,7 @@ public class EntityCreator {
         deathAniEntity.add(stateComponent);
         deathAniEntity.add(deathAnimation);
         deathAniEntity.add(new TextureComponent((TextureRegion) animation.getKeyFrame(0)));
-        deathAniEntity.add(new CollisionTypeComponent(CollisionTypeComponent.OTHER));
+        //deathAniEntity.add(new CollisionTypeComponent(CollisionTypeComponent.OTHER));
         myEngine.addEntity(deathAniEntity);
     }
 }

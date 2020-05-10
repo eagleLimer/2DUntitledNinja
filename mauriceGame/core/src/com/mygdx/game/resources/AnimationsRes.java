@@ -18,6 +18,8 @@ public class AnimationsRes {
     public static Animation plantAni;
     public static Animation dabAni;
     public static Animation coinPickupAni;
+    public static Animation bulletDeathAni;
+    public static Animation playerBulletDeathAni;
 
 
     public static void loadAnimations() {
@@ -73,6 +75,18 @@ public class AnimationsRes {
         frame_rows = 1;
         frameTime = 0.1f;
         coinPickupAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
+
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"bulletDeathAni.png"));
+        frame_cols = 8;
+        frame_rows = 1;
+        frameTime = 0.05f;
+        bulletDeathAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
+
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"bullet.png"));
+        frame_cols = 1;
+        frame_rows = 1;
+        frameTime = 1f;
+        playerBulletDeathAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
     }
 

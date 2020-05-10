@@ -26,12 +26,14 @@ public class DeactivationSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        float activeDistance = collisionM.get(entity).type == CollisionTypeComponent.SCENERY ? SCENERY_MULTIPLIER*ACTIVATION_DISTANCE : ACTIVATION_DISTANCE;
-        if(Math.abs(posM.get(player).position.x - posM.get(entity).position.x) > activeDistance &&
-                Math.abs(posM.get(player).position.y - posM.get(entity).position.y) > activeDistance){
-            entity.remove(ActivatedComponent.class);
-            bodyM.get(entity).body.setActive(false);
-            entity.add(new DeactivatedComponent());
+        if(bodyM.get(entity) != null) {
+            float activeDistance = collisionM.get(entity).type == CollisionTypeComponent.SCENERY ? SCENERY_MULTIPLIER * ACTIVATION_DISTANCE : ACTIVATION_DISTANCE;
+            if (Math.abs(posM.get(player).position.x - posM.get(entity).position.x) > activeDistance &&
+                    Math.abs(posM.get(player).position.y - posM.get(entity).position.y) > activeDistance) {
+                entity.remove(ActivatedComponent.class);
+                bodyM.get(entity).body.setActive(false);
+                entity.add(new DeactivatedComponent());
+            }
         }
     }
 }

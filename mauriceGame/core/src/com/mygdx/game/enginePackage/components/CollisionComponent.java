@@ -2,8 +2,9 @@ package com.mygdx.game.enginePackage.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.utils.Array;
+
+import java.util.HashMap;
 
 public class CollisionComponent implements Component {
-    public Array<Entity> collidingEntities = new Array<>();
+    public HashMap<Entity, CollisionBooleans> collidingEntities = new HashMap<>();
 }

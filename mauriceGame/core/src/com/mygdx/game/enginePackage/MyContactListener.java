@@ -1,12 +1,18 @@
 package com.mygdx.game.enginePackage;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.combatComponents.DamageComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
 
 public class MyContactListener implements ContactListener {
     //THIS IS USEFUL IF WE WANT COLLISIONS TO IGNORE VELOCITY AND MASS
+    ComponentMapper<CollisionComponent> collisionM = ComponentMapper.getFor(CollisionComponent.class);
+    ComponentMapper<DamageComponent> damageM = ComponentMapper.getFor(DamageComponent.class);
+    ComponentMapper<HealthComponent> healthM = ComponentMapper.getFor(HealthComponent.class);
+
 
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -18,18 +24,19 @@ public class MyContactListener implements ContactListener {
             return;
         }
     }
+
     private void entityCollision2(Entity ent, Entity ent2) {
 
-            CollisionComponent col = ent.getComponent(CollisionComponent.class);
-            CollisionComponent colb = ent2.getComponent(CollisionComponent.class);
+        CollisionComponent col = collisionM.get(ent);
+        CollisionComponent colb = collisionM.get(ent2);
 
-            if (col != null) {
-                col.collidingEntities.add(ent2);
-            }
-            if (colb != null) {
-                colb.collidingEntities.add(ent);
-            }
+        if (col != null) {
+            col.collidingEntities.put(ent2, new CollisionBooleans(ent2));
         }
+        if (colb != null) {
+            colb.collidingEntities.put(ent, new CollisionBooleans(ent));
+        }
+    }
 
     @Override
     public void endContact(Contact contact) {
@@ -44,18 +51,24 @@ public class MyContactListener implements ContactListener {
 
     private void endedCollision(Entity ent, Entity ent2) {
 
-            CollisionComponent col = ent.getComponent(CollisionComponent.class);
-            CollisionComponent colb = ent2.getComponent(CollisionComponent.class);
+        CollisionComponent col = ent.getComponent(CollisionComponent.class);
+        CollisionComponent colb = ent2.getComponent(CollisionComponent.class);
 
-            if (col != null) {
-                if(col.collidingEntities.contains(ent2, true)) {
-                    col.collidingEntities.removeValue(ent2, true);
-                }
-
-            } if (colb != null) {
-                if(colb.collidingEntities.contains(ent, true)) {
-                    colb.collidingEntities.removeValue(ent, true);
-                }
+        if (col != null) {
+            col.collidingEntities.get(ent2).shouldRemove = true;
+            /*if (col.collidingEntities.get(ent2).dealthDamage) {
+                col.collidingEntities.remove(ent2);
+            } else {
+                col.collidingEntities.get(ent2).shouldRemove = true;
+            }*/
+        }
+        if (colb != null) {
+            colb.collidingEntities.get(ent).shouldRemove = true;
+            /*if (colb.collidingEntities.get(ent).dealthDamage) {
+                colb.collidingEntities.remove(ent);
+            } else {
+                colb.collidingEntities.get(ent).shouldRemove = true;
+            }*/
         }
     }
 
@@ -89,19 +102,19 @@ public class MyContactListener implements ContactListener {
 
     private void entityCrash(Entity ent, Fixture fb) {
 
-        if (ent.getComponent(CollisionTypeComponent.class)== null)return;
-        if(ent.getComponent(CollisionTypeComponent.class).type == CollisionTypeComponent.ENEMY){
-            if(fb.getBody().getUserData() instanceof Entity){
+        if (ent.getComponent(CollisionTypeComponent.class) == null) return;
+        if (ent.getComponent(CollisionTypeComponent.class).type == CollisionTypeComponent.ENEMY) {
+            if (fb.getBody().getUserData() instanceof Entity) {
                 Entity entb = (Entity) fb.getBody().getUserData();
                 EntityTypeComponent type = entb.getComponent(EntityTypeComponent.class);
-                if(type != null){
-                    if(type.entityType == EntityType.ROCK){
+                if (type != null) {
+                    if (type.entityType == EntityType.ROCK) {
                         HealthComponent health = ent.getComponent(HealthComponent.class);
                         if (health != null) {
                             BodyComponent bodyComponent = entb.getComponent(BodyComponent.class);
                             float damage = bodyComponent.body.getLinearVelocity().len();
-                            if(damage  > 10) {
-                                health.health -= damage/2;
+                            if (damage > 10) {
+                                health.health -= damage / 2;
                                 System.out.println(damage);
                             }
                         }
@@ -110,6 +123,7 @@ public class MyContactListener implements ContactListener {
             }
         }
     }
+
     //THIS IS USEFUL IF WE WANT COLLISION DAMAGE TO DEPEND ON VELOCITY AND MASS.
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
@@ -144,13 +158,13 @@ public class MyContactListener implements ContactListener {
                 }
             }
         }*/
-        if (ent.getComponent(CollisionTypeComponent.class)== null)return;
-        if(ent.getComponent(CollisionTypeComponent.class).type == CollisionTypeComponent.ENEMY){
-            if(fb.getBody().getUserData() instanceof Entity){
+        if (ent.getComponent(CollisionTypeComponent.class) == null) return;
+        if (ent.getComponent(CollisionTypeComponent.class).type == CollisionTypeComponent.ENEMY) {
+            if (fb.getBody().getUserData() instanceof Entity) {
                 Entity entb = (Entity) fb.getBody().getUserData();
                 EntityTypeComponent type = entb.getComponent(EntityTypeComponent.class);
-                if(type != null){
-                    if(type.entityType == EntityType.ROCK){
+                if (type != null) {
+                    if (type.entityType == EntityType.ROCK) {
                         HealthComponent health = ent.getComponent(HealthComponent.class);
                         if (health != null) {
                             float damage = 0;
@@ -159,7 +173,7 @@ public class MyContactListener implements ContactListener {
                                 damage += imp;
                             }
                             if (damage > 4) {
-                                health.health -= damage*5;
+                                health.health -= damage * 5;
                                 System.out.println(damage);
                             }
                         }

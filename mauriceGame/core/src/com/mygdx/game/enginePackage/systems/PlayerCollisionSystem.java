@@ -52,8 +52,8 @@ public class PlayerCollisionSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         CollisionComponent cc = collisionM.get(entity);
-        //System.out.println("playercolliding " + cc.collidingEntities.size);
-        for (Entity collidingEntity : cc.collidingEntities) {
+        for (CollisionBooleans booleans : cc.collidingEntities.values()) {
+            Entity collidingEntity = booleans.collidedEntity;
             if (collidingEntity != null) {
                 CollisionTypeComponent type = typeM.get(collidingEntity);
                 if (type != null) {
@@ -65,10 +65,8 @@ public class PlayerCollisionSystem extends IteratingSystem {
                                 damageComponent.damageTimer = damageComponent.damageCD;
                                 BodyComponent playerBod = bodyM.get(entity);
                                 BodyComponent enemyBod = bodyM.get(collidingEntity);
-
                                 playerBod.body.applyLinearImpulse(new Vector2(playerBod.body.getWorldCenter().sub(enemyBod.body.getWorldCenter())).nor().scl(damageComponent.damage * 2.5f), playerBod.body.getWorldCenter(), true);
                             }
-                            //System.out.println("player hit enemy");
                             break;
                         case CollisionTypeComponent.SCENERY:
                             //System.out.println(posM.get(collidingEntity).position.y + " player " + posM.get(entity).position.y);
@@ -77,7 +75,6 @@ public class PlayerCollisionSystem extends IteratingSystem {
                                 if (stateComponent.get() == StateComponent.STATE_FALLING || stateComponent.get() == StateComponent.STATE_JUMPING) {
                                     //stateComponent.set(StateComponent.STATE_NORMAL);
                                     stateComponent.grounded = true;
-                                    //System.out.println("landed and normal!");
                                 }
                             }
                             //System.out.println("player hit scenery");
@@ -104,8 +101,6 @@ public class PlayerCollisionSystem extends IteratingSystem {
                             break;
                     }
                 }
-            } else {
-                cc.collidingEntities.removeValue(collidingEntity, false);
             }
         }
     }

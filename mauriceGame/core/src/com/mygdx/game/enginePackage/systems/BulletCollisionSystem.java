@@ -37,10 +37,11 @@ public class BulletCollisionSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         //todo: upon removal of shurikens set the velocity to 0 and make them not affected by gravity.
         CollisionComponent cc = collisionM.get(entity);
-        for (Entity collidingEntity: cc.collidingEntities) {
+        for (CollisionBooleans booleans : cc.collidingEntities.values()) {
+            Entity collidingEntity = booleans.collidedEntity;
             if (collidingEntity != null) {
                 CollisionTypeComponent type = typeM.get(collidingEntity);
-                if(typeM.get(entity).type == CollisionTypeComponent.FRIENDLY) {
+                if (typeM.get(entity).type == CollisionTypeComponent.FRIENDLY) {
                     if (type != null) {
                         switch (type.type) {
                             case CollisionTypeComponent.ENEMY:
@@ -48,8 +49,9 @@ public class BulletCollisionSystem extends IteratingSystem {
                                 if (damageComponent.damageTimer <= 0) {
                                     healthM.get(collidingEntity).health -= damageM.get(entity).damage;
                                     damageComponent.damageTimer = damageComponent.damageCD;
+
                                     AggressiveComponent aggressiveComponent = aggroM.get(collidingEntity);
-                                    if(aggressiveComponent !=null){
+                                    if (aggressiveComponent != null) {
                                         aggressiveComponent.aggressive = true;
                                     }
                                 }
@@ -62,13 +64,14 @@ public class BulletCollisionSystem extends IteratingSystem {
                                 break;
                         }
                     }
-                }else{
+                } else {
                     if (type != null) {
                         switch (type.type) {
                             case CollisionTypeComponent.FRIENDLY:
+                                booleans.processed = true;
                                 DamageComponent damageComponent = damageM.get(entity);
                                 if (damageComponent.damageTimer <= 0) {
-                                    if(healthM.get(entity) != null) {
+                                    if (healthM.get(entity) != null) {
                                         healthM.get(collidingEntity).health -= damageM.get(entity).damage;
                                         damageComponent.damageTimer = damageComponent.damageCD;
                                     }
@@ -83,11 +86,10 @@ public class BulletCollisionSystem extends IteratingSystem {
                         }
                     }
                 }
-                if(bodyM.get(entity).body.getLinearVelocity().len() < bulletM.get(entity).bulletMinSpeed && cc.collidingEntities.size >= 0) {
+                if (bodyM.get(entity).body.getLinearVelocity().len() < bulletM.get(entity).bulletMinSpeed) {
                     toBeRemoved.add(entity);
                 }
             }
         }
-
     }
 }

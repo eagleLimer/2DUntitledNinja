@@ -42,7 +42,7 @@ public class BasicEnemyMovement extends IteratingSystem {
                 body.body.setLinearVelocity(MathUtils.lerp(body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION), body.body.getLinearVelocity().y);
             }
             velocity.jumpCountDown -= deltaTime;
-            if(playerPos.y- enemyPos.y >40 && velocity.jumpCountDown < 0){
+            if(playerPos.y- enemyPos.y >2 && velocity.jumpCountDown < 0){
                 body.body.setLinearVelocity(body.body.getLinearVelocity().x, velocity.jumpSpeed);
                 velocity.jumpCountDown = velocity.jumpCooldown;
             }

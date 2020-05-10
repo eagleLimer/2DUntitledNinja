@@ -206,6 +206,7 @@ public class MyEngine extends Engine {
         MyEntityListener entityListener = new MyEntityListener(world);
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world, controller, viewport);
 
+        this.addSystem(new CollisionSystem());
         this.addSystem(new CollectorSystem());
         this.addSystem(new GhostMovementSystem(player));
         this.addSystem(new AggressiveSystem(player));
@@ -267,7 +268,6 @@ public class MyEngine extends Engine {
         }
         LevelSensorData[] levelSensorList = engineData.getLevelSensorDataList();
         for (LevelSensorData levelData : levelSensorList) {
-            System.out.println("created sensor");
             creator.createLevelSensor(levelData.getxPos(), levelData.getyPos(), levelData.getLevelName());
         }
     }
@@ -284,7 +284,6 @@ public class MyEngine extends Engine {
         for (Entity entity : entityDataArray) {
             if (levelM.get(entity) != null) {
                 levelSensorIndex++;
-                System.out.println("saved portal");
             } else if (typeM.get(entity).type != CollisionTypeComponent.SCENERY && playerM.get(entity) == null) {
                 index++;
             }

@@ -18,6 +18,7 @@ public class ActivationSystem extends IteratingSystem {
 
     public ActivationSystem(Entity player) {
         super(Family.all(DeactivatedComponent.class).get());
+        //super(Family.exclude(ActivatedComponent.class).get()); //TRY THIS SOMETIME.
         this.player = player;
         bodyM = ComponentMapper.getFor(BodyComponent.class);
         posM = ComponentMapper.getFor(PositionComponent.class);
