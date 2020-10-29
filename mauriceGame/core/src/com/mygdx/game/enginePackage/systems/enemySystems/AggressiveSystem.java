@@ -7,7 +7,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.enginePackage.components.combatComponents.AggressiveComponent;
-import com.mygdx.game.enginePackage.components.PositionComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.PositionComponent;
 
 public class AggressiveSystem extends IteratingSystem {
     private ComponentMapper<AggressiveComponent> aggroM;

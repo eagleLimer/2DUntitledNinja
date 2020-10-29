@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.BasicComponents.*;
 import com.mygdx.game.enginePackage.components.combatComponents.*;
 import com.mygdx.game.enginePackage.components.enemyComponents.*;
 import com.mygdx.game.enginePackage.components.playerComponents.EnergyBarComponent;
@@ -176,6 +176,8 @@ public class EntityCreator {
         animationComponent.animationMap.put(StateComponent.STATE_NORMAL, animation);
         animation = AnimationsRes.playerJumping;
         animationComponent.animationMap.put(StateComponent.STATE_JUMPING, animation);
+        animation = AnimationsRes.playerAttack;
+        animationComponent.animationMap.put(StateComponent.STATE_ATTACKING,animation);
 
         //player.add(new NameComponent("PLAYER"));
         player.add(new InventoryComponent());

@@ -3,7 +3,7 @@ package com.mygdx.game.enginePackage;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.*;
-import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.BasicComponents.*;
 import com.mygdx.game.enginePackage.components.combatComponents.DamageComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
 

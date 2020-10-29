@@ -15,6 +15,7 @@ public class AnimationsRes {
     public static Animation playerFalling;
     public static Animation playerJumping;
     public static Animation playerDeath;
+    public static Animation playerAttack;
     public static Animation plantAni;
     public static Animation dabAni;
     public static Animation coinPickupAni;
@@ -32,7 +33,7 @@ public class AnimationsRes {
         int frame_rows = 1;
         float frameTime = 0.025f;
         playerRight = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
-        playerLeft = createFlippedAnimation(walkSheet, frame_rows, frame_cols, frameTime);
+        playerLeft = createXFlippedAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
         walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"fallingAni.png"));
         frame_cols = 5;
@@ -58,6 +59,12 @@ public class AnimationsRes {
         frameTime = 0.1f;
         playerDeath = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
+        walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"AttackAni.png"));
+        frame_cols = 3;
+        frame_rows = 1;
+        frameTime = 0.05f;
+        playerAttack = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
+
         walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"plantAni.png"));
         frame_cols = 2;
         frame_rows = 1;
@@ -79,7 +86,7 @@ public class AnimationsRes {
         walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"bulletDeathAni.png"));
         frame_cols = 8;
         frame_rows = 1;
-        frameTime = 0.05f;
+        frameTime = 0.01f;
         bulletDeathAni = createAnimation(walkSheet, frame_rows, frame_cols, frameTime);
 
         walkSheet = new Texture(Gdx.files.internal(ENTITY_PATH+"bullet.png"));
@@ -102,7 +109,7 @@ public class AnimationsRes {
         return new Animation<TextureRegion>(frameTime, walkFrames);
     }
 
-    private static Animation createFlippedAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
+    private static Animation createXFlippedAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
         TextureRegion[][] tmp = TextureRegion.split(sheet, sheet.getWidth() / frame_cols, sheet.getHeight() / frame_rows);
         TextureRegion[] walkFrames = new TextureRegion[frame_cols * frame_rows];
         int index = 0;
@@ -110,6 +117,18 @@ public class AnimationsRes {
             for (int j = 0; j < frame_cols; j++) {
                 walkFrames[index] = tmp[i][j];
                 walkFrames[index++].flip(true, false);
+            }
+        }
+        return new Animation<TextureRegion>(frameTime, walkFrames);
+    }
+    private static Animation createYFlippedAnimation(Texture sheet, int frame_rows, int frame_cols, float frameTime) {
+        TextureRegion[][] tmp = TextureRegion.split(sheet, sheet.getWidth() / frame_cols, sheet.getHeight() / frame_rows);
+        TextureRegion[] walkFrames = new TextureRegion[frame_cols * frame_rows];
+        int index = 0;
+        for (int i = 0; i < frame_rows; i++) {
+            for (int j = 0; j < frame_cols; j++) {
+                walkFrames[index] = tmp[i][j];
+                walkFrames[index++].flip(false, true);
             }
         }
         return new Animation<TextureRegion>(frameTime, walkFrames);

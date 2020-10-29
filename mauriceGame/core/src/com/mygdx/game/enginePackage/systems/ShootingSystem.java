@@ -7,9 +7,9 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.enginePackage.components.ActivatedComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.BasicShooterComponent;
-import com.mygdx.game.enginePackage.components.PositionComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.PositionComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.ShooterComponent;
 import com.mygdx.game.enginePackage.BulletInfo;
 

@@ -5,9 +5,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.enginePackage.components.ActivatedComponent;
-import com.mygdx.game.enginePackage.components.CollisionBooleans;
-import com.mygdx.game.enginePackage.components.CollisionComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.ActivatedComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.CollisionBooleans;
+import com.mygdx.game.enginePackage.components.BasicComponents.CollisionComponent;
 
 public class CollisionSystem extends IteratingSystem {
     ComponentMapper<CollisionComponent> collisionM;

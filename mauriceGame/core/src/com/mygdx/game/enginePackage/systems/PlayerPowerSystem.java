@@ -15,7 +15,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.enginePackage.EntityType;
-import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.BasicComponents.BodyComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.EntityTypeComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.PositionComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.StateComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.ShooterComponent;
 import com.mygdx.game.enginePackage.components.playerComponents.EnergyComponent;
 import com.mygdx.game.enginePackage.components.playerComponents.PlayerComponent;
@@ -38,6 +41,7 @@ public class PlayerPowerSystem extends IteratingSystem {
     private ComponentMapper<EnergyComponent> energyM;
     private ComponentMapper<PositionComponent> posM;
     private ComponentMapper<ShooterComponent> shooterM;
+    private ComponentMapper<StateComponent> stateM;
     private float mouseX;
     private float mouseY;
     private boolean checkShoot = false;
@@ -56,6 +60,7 @@ public class PlayerPowerSystem extends IteratingSystem {
         posM = ComponentMapper.getFor(PositionComponent.class);
         shooterM = ComponentMapper.getFor(ShooterComponent.class);
         entityM = ComponentMapper.getFor(EntityTypeComponent.class);
+        stateM = ComponentMapper.getFor(StateComponent.class);
         entityList = new Array<>();
         mycallBack = new QueryCallback() {
             @Override
@@ -144,6 +149,12 @@ public class PlayerPowerSystem extends IteratingSystem {
                 //energy.mana -= bodyM.get(ball).body.getMass();
             }
         }
+        /*if(controller.shoot){
+            //todo: state attacking,
+            StateComponent state = stateM.get(entity);
+            state.attacking = true;
+            state.time = 0;
+        }*/
         if(checkShoot){
             if (controller.shoot) {
                 ShooterComponent shooter = shooterM.get(entity);

@@ -5,7 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.enginePackage.components.ActivatedComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.ActivatedComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthBarComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
 

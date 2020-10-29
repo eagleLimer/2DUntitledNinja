@@ -1,4 +1,4 @@
-package com.mygdx.game.enginePackage.components;
+package com.mygdx.game.enginePackage.components.BasicComponents;
 
 import com.badlogic.ashley.core.Component;
 
@@ -8,10 +8,13 @@ public class StateComponent implements Component {
     public static final int STATE_FALLING = 2;
     public static final int STATE_RIGHT = 3;
     public static final int STATE_LEFT = 4;
-    public static final int STATE_HIT = 5;
-    public static final int STATE_DEAD = 6;
+    public static final int STATE_HIT = 6;
+    public static final int STATE_DEAD = 7;
+    public static final int STATE_ATTACKING = 8;
+
     public boolean grounded = true;
 
+    public boolean attacking = false;
     private int state = 0;
     public float time = 0.0f;
     public boolean isLooping = true;

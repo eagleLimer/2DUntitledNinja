@@ -7,11 +7,11 @@ import com.badlogic.ashley.systems.IteratingSystem;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.BasicComponents.*;
 
 //todo: change this! world query is really inefficient, would be much better to just make another sensorBody over player that sucks the coins.
 public class CollectorSystem extends IteratingSystem {
-    private static final float PULL_STRENGTH = 5;
+    private static final float PULL_STRENGTH = 15;
     private static final float FOLLOW_SPEED = 10;
     private ComponentMapper<CollectorComponent> collectorM;
     private ComponentMapper<ItemComponent> itemM;
@@ -42,11 +42,11 @@ public class CollectorSystem extends IteratingSystem {
                 BodyComponent bodyComponent = bodyM.get(item);
                 float pullForce = PULL_STRENGTH/distance.len(); // pull stronger when item closer
                 //bodyComponent.body.applyLinearImpulse(distance.nor().scl(pullForce),bodyComponent.body.getWorldCenter(),false);
-                //if(bodyComponent.body.getLinearVelocity().len() < distance.nor().scl(pullForce).len()) {
+                if(bodyComponent.body.getLinearVelocity().len() < distance.nor().scl(pullForce).len()) {
 
-                bodyComponent.body.applyForce(distance.nor().scl(pullForce), bodyComponent.body.getWorldCenter(),false);
-                    //bodyComponent.body.setLinearVelocity(distance.nor().scl(pullForce));
-                //}
+                //bodyComponent.body.applyForce(distance.nor().scl(pullForce), bodyComponent.body.getWorldCenter(),false);
+                    bodyComponent.body.setLinearVelocity(distance.nor().scl(pullForce));
+                }
             }
         }
         Vector3 collectorPos = posM.get(entity).position;

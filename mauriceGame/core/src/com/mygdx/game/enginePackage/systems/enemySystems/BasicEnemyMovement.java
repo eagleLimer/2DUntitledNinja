@@ -6,7 +6,10 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.BasicComponents.ActivatedComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.BodyComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.PositionComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.VelocityComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.AggressiveComponent;
 import com.mygdx.game.enginePackage.components.enemyComponents.BasicEnemyComponent;
 

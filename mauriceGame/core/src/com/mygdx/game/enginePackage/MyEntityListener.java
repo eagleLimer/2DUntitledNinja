@@ -3,8 +3,7 @@ package com.mygdx.game.enginePackage;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.game.enginePackage.components.BodyComponent;
-import com.mygdx.game.enginePackage.components.TextureComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.BodyComponent;
 
 public class MyEntityListener implements EntityListener {
     private World world;

@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.BasicComponents.*;
 
 import static com.mygdx.game.enginePackage.systems.DeactivationSystem.ACTIVATION_DISTANCE;
 import static com.mygdx.game.enginePackage.systems.DeactivationSystem.SCENERY_MULTIPLIER;

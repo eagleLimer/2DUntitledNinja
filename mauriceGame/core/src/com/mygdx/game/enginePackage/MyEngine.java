@@ -15,8 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.enginePackage.components.*;
-import com.mygdx.game.enginePackage.components.NameComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.*;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthBarComponent;
 import com.mygdx.game.enginePackage.components.combatComponents.HealthComponent;
 import com.mygdx.game.enginePackage.components.enemyComponents.EnemyRarityComponent;
@@ -206,6 +205,7 @@ public class MyEngine extends Engine {
         MyEntityListener entityListener = new MyEntityListener(world);
         PlayerPowerSystem powerSystem = new PlayerPowerSystem(world, controller, viewport);
 
+        this.addSystem(new LevelSystem());
         this.addSystem(new CollisionSystem());
         this.addSystem(new CollectorSystem());
         this.addSystem(new GhostMovementSystem(player));

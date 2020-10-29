@@ -2,7 +2,7 @@ package com.mygdx.game.enginePackage.systems;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.mygdx.game.enginePackage.components.PositionComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.PositionComponent;
 
 import java.util.Comparator;
 

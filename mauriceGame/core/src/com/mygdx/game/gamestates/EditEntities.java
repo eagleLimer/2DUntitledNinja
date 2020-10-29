@@ -1,7 +1,6 @@
 package com.mygdx.game.gamestates;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -15,9 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.enginePackage.EntityType;
-import com.mygdx.game.enginePackage.components.CollisionTypeComponent;
 import com.mygdx.game.game.*;
-import com.mygdx.game.resources.ImagesRes;
+
 import static com.mygdx.game.enginePackage.Constants.RENDERUNITS_PER_METER;
 
 import java.util.HashMap;

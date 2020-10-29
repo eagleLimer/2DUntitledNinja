@@ -5,7 +5,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
-import com.mygdx.game.enginePackage.components.*;
+import com.mygdx.game.enginePackage.components.BasicComponents.BodyComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.StateComponent;
+import com.mygdx.game.enginePackage.components.BasicComponents.VelocityComponent;
 import com.mygdx.game.enginePackage.components.playerComponents.PlayerComponent;
 import com.mygdx.game.game.KeyboardController;
 
@@ -45,49 +47,51 @@ public class PlayerControlSystem extends IteratingSystem {
         VelocityComponent velocity = vm.get(entity);
         stateChanged = state.get();
 
-        if(state.grounded){
-            stateChanged = StateComponent.STATE_NORMAL;
-        }
-        //ugly as crap? Maybe.
-        if ((state.get() == StateComponent.STATE_JUMPING && b2body.body.getLinearVelocity().y < 0.00000001) || b2body.body.getLinearVelocity().y < FALLING_MIN) {
-            stateChanged = StateComponent.STATE_FALLING;
-            state.grounded = false;
-        } /*else if (state.get() != StateComponent.STATE_JUMPING) {
+        if(!state.attacking) {
+            if (state.grounded) {
+                stateChanged = StateComponent.STATE_NORMAL;
+            }
+            //ugly as crap? Maybe.
+            if ((state.get() == StateComponent.STATE_JUMPING && b2body.body.getLinearVelocity().y < 0.00000001) || b2body.body.getLinearVelocity().y < FALLING_MIN) {
+                stateChanged = StateComponent.STATE_FALLING;
+                state.grounded = false;
+            } /*else if (state.get() != StateComponent.STATE_JUMPING) {
         stateChanged = StateComponent.STATE_NORMAL;
         //state.grounded = false;
     }*/
 
 
-        boolean airborne = stateChanged == StateComponent.STATE_FALLING || stateChanged == StateComponent.STATE_JUMPING;
-        airborne = !state.grounded;
-        float accMultiplier = airborne ? AIRBORNE_CONTROL : 1;
-        if (controller.left) {
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
-            if (!airborne) {
-                stateChanged = StateComponent.STATE_LEFT;
+            boolean airborne = stateChanged == StateComponent.STATE_FALLING || stateChanged == StateComponent.STATE_JUMPING;
+            airborne = !state.grounded;
+            float accMultiplier = airborne ? AIRBORNE_CONTROL : 1;
+            if (controller.left) {
+                b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
+                if (!airborne) {
+                    stateChanged = StateComponent.STATE_LEFT;
+                }
+            } else if (controller.right) {
+                b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
+                if (!airborne) {
+                    stateChanged = StateComponent.STATE_RIGHT;
+                }
+            } else {
+                b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, DEACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
             }
-        } else if (controller.right) {
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, velocity.sprintSpeed, ACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
-            if (!airborne) {
-                stateChanged = StateComponent.STATE_RIGHT;
-            }
-        } else {
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 0, DEACCELERATION * accMultiplier), b2body.body.getLinearVelocity().y);
-        }
 
 
-        velocity.jumpCountDown -= deltaTime;
-        if (controller.jump && !airborne && velocity.jumpCountDown < 0 /*&&
+            velocity.jumpCountDown -= deltaTime;
+            if (controller.jump && !airborne && velocity.jumpCountDown < 0 /*&&
                 (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_LEFT || state.get() == StateComponent.STATE_RIGHT)*/) {
-            b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, velocity.jumpSpeed);
-            //b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
-            stateChanged = StateComponent.STATE_JUMPING;
-            state.grounded = false;
-            velocity.jumpCountDown = velocity.jumpCooldown;
-        }
-        if (state.get() != stateChanged) {
-            state.set(stateChanged);
-        }
+                b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, velocity.jumpSpeed);
+                //b2body.body.applyLinearImpulse(0, velocity.jumpForce, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
+                stateChanged = StateComponent.STATE_JUMPING;
+                state.grounded = false;
+                velocity.jumpCountDown = velocity.jumpCooldown;
+            }
+            if (state.get() != stateChanged) {
+                state.set(stateChanged);
+            }
 
+        }
     }
 }
